@@ -6,3 +6,5 @@ test('flashphrase is a function', function (assert) {
     assert.strictEqual(typeof flashphrase, 'function');
     assert.end();
 });
+
+require('./lib/stream/match');
