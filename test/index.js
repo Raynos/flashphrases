@@ -7,4 +7,5 @@ test('flashphrase is a function', function (assert) {
     assert.end();
 });
 
+require('./lib/markov');
 require('./lib/stream/match');
