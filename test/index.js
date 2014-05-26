@@ -9,3 +9,4 @@ test('flashphrase is a function', function (assert) {
 
 require('./lib/markov');
 require('./lib/stream/match');
+require('./lib/editdist');
