@@ -102,6 +102,68 @@ test('Markov build', function(assert) {
     assert.end();
 });
 
+test('Markov special keywords', function(assert) {
+    var markov = new Markov();
+
+    function expect(counts, trans, mess) {
+        assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
+        assert.deepEqual(markov.transitions, trans, 'expected transitions ' + mess);
+    }
+
+    var expectedCounts = {};
+    var expectedTransitions = {
+        __START_TOKEN__: [],
+    };
+    expect(expectedCounts, expectedTransitions, 'initially');
+
+    [
+
+        ['the', {
+            the: 1,
+        }, {
+            __START_TOKEN__: ['the'],
+        } ],
+
+        ['token', {
+            token: 1,
+        }, {
+            the: ['token'],
+        } ],
+
+        ['constructor', {
+            constructor: 1,
+        }, {
+            token: ['constructor'],
+        } ],
+
+        ['is', {
+            is: 1,
+        }, {
+            constructor: ['is'],
+        } ],
+
+        ['special', {
+            special: 1,
+        }, {
+            is: ['special'],
+        } ],
+
+        // null
+
+    ].forEach(function(state, i) {
+        var token = state[0];
+        var counts = state[1];
+        var trans = state[2];
+        var mess = util.format('after token %j %j', i+1, token);
+        markov.addToken(token);
+        extend(expectedCounts, counts);
+        extend(expectedTransitions, trans);
+        expect(expectedCounts, expectedTransitions, mess);
+    });
+
+    assert.end();
+});
+
 test('Markov merge', function(assert) {
     function expect(markov, counts, trans, mess) {
         assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
