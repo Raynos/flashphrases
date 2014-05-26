@@ -164,6 +164,43 @@ test('Markov special keywords', function(assert) {
     assert.end();
 });
 
+test('Markov save/load', function(assert) {
+    var markov = new Markov();
+    markov.addTokens('a b c'.split(' '));
+    markov.addTokens('a b d'.split(' '));
+    markov.addTokens('c e g'.split(' '));
+
+    var expectedCounts = {
+        a: 2,
+        b: 2,
+        c: 2,
+        d: 1,
+        e: 1,
+        g: 1,
+    };
+    var expectedTrans = {
+        __START_TOKEN__: ['a', 'c'],
+        a: ['b'],
+        b: ['c', 'd'],
+        c: ['__END_TOKEN__', 'e'],
+        d: ['__END_TOKEN__'],
+        e: ['g'],
+        g: ['__END_TOKEN__'],
+    };
+
+    var data = markov.save();
+    assert.deepEqual(data, {
+        counts: expectedCounts,
+        transitions: expectedTrans
+    }, 'saved data matches');
+
+    var copy = Markov.load(data);
+    assert.deepEqual(copy.counts, expectedCounts, 'loaded counts');
+    assert.deepEqual(copy.transitions, expectedTrans, 'loaded transitions');
+
+    assert.end();
+});
+
 test('Markov merge', function(assert) {
     function expect(markov, counts, trans, mess) {
         assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
