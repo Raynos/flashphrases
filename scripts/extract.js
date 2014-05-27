@@ -1,11 +1,13 @@
 var async = require('async');
 var fs = require('fs');
 
+var argv = require('minimist')(process.argv.slice(2));
+
 var extract = require('../lib/extract');
 var extractQ = async.queue(extract, 32);
 
 async.parallel(
-    process.argv.slice(2).map(function(path) {
+    argv._.map(function(path) {
         return function(callback) {
             extractQ.push(fs.createReadStream(path, {
                 encoding: 'utf8'
