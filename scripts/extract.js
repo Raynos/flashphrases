@@ -9,9 +9,10 @@ var extractQ = async.queue(extract, 32);
 async.parallel(
     argv._.map(function(path) {
         return function(callback) {
-            extractQ.push(fs.createReadStream(path, {
+            var stream = fs.createReadStream(path, {
                 encoding: 'utf8'
-            }), callback);
+            });
+            extractQ.push(stream, callback);
         };
     }),
     function loadDone(err, markovs) {
