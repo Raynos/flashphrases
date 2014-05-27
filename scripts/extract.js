@@ -16,7 +16,8 @@ async.parallel(
         };
     }),
     function loadDone(err, markovs) {
-        var markov = markovs.shift();
-        markovs.forEach(markov.merge.bind(markov));
-        process.stdout.write(JSON.stringify(markov.save()));
+        var markov = markovs.reduce(function(markov, other) {
+            return markov ? markov.merge(other) : other;
+        }, null);
+        if (markov) process.stdout.write(JSON.stringify(markov.save()));
     });
