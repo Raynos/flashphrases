@@ -2,7 +2,7 @@ var debounce = require('debounce');
 var inherits = require('inherits');
 var nextTick = require('next-tick');
 
-var editdist = require('./lib/editdist');
+var editdist = require('../lib/editdist');
 var GenerativePrompt = require('./generative_prompt');
 
 function PhrasePrompt(options) {

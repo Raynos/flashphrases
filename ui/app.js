@@ -15,7 +15,7 @@ document.head.appendChild(
 ////
 
 var fs = require('fs');
-var Markov = require('./lib/markov');
+var Markov = require('../lib/markov');
 var markov = Markov.load(JSON.parse(fs.readFileSync('markov_source.json')));
 function generatePhrase(numPhrases, minLength) {
     var phrase = '';
