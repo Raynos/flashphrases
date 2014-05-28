@@ -22,6 +22,7 @@
     "istanbul": "^0.2.7",
     "tap-spec": "^0.1.8",
     "pre-commit": "0.0.5",
+    "next-tick": "^0.2.2",
     "hyperscript": "^1.4.0",
     "inherits": "^2.0.1",
     "debounce": "0.0.3"
