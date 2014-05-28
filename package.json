@@ -21,7 +21,9 @@
     "jshint": "^2.5.0",
     "istanbul": "^0.2.7",
     "tap-spec": "^0.1.8",
-    "pre-commit": "0.0.5"
+    "pre-commit": "0.0.5",
+    "hyperscript": "^1.4.0",
+    "inherits": "^2.0.1"
   },
   "licenses": [
     "BSD 3-Clause"
