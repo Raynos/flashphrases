@@ -33,6 +33,8 @@ var prompt = new PhrasePrompt({
     complexity: {
         initial: [2, 10],
         step: [1, 5],
+        lo: [2, 10],
+        hi: [10, 50]
     }
 });
 
