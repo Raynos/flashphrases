@@ -41,6 +41,7 @@ PhrasePrompt.prototype.finishRecord = function(force) {
         ;
     this.record.correct = this.record.dist <= this.record.maxErrors;
     if (force || this.record.correct) {
+        this.record.forced = force;
         if (this.record.inputShownAt) {
             if (!this.record.elapsed.input) {
                 this.record.elapsed.input = now - this.record.inputShownAt;
