@@ -10,5 +10,6 @@ test('flashphrase is a function', function (assert) {
 require('./lib/markov');
 require('./lib/stream/between');
 require('./lib/stream/match');
+require('./lib/complexity');
 require('./lib/editdist');
 require('./lib/extract');
