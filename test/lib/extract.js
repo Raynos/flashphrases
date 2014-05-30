@@ -5,7 +5,7 @@ var extract = require('../../lib/extract');
 
 test('extract', function(assert) {
     extract(
-        fs.createReadStream(__dirname + '/../../README.md', {
+        fs.createReadStream(__dirname + '/extract.txt', {
             encoding:'utf8'
         }),
         function(err, markov) {
