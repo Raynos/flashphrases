@@ -38,8 +38,8 @@ StartStop.prototype.onKeyPress = function(event) {
         case 3: // C-c
             this.stop();
             break;
-        // default:
-        //     console.log(event);
+        default:
+            this.emit('keypress', event);
     }
 };
 
