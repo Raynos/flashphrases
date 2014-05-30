@@ -30,6 +30,8 @@ var prompt = new PhrasePrompt({
     generatePhrase: generatePhrase,
     displayTime: 1500,
     inputTime: 10000,
+    maxErrorPerWord: 2,
+    repromptDelay: 200,
     complexity: {
         initial: [2, 10],
         step: [1, 5],
