@@ -63,6 +63,7 @@ Prompt.prototype.onInputKeyDown = function(event) {
         event.keyCode !== 0x0d) {
         event.preventDefault();
         event.stopPropagation();
+        this.emit('stopkey', event);
     }
 };
 
