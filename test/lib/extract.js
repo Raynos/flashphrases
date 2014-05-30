@@ -10,6 +10,8 @@ test('extract', function(assert) {
         }),
         function(err, markov) {
             assert.ifError(err, "didn't fail");
+            assert.ok(Object.keys(markov.counts).length > 1, 'must have extracted some tokens');
+            assert.ok(markov.transitions.__START_TOKEN__.length > 1, 'must have extracted some starting tokens');
             assert.ok(markov.chain().length > 0, 'can generate a non-empty chain');
             assert.end();
         });
