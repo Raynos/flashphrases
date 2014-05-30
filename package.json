@@ -25,7 +25,6 @@
     "beefy": "^1.1.0",
     "browserify": "^4.1.5",
     "brfs": "^1.1.1",
-    "next-tick": "^0.2.2",
     "hyperscript": "^1.4.0",
     "inherits": "^2.0.1",
     "debounce": "0.0.3"

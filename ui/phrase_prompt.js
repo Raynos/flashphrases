@@ -1,6 +1,5 @@
 var debounce = require('debounce');
 var inherits = require('inherits');
-var nextTick = require('next-tick');
 
 var editdist = require('../lib/editdist');
 var GenerativePrompt = require('./generative_prompt');
@@ -11,11 +10,12 @@ function PhrasePrompt(options) {
     }
     options = options || {};
     this.maxErrorPerWord = options.maxErrorPerWord || 2;
+    this.repromptDelay = options.repromptDelay || 100;
 
     GenerativePrompt.call(this, options);
 
     this.on('expire', this.onPhraseExpired.bind(this));
-    this.on('input', debounce(this.onInput.bind(this), 100));
+    this.on('input', debounce(this.onInput.bind(this), 200));
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
 }
@@ -62,7 +62,7 @@ PhrasePrompt.prototype.reprompt = function() {
     if (this.inputing) {
         this.inputElement.disabled = true;
     }
-    nextTick(this.prompt.bind(this));
+    setTimeout(this.prompt.bind(this), this.repromptDelay);
 };
 
 PhrasePrompt.prototype.onDisplay = function() {
