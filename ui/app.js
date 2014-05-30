@@ -93,6 +93,9 @@ function onResult(result) {
     console.log(result);
 }
 
+prompt.on('stopkey', function(event) {
+    if (event.keyCode === 0x1b) ss.stop();
+});
 ss.on('start', loop.start.bind(loop));
 ss.on('stop', loop.stop.bind(loop));
 ss.on('keypress', function(event) {
