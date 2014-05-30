@@ -16,25 +16,25 @@ inherits(TimedPrompt, Prompt);
 
 TimedPrompt.prototype.prompt = function(text) {
     Prompt.prototype.prompt.call(this, text);
-    this.setTimer(this.displayTime);
+    this.setTimer();
 };
 
 TimedPrompt.prototype.showInput = function() {
     this.clearTimer();
     Prompt.prototype.showInput.call(this);
-    this.setTimer(this.inputTime);
+    this.setTimer();
 };
 
-TimedPrompt.prototype.setTimer = function(time) {
+TimedPrompt.prototype.setTimer = function() {
     this.clearTimer();
     if (this.inputing) {
         this.timer = setTimeout(function() {
             if (this.inputing) this.expireInput();
-        }.bind(this), time);
+        }.bind(this), this.inputTime);
     } else {
         this.timer = setTimeout(function() {
             if (!this.inputing) this.showInput();
-        }.bind(this), time);
+        }.bind(this), this.displayTime);
     }
 };
 
