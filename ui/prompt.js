@@ -1,4 +1,3 @@
-var debounce = require('debounce');
 var EE = require('events').EventEmitter;
 var h = require('hyperscript');
 var inherits = require('inherits');
@@ -9,7 +8,6 @@ function Prompt(options) {
     }
     this.element = h('div.prompt');
     this.displayElement = this.element.appendChild(h('span'));
-    this.eventuallyUpdateInput = debounce(this.updateInput.bind(this), 200);
     this.inputElement = this.element.appendChild(h('input', {
         style: {display: 'none'},
         type: 'text',
@@ -76,6 +74,17 @@ Prompt.prototype.onInputKeyPress = function(event) {
         default:
             this.eventuallyUpdateInput();
     }
+};
+
+Prompt.prototype.eventuallyUpdateInput = function() {
+    if (this.inputUpdateTimer) {
+        clearTimeout(this.inputUpdateTimer);
+    }
+    var self = this;
+    this.inputUpdateTimer = setTimeout(function() {
+        delete self.inputUpdateTimer;
+        self.updateInput();
+    }, 200);
 };
 
 Prompt.prototype.updateInput = function() {
