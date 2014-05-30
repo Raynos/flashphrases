@@ -69,7 +69,7 @@ Prompt.prototype.onInputKeyDown = function(event) {
 Prompt.prototype.onInputKeyPress = function(event) {
     if (event.keyCode === 0x0a ||
         event.keyCode === 0x0d) {
-        this.emit('submit');
+        this.updateInput(true);
     } else {
         this.eventuallyUpdateInput();
     }

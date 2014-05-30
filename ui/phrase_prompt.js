@@ -19,7 +19,6 @@ function PhrasePrompt(options) {
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
-    this.on('submit', this.onSubmit.bind(this));
 }
 
 inherits(PhrasePrompt, GenerativePrompt);
@@ -89,13 +88,6 @@ PhrasePrompt.prototype.onShowInput = function() {
         }
         delete this.record.displayedAt;
     }
-};
-
-PhrasePrompt.prototype.onSubmit = function() {
-    this.clearTimer();
-    this.finishRecord(true);
-    this.emitRecord();
-    this.reprompt();
 };
 
 PhrasePrompt.prototype.onPhraseExpired = function() {
