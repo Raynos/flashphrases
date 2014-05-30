@@ -8,7 +8,7 @@ function PhrasePrompt(options) {
         return new PhrasePrompt(options);
     }
     options = options || {};
-    this.maxErrorPerWord = options.maxErrorPerWord || 2;
+    this.maxErrorPerWord = options.maxErrorPerWord || 1;
     this.repromptDelay = options.repromptDelay || 100;
 
     GenerativePrompt.call(this, options);
@@ -57,7 +57,7 @@ PhrasePrompt.prototype.prompt = function() {
     GenerativePrompt.prototype.prompt.call(this);
     this.record.expected = this.expected;
     this.record.got = this.got;
-    this.record.dist = editdist(this.got, this.expected);
+    this.record.dist = editdist.lossy(this.got, this.expected);
 };
 
 PhrasePrompt.prototype.reprompt = function() {
