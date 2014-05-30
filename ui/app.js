@@ -50,7 +50,6 @@ var history = [];
 function onResult(result) {
     // TODO: prune and/or archive history?
     history.push(result);
-    console.log(result);
 
     var k = 3; // TODO setting
 
@@ -61,6 +60,7 @@ function onResult(result) {
         }, lastK.length >= k);
     if (lastKExpired) return ss.stop();
 
+    console.log(result);
 }
 
 ss.on('start', loop.start.bind(loop));
