@@ -20,7 +20,9 @@
     "tap-spec": "^0.1.8",
     "pre-commit": "0.0.5"
   },
-  "licenses": [],
+  "licenses": [
+    "BSD 3-Clause"
+  ],
   "scripts": {
     "test": "npm run jshint -s && NODE_ENV=test node test/index.js | tap-spec",
     "fast-test": "NODE_ENV=test node test/index.js | tap-spec",
@@ -36,6 +38,6 @@
     "jshint-pre-commit",
     "fast-test"
   ],
-  "private": true,
+  "private": false,
   "playdoh-version": "module@2.1.3"
 }
