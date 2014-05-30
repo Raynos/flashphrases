@@ -59,6 +59,9 @@ PhrasePrompt.prototype.prompt = function() {
 };
 
 PhrasePrompt.prototype.reprompt = function() {
+    if (this.inputing) {
+        this.inputElement.disabled = true;
+    }
     nextTick(this.prompt.bind(this));
 };
 
