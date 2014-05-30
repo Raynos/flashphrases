@@ -9,10 +9,11 @@ function Prompt(options) {
     }
     this.element = h('div.prompt');
     this.displayElement = this.element.appendChild(h('span'));
+    this.eventuallyUpdateInput = debounce(this.updateInput.bind(this), 200);
     this.inputElement = this.element.appendChild(h('input', {
         style: {display: 'none'},
         type: 'text',
-        onkeypress: debounce(this.updateInput.bind(this), 200),
+        onkeypress: this.eventuallyUpdateInput,
         onchange: this.updateInput.bind(this)
     }));
     this.expected = '';
