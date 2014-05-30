@@ -59,6 +59,7 @@ function scoreResult(result) {
 }
 
 var history = [];
+var levelScore = 0;
 function onResult(result) {
     // TODO: prune and/or archive history?
     history.push(result);
@@ -74,6 +75,21 @@ function onResult(result) {
 
     result.score = scoreResult(result);
 
+    // TODO: adjust dispalyTime and inputTime in addition to complexity
+
+    levelScore += result.score;
+    var threshold = 2 + (2 * prompt.complexity.level) * 100;
+    if (levelScore > threshold) {
+        levelScore = 0;
+        prompt.complexity.level++;
+    }
+
+    var util = require('util');
+    console.log(util.format(
+        'level %s (%s/%s = %s%%)',
+        prompt.complexity.level,
+        levelScore, threshold,
+        (100 * Math.round(levelScore) / threshold).toFixed(2)));
     console.log(result);
 }
 
