@@ -67,5 +67,15 @@ function onResult(result) {
 
 ss.on('start', loop.start.bind(loop));
 ss.on('stop', loop.stop.bind(loop));
+ss.on('keypress', function(event) {
+    if (prompt.inputing) return;
+    var char = String.fromCharCode(event.charCode);
+    if (char !== prompt.expected[0]) return;
+    event.stopPropagation();
+    event.preventDefault();
+    prompt.showInput();
+    prompt.inputElement.value = char;
+    prompt.updateInput();
+});
 ss.addListeners(window);
 prompt.on('result', onResult);
