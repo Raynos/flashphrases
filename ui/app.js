@@ -48,6 +48,16 @@ var ss = new StartStop();
 ss.contentElement.appendChild(prompt.element);
 document.body.appendChild(ss.element);
 
+function scoreResult(result) {
+    if (!result.correct) return 0;
+    var diffDisplay = Math.max(0, result.timeout.display - result.elapsed.display);
+    var diffInput = Math.max(0, result.timeout.input - result.elapsed.input);
+    var diffError = result.maxErrors - result.dist;
+    diffDisplay /= 100; // milli -> deci seconds
+    diffInput /= 100; // milli -> deci seconds
+    return diffError + diffInput + diffDisplay;
+}
+
 var history = [];
 function onResult(result) {
     // TODO: prune and/or archive history?
@@ -61,6 +71,8 @@ function onResult(result) {
             return allExpired && Boolean(result.expired);
         }, lastK.length >= k);
     if (lastKExpired) return ss.stop();
+
+    result.score = scoreResult(result);
 
     console.log(result);
 }
