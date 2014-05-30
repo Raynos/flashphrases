@@ -111,8 +111,8 @@ PhrasePrompt.prototype.onInput = function() {
         this.record.dist = editdist(this.got, this.expected);
         this.finishRecord(false);
         if (this.record.correct) {
-            this.emitRecord();
             this.clearTimer();
+            this.emitRecord();
             this.reprompt();
         }
     }
