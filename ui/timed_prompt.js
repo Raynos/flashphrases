@@ -19,6 +19,12 @@ TimedPrompt.prototype.prompt = function(text) {
     this.setTimer(this.displayTime);
 };
 
+TimedPrompt.prototype.showInput = function() {
+    this.clearTimer();
+    Prompt.prototype.showInput.call(this);
+    this.setTimer(this.inputTime);
+};
+
 TimedPrompt.prototype.setTimer = function(time) {
     this.clearTimer();
     this.timer = setTimeout(function() {
@@ -26,7 +32,6 @@ TimedPrompt.prototype.setTimer = function(time) {
             this.expireInput();
         } else {
             this.showInput();
-            this.setTimer(this.inputTime);
         }
     }.bind(this), time);
 };
