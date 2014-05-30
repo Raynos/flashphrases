@@ -94,6 +94,7 @@ Prompt.prototype.updateInput = function(force) {
     }
     if (this.inputing && !this.inputElement.disabled) {
         this.got = this.inputElement.value;
+        if (force) this.inputElement.disabled = true;
         this.emit('input', Boolean(force));
     }
 };
