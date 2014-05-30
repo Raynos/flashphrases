@@ -106,12 +106,12 @@ PhrasePrompt.prototype.onPhraseExpired = function() {
     }
 };
 
-PhrasePrompt.prototype.onInput = function() {
+PhrasePrompt.prototype.onInput = function(force) {
     if (this.record) {
         this.record.got = this.got;
         this.record.dist = editdist(this.got, this.expected);
-        this.finishRecord(false);
-        if (this.record.correct) {
+        this.finishRecord(force);
+        if (this.record.forced || this.record.correct) {
             this.clearTimer();
             this.emitRecord();
             this.reprompt();
