@@ -67,13 +67,11 @@ Prompt.prototype.onInputKeyDown = function(event) {
 };
 
 Prompt.prototype.onInputKeyPress = function(event) {
-    switch (event.keyCode) {
-        case 0x0a: // nl
-        case 0x0d: // cr
-            this.emit('submit');
-            break;
-        default:
-            this.eventuallyUpdateInput();
+    if (event.keyCode === 0x0a ||
+        event.keyCode === 0x0d) {
+        this.emit('submit');
+    } else {
+        this.eventuallyUpdateInput();
     }
 };
 
