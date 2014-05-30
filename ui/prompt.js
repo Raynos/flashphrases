@@ -79,7 +79,7 @@ Prompt.prototype.onInputKeyPress = function(event) {
 };
 
 Prompt.prototype.updateInput = function() {
-    if (this.inputing) {
+    if (this.inputing && !this.inputElement.disabled) {
         this.got = this.inputElement.value;
         this.emit('input');
     }
