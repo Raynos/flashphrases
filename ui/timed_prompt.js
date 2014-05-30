@@ -27,13 +27,15 @@ TimedPrompt.prototype.showInput = function() {
 
 TimedPrompt.prototype.setTimer = function(time) {
     this.clearTimer();
-    this.timer = setTimeout(function() {
-        if (this.inputing) {
-            this.expireInput();
-        } else {
-            this.showInput();
-        }
-    }.bind(this), time);
+    if (this.inputing) {
+        this.timer = setTimeout(function() {
+            if (this.inputing) this.expireInput();
+        }.bind(this), time);
+    } else {
+        this.timer = setTimeout(function() {
+            if (!this.inputing) this.showInput();
+        }.bind(this), time);
+    }
 };
 
 TimedPrompt.prototype.clearTimer = function() {
