@@ -26,8 +26,7 @@
     "browserify": "^4.1.5",
     "brfs": "^1.1.1",
     "hyperscript": "^1.4.0",
-    "inherits": "^2.0.1",
-    "debounce": "0.0.3"
+    "inherits": "^2.0.1"
   },
   "licenses": [
     "BSD 3-Clause"

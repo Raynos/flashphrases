@@ -1,4 +1,3 @@
-var debounce = require('debounce');
 var inherits = require('inherits');
 
 var editdist = require('../lib/editdist');
@@ -15,7 +14,7 @@ function PhrasePrompt(options) {
     GenerativePrompt.call(this, options);
 
     this.on('expire', this.onPhraseExpired.bind(this));
-    this.on('input', debounce(this.onInput.bind(this), 200));
+    this.on('input', this.onInput.bind(this));
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
