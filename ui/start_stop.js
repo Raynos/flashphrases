@@ -32,7 +32,7 @@ StartStop.prototype.addListeners = function(element) {
 
 StartStop.prototype.onKeyPress = function(event) {
     switch(event.charCode) {
-        case 32: // ' '
+        case 0x20: // <space>
             this.start();
             break;
         case 3: // C-c
