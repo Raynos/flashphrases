@@ -26,8 +26,17 @@ StartStop.prototype.onStartClick = function() {
 };
 
 StartStop.prototype.addListeners = function(element) {
+    element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('keypress', this.onKeyPress.bind(this));
     element.addEventListener('blur', this.stop.bind(this));
+};
+
+StartStop.prototype.onKeyDown = function(event) {
+    if (event.keyCode === 0x1b) { // <esc>
+        event.preventDefault();
+        event.stopPropagation();
+        this.stop();
+    }
 };
 
 StartStop.prototype.onKeyPress = function(event) {
@@ -36,9 +45,6 @@ StartStop.prototype.onKeyPress = function(event) {
         case 0x0d: // cr
         case 0x20: // <space>
             this.start();
-            break;
-        case 3: // C-c
-            this.stop();
             break;
         default:
             this.emit('keypress', event);
