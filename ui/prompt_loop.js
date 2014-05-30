@@ -1,6 +1,5 @@
 var EE = require('events').EventEmitter;
 var inherits = require('inherits');
-var nextTick = require('next-tick');
 
 function PromptLoop(prompt) {
     this.prompt = prompt;
@@ -11,9 +10,7 @@ function PromptLoop(prompt) {
 inherits(PromptLoop, EE);
 
 PromptLoop.prototype.onPromptExpire = function() {
-    if (this.running) {
-        nextTick(this.prompt.prompt.bind(this.prompt));
-    }
+    if (this.running) this.prompt.reprompt();
 };
 
 PromptLoop.prototype.start = function() {

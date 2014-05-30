@@ -58,6 +58,10 @@ PhrasePrompt.prototype.prompt = function() {
     this.record.dist = editdist(this.got, this.expected);
 };
 
+PhrasePrompt.prototype.reprompt = function() {
+    nextTick(this.prompt.bind(this));
+};
+
 PhrasePrompt.prototype.onDisplay = function() {
     if (this.record && !this.record.displayedAt) {
         this.record.displayedAt = Date.now();
@@ -90,7 +94,7 @@ PhrasePrompt.prototype.onInput = function() {
         if (this.record.correct) {
             this.emitRecord();
             this.clearTimer();
-            nextTick(this.prompt.bind(this));
+            this.reprompt();
         }
     }
 };
