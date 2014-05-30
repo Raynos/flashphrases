@@ -13,7 +13,7 @@ function Prompt(options) {
         type: 'text',
         onkeydown: this.onInputKeyDown.bind(this),
         onkeypress: this.onInputKeyPress.bind(this),
-        onchange: this.updateInput.bind(this)
+        onchange: this.updateInput.bind(this, true)
     }));
     this.expected = '';
     this.got = '';
