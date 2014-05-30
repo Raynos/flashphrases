@@ -31,10 +31,12 @@ TimedPrompt.prototype.setTimer = function() {
         this.timer = setTimeout(function() {
             if (this.inputing) this.expireInput();
         }.bind(this), this.inputTime);
+        this.emit('settimeout', 'input', this.inputTime);
     } else {
         this.timer = setTimeout(function() {
             if (!this.inputing) this.showInput();
         }.bind(this), this.displayTime);
+        this.emit('settimeout', 'display', this.displayTime);
     }
 };
 
