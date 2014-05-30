@@ -67,7 +67,7 @@ Prompt.prototype.onInputKeyDown = function(event) {
 };
 
 Prompt.prototype.onInputKeyPress = function(event) {
-    switch (event.charCode) {
+    switch (event.keyCode) {
         case 0x0a: // nl
         case 0x0d: // cr
             this.emit('submit');
