@@ -13,6 +13,7 @@ function Prompt(options) {
     this.inputElement = this.element.appendChild(h('input', {
         style: {display: 'none'},
         type: 'text',
+        onkeydown: this.onInputKeyDown.bind(this),
         onkeypress: this.onInputKeyPress.bind(this),
         onchange: this.updateInput.bind(this)
     }));
@@ -54,6 +55,15 @@ Prompt.prototype.showInput = function() {
         this.inputElement.disabled = false;
         this.inputElement.focus();
         this.emit('showinput');
+    }
+};
+
+Prompt.prototype.onInputKeyDown = function(event) {
+    if (event.keyCode  <  0x20 &&
+        event.keyCode !== 0x0a &&
+        event.keyCode !== 0x0d) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 };
 
