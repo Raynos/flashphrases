@@ -76,25 +76,25 @@ Prompt.prototype.onInputKeyPress = function(event) {
     }
 };
 
-Prompt.prototype.eventuallyUpdateInput = function() {
+Prompt.prototype.eventuallyUpdateInput = function(force) {
     if (this.inputUpdateTimer) {
         clearTimeout(this.inputUpdateTimer);
     }
     var self = this;
     this.inputUpdateTimer = setTimeout(function() {
         delete self.inputUpdateTimer;
-        self.updateInput();
+        self.updateInput(force);
     }, 200);
 };
 
-Prompt.prototype.updateInput = function() {
+Prompt.prototype.updateInput = function(force) {
     if (this.inputUpdateTimer) {
         clearTimeout(this.inputUpdateTimer);
         delete this.inputUpdateTimer;
     }
     if (this.inputing && !this.inputElement.disabled) {
         this.got = this.inputElement.value;
-        this.emit('input');
+        this.emit('input', Boolean(force));
     }
 };
 
