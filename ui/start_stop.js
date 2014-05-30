@@ -11,7 +11,7 @@ function StartStop(options) {
         h('div.start', {
             onclick: this.onStartClick.bind(this)
         }, [
-            'Click or press <space> to start'
+            'Click or press <enter> to start'
         ]));
     this.contentElement = this.element.appendChild(h('div', {
         style: {display: 'none'},
@@ -32,6 +32,8 @@ StartStop.prototype.addListeners = function(element) {
 
 StartStop.prototype.onKeyPress = function(event) {
     switch(event.charCode) {
+        case 0x0a: // nl
+        case 0x0d: // cr
         case 0x20: // <space>
             this.start();
             break;
