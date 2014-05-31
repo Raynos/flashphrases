@@ -11,6 +11,7 @@ require('./lib/markov');
 require('./lib/stream/accum');
 require('./lib/stream/between');
 require('./lib/stream/match');
+require('./lib/stream/sentence');
 require('./lib/complexity');
 require('./lib/editdist');
 require('./lib/extract');
