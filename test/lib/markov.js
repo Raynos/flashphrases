@@ -5,7 +5,7 @@ var util = require('util');
 
 var Markov = require('../../lib/Markov');
 
-test('Markov build', function(assert) {
+test('Markov addTokens', function(assert) {
     var markov = new Markov();
 
     function expect(counts, trans, mess) {
@@ -20,80 +20,39 @@ test('Markov build', function(assert) {
     expect(expectedCounts, expectedTransitions, 'initially');
 
     [
-
-        ['this', {
+        ['this is a testing sentence', {
             this: 1,
-        }, {
-            __START_TOKEN__: ['this'],
-        } ],
-
-        ['is', {
             is: 1,
-        }, {
-            this: ['is'],
-        } ],
-
-        ['a', {
             a: 1,
-        }, {
-            is: ['a'],
-        } ],
-
-        ['testing', {
             testing: 1,
-        }, {
-            a: ['testing'],
-        } ],
-
-        ['sentence', {
             sentence: 1,
         }, {
+            __START_TOKEN__: ['this'],
+            this: ['is'],
+            is: ['a'],
+            a: ['testing'],
             testing: ['sentence'],
-        } ],
-
-        [null, {
-        }, {
             sentence: ['__END_TOKEN__'],
         } ],
-
-        ['here', {
-            here: 1
-        }, {
-            __START_TOKEN__: ['here', 'this'],
-        } ],
-
-        ['is', {
+        ['here is another testing sentence', {
+            here: 1,
             is: 2,
-        }, {
-            here: ['is'],
-        } ],
-
-        ['another', {
             another: 1,
-        }, {
-            is: ['a', 'another'],
-        } ],
-
-        ['testing', {
             testing: 2,
-        }, {
-            another: ['testing'],
-        } ],
-
-        ['sentence', {
             sentence: 2,
         }, {
+            __START_TOKEN__: ['here', 'this'],
+            here: ['is'],
+            is: ['a', 'another'],
+            another: ['testing'],
             testing: ['sentence'],
         } ],
-
-        // null
-
-    ].forEach(function(state, i) {
-        var token = state[0];
+    ].forEach(function(state) {
+        var tokens = state[0].split(' ');
         var counts = state[1];
         var trans = state[2];
-        var mess = util.format('after token %j %j', i+1, token);
-        markov.addToken(token);
+        var mess = util.format('after tokens %j', tokens);
+        markov.addTokens(tokens);
         extend(expectedCounts, counts);
         extend(expectedTransitions, trans);
         expect(expectedCounts, expectedTransitions, mess);
@@ -117,45 +76,26 @@ test('Markov special keywords', function(assert) {
     expect(expectedCounts, expectedTransitions, 'initially');
 
     [
-
-        ['the', {
+        ['the token constructor is special', {
             the: 1,
-        }, {
-            __START_TOKEN__: ['the'],
-        } ],
-
-        ['token', {
             token: 1,
-        }, {
-            the: ['token'],
-        } ],
-
-        ['constructor', {
             constructor: 1,
-        }, {
-            token: ['constructor'],
-        } ],
-
-        ['is', {
             is: 1,
-        }, {
-            constructor: ['is'],
-        } ],
-
-        ['special', {
             special: 1,
         }, {
+            __START_TOKEN__: ['the'],
+            the: ['token'],
+            token: ['constructor'],
+            constructor: ['is'],
             is: ['special'],
+            special: ['__END_TOKEN__']
         } ],
-
-        // null
-
-    ].forEach(function(state, i) {
-        var token = state[0];
+    ].forEach(function(state) {
+        var tokens = state[0].split(' ');
         var counts = state[1];
         var trans = state[2];
-        var mess = util.format('after token %j %j', i+1, token);
-        markov.addToken(token);
+        var mess = util.format('after tokens %j', tokens);
+        markov.addTokens(tokens);
         extend(expectedCounts, counts);
         extend(expectedTransitions, trans);
         expect(expectedCounts, expectedTransitions, mess);
