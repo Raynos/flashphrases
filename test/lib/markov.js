@@ -5,201 +5,231 @@ var util = require('util');
 
 var Markov = require('../../lib/Markov');
 
-test('Markov addTokens', function(assert) {
-    var markov = new Markov();
-
-    function expect(counts, trans, mess) {
-        assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
-        assert.deepEqual(markov.transitions, trans, 'expected transitions ' + mess);
+function markovTest(desc, names, func) {
+    if (typeof names === 'function') {
+        func = names;
+        names = ['markov'];
     }
+    test(desc, function(assert) {
+        var proto = {
+            okState: function assertState(mess, expect) {
+                if (expect) {
+                    if (expect.counts) extend(this.expected.counts, expect.counts);
+                    if (expect.transitions) extend(this.expected.transitions, expect.transitions);
+                }
+                assert.deepEqual(
+                    this.the.counts,
+                    this.expected.counts,
+                    'expected counts ' + mess);
+                assert.deepEqual(
+                    this.the.transitions,
+                    this.expected.transitions,
+                    'expected transitions ' + mess);
+            },
+            okStep: function assertStep(step, i) {
+                var desc;
+                if (typeof step.op === 'function') {
+                    step.op(this.the);
+                    desc = step.op.name || ('step ' + i);
+                } else {
+                    var method = step.op[0];
+                    var args = step.op.slice(1);
+                    desc = util.format('after %s.%s(%s)', this.name, method,
+                        args.map(function(arg) {return JSON.stringify(arg);}).join(', '));
+                    this.the[method].apply(this.the, args);
+                }
+                this.okState(desc, step.expect);
+            },
+            okSteps: function assertSteps(steps) {
+                steps.forEach(this.okStep, this);
+            }
+        };
+        names.forEach(function(name) {
+            assert[name] = Object.create(proto);
+            assert[name].name = name;
+            assert[name].the = new Markov();
+            assert[name].expected = {
+                counts: {},
+                    transitions: {
+                        __START_TOKEN__: [],
+                    }
+            };
+            assert[name].okState('inital ' + name);
+        });
+        func(assert);
+    });
+}
 
-    var expectedCounts = {};
-    var expectedTransitions = {
-        __START_TOKEN__: [],
-    };
-    expect(expectedCounts, expectedTransitions, 'initially');
+markovTest('Markov addTokens', function(assert) {
+    assert.markov.okSteps([
+        {
+            op: ['addTokens', 'this is a testing sentence'.split(' ')],
+            expect: {
+                counts: {
+                    this: 1,
+                    is: 1,
+                    a: 1,
+                    testing: 1,
+                    sentence: 1,
+                },
+                transitions: {
+                    __START_TOKEN__: ['this'],
+                    this: ['is'],
+                    is: ['a'],
+                    a: ['testing'],
+                    testing: ['sentence'],
+                    sentence: ['__END_TOKEN__'],
+                }
+            }
+        },
+        {
+            op: ['addTokens', 'here is another testing sentence'.split(' ')],
+            expect: {
+                counts: {
+                    here: 1,
+                    is: 2,
+                    another: 1,
+                    testing: 2,
+                    sentence: 2,
+                },
+                transitions: {
+                    __START_TOKEN__: ['here', 'this'],
+                    here: ['is'],
+                    is: ['a', 'another'],
+                    another: ['testing'],
+                    testing: ['sentence'],
+                }
+            }
+        }
+    ]);
+    assert.end();
+});
 
-    [
-        ['this is a testing sentence', {
+markovTest('Markov special keywords', function(assert) {
+    assert.markov.okStep({
+        op: ['addTokens', 'the token constructor is special'.split(' ')],
+        expect: {
+            counts: {
+                the: 1,
+                token: 1,
+                constructor: 1,
+                is: 1,
+                special: 1
+            },
+            transitions: {
+                __START_TOKEN__: ['the'],
+                the: ['token'],
+                token: ['constructor'],
+                constructor: ['is'],
+                is: ['special'],
+                special: ['__END_TOKEN__']
+            }
+        },
+    });
+    assert.end();
+});
+
+markovTest('Markov save/load', function(assert) {
+    assert.markov.okStep({
+        op: function setup(markov) {
+            markov.addTokens('a b c'.split(' '));
+            markov.addTokens('a b d'.split(' '));
+            markov.addTokens('c e g'.split(' '));
+        },
+        expect: {
+            counts: {
+                a: 2,
+                b: 2,
+                c: 2,
+                d: 1,
+                e: 1,
+                g: 1,
+            },
+            transitions: {
+                __START_TOKEN__: ['a', 'c'],
+                a: ['b'],
+                b: ['c', 'd'],
+                c: ['__END_TOKEN__', 'e'],
+                d: ['__END_TOKEN__'],
+                e: ['g'],
+                g: ['__END_TOKEN__'],
+            }
+        }
+    });
+    var data = assert.markov.the.save();
+    assert.deepEqual(data, {
+        counts: assert.markov.expected.counts,
+        transitions: assert.markov.expected.transitions
+    }, 'saved data matches');
+    var copy = Markov.load(data);
+    assert.deepEqual(copy.counts, assert.markov.expected.counts, 'loaded counts');
+    assert.deepEqual(copy.transitions, assert.markov.expected.transitions, 'loaded transitions');
+    assert.end();
+});
+
+markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
+    assert.markova.okStep({
+        op: ['addTokens', ['this', 'is', 'a', 'testing', 'sentence']],
+        expect: {
+            counts: {
+                this: 1,
+                is: 1,
+                a: 1,
+                testing: 1,
+                sentence: 1,
+            },
+            transitions: {
+                __START_TOKEN__: ['this'],
+                this: ['is'],
+                is: ['a'],
+                a: ['testing'],
+                testing: ['sentence'],
+                sentence: ['__END_TOKEN__'],
+            }
+        }
+    });
+    assert.markovb.okStep({
+        op: ['addTokens', ['here', 'is', 'another', 'testing', 'sentence']],
+        expect: {
+            counts: {
+                here: 1,
+                is: 1,
+                another: 1,
+                testing: 1,
+                sentence: 1,
+            },
+            transitions: {
+                __START_TOKEN__: ['here'],
+                here: ['is'],
+                is: ['another'],
+                another: ['testing'],
+                testing: ['sentence'],
+                sentence: ['__END_TOKEN__'],
+            }
+        }
+    });
+    assert.markova.the.merge(assert.markovb.the);
+    assert.markova.okState('after markova.merge(markovb)', {
+        counts: {
             this: 1,
-            is: 1,
-            a: 1,
-            testing: 1,
-            sentence: 1,
-        }, {
-            __START_TOKEN__: ['this'],
-            this: ['is'],
-            is: ['a'],
-            a: ['testing'],
-            testing: ['sentence'],
-            sentence: ['__END_TOKEN__'],
-        } ],
-        ['here is another testing sentence', {
             here: 1,
             is: 2,
+            a: 1,
             another: 1,
             testing: 2,
             sentence: 2,
-        }, {
+        },
+        transitions: {
             __START_TOKEN__: ['here', 'this'],
+            this: ['is'],
             here: ['is'],
             is: ['a', 'another'],
+            a: ['testing'],
             another: ['testing'],
             testing: ['sentence'],
-        } ],
-    ].forEach(function(state) {
-        var tokens = state[0].split(' ');
-        var counts = state[1];
-        var trans = state[2];
-        var mess = util.format('after tokens %j', tokens);
-        markov.addTokens(tokens);
-        extend(expectedCounts, counts);
-        extend(expectedTransitions, trans);
-        expect(expectedCounts, expectedTransitions, mess);
+            sentence: ['__END_TOKEN__'],
+        }
     });
-
-    assert.end();
-});
-
-test('Markov special keywords', function(assert) {
-    var markov = new Markov();
-
-    function expect(counts, trans, mess) {
-        assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
-        assert.deepEqual(markov.transitions, trans, 'expected transitions ' + mess);
-    }
-
-    var expectedCounts = {};
-    var expectedTransitions = {
-        __START_TOKEN__: [],
-    };
-    expect(expectedCounts, expectedTransitions, 'initially');
-
-    [
-        ['the token constructor is special', {
-            the: 1,
-            token: 1,
-            constructor: 1,
-            is: 1,
-            special: 1,
-        }, {
-            __START_TOKEN__: ['the'],
-            the: ['token'],
-            token: ['constructor'],
-            constructor: ['is'],
-            is: ['special'],
-            special: ['__END_TOKEN__']
-        } ],
-    ].forEach(function(state) {
-        var tokens = state[0].split(' ');
-        var counts = state[1];
-        var trans = state[2];
-        var mess = util.format('after tokens %j', tokens);
-        markov.addTokens(tokens);
-        extend(expectedCounts, counts);
-        extend(expectedTransitions, trans);
-        expect(expectedCounts, expectedTransitions, mess);
-    });
-
-    assert.end();
-});
-
-test('Markov save/load', function(assert) {
-    var markov = new Markov();
-    markov.addTokens('a b c'.split(' '));
-    markov.addTokens('a b d'.split(' '));
-    markov.addTokens('c e g'.split(' '));
-
-    var expectedCounts = {
-        a: 2,
-        b: 2,
-        c: 2,
-        d: 1,
-        e: 1,
-        g: 1,
-    };
-    var expectedTrans = {
-        __START_TOKEN__: ['a', 'c'],
-        a: ['b'],
-        b: ['c', 'd'],
-        c: ['__END_TOKEN__', 'e'],
-        d: ['__END_TOKEN__'],
-        e: ['g'],
-        g: ['__END_TOKEN__'],
-    };
-
-    var data = markov.save();
-    assert.deepEqual(data, {
-        counts: expectedCounts,
-        transitions: expectedTrans
-    }, 'saved data matches');
-
-    var copy = Markov.load(data);
-    assert.deepEqual(copy.counts, expectedCounts, 'loaded counts');
-    assert.deepEqual(copy.transitions, expectedTrans, 'loaded transitions');
-
-    assert.end();
-});
-
-test('Markov merge', function(assert) {
-    function expect(markov, counts, trans, mess) {
-        assert.deepEqual(markov.counts, counts, 'expected counts ' + mess);
-        assert.deepEqual(markov.transitions, trans, 'expected transitions ' + mess);
-    }
-
-    var markova = new Markov(['this', 'is', 'a', 'testing', 'sentence', null]);
-    var markovb = new Markov(['here', 'is', 'another', 'testing', 'sentence', null]);
-
-    expect(markova, {
-        this: 1,
-        is: 1,
-        a: 1,
-        testing: 1,
-        sentence: 1,
-    }, {
-        __START_TOKEN__: ['this'],
-        this: ['is'],
-        is: ['a'],
-        a: ['testing'],
-        testing: ['sentence'],
-        sentence: ['__END_TOKEN__'],
-    }, 'markova');
-
-    expect(markovb, {
-        here: 1,
-        is: 1,
-        another: 1,
-        testing: 1,
-        sentence: 1,
-    }, {
-        __START_TOKEN__: ['here'],
-        here: ['is'],
-        is: ['another'],
-        another: ['testing'],
-        testing: ['sentence'],
-        sentence: ['__END_TOKEN__'],
-    }, 'markovb');
-
-    markova.merge(markovb);
-    expect(markova, {
-        this: 1,
-        here: 1,
-        is: 2,
-        a: 1,
-        another: 1,
-        testing: 2,
-        sentence: 2,
-    }, {
-        __START_TOKEN__: ['here', 'this'],
-        this: ['is'],
-        here: ['is'],
-        is: ['a', 'another'],
-        a: ['testing'],
-        another: ['testing'],
-        testing: ['sentence'],
-        sentence: ['__END_TOKEN__'],
-    }, 'markova + markovb');
-
     assert.end();
 });
 
