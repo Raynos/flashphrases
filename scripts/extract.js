@@ -14,21 +14,61 @@ if (argv.transform && ! Array.isArray(argv.transform))
     argv.transform = [argv.transform];
 
 var stateSize = argv['state-size'];
-if (typeof stateSize !== 'number') {
+if (typeof stateSize === 'string') {
+    stateSize = stateSize
+        .split(',')
+        .map(function(s) {return parseInt(s);});
+    if (!stateSize.length ||
+        stateSize
+            .map(function(n) {return isNaN(n) || n <= 0 || n !== Math.floor(n);})
+            .reduce(function(any, bool) {return any || bool;}, false)
+        ) {
+        throw new Error('invalid state-size option');
+    }
+} else if (typeof stateSize !== 'number') {
     throw new Error('invalid state-size option');
 }
 
 var extract = require('../lib/extract');
-var extractStream = extract.bind(null, {
-    stateSize: stateSize
-});
-var loadDone = function(err, markovs) {
-    if (argv.verbose) console.error('merging');
-    var markov = markovs.reduce(function(markov, other) {
-        return markov ? markov.merge(other) : other;
-    }, null);
-    if (markov) process.stdout.write(JSON.stringify(markov.save()));
-};
+var extractStream;
+var loadDone;
+if (Array.isArray(stateSize)) {
+    extractStream = extract.many.bind(null,
+        stateSize.map(function(n) {return {stateSize: n};})
+    );
+    loadDone = function(err, markovs) {
+        if (argv.verbose) console.error('merging');
+        var out = {};
+        markovs
+            .reduce(function(a1, a2) {return a1.concat(a2);})
+            .forEach(function(markov) {
+                var n = markov.stateSize;
+                if (!out[n]) {
+                    out[n] = markov;
+                } else {
+                    out[n].merge(markov);
+                }
+            });
+
+        if (markovs.length) {
+            Object.keys(out).forEach(function(k) {
+                out[k] = out[k].save();
+            });
+            process.stdout.write(JSON.stringify(out));
+        }
+    };
+} else {
+    extractStream = extract.bind(null, {
+        stateSize: stateSize
+    });
+    loadDone = function(err, markovs) {
+        if (argv.verbose) console.error('merging');
+        var markov = markovs.reduce(function(markov, other) {
+            return markov ? markov.merge(other) : other;
+        }, null);
+        if (markov) process.stdout.write(JSON.stringify(markov.save()));
+    };
+}
 
 var transforms = argv.transform && argv.transform.map(function(spec) {
     // jshint evil:true, unused:false
