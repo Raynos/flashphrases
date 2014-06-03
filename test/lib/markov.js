@@ -1,64 +1,17 @@
-var extend = require('xtend/mutable');
-
 var test = require('tape');
-var util = require('util');
 
 var Markov = require('../../lib/Markov');
+var createTestObjects = require('../object');
 
-function markovTest(desc, names, func) {
-    if (typeof names === 'function') {
-        func = names;
-        names = ['markov'];
+var markovTest = createTestObjects.wrapper({
+    type: Markov,
+    expected: {
+        counts: {},
+        transitions: {
+            __START_TOKEN__: [],
+        }
     }
-    test(desc, function(assert) {
-        var proto = {
-            okState: function assertState(mess, expect) {
-                if (expect) {
-                    if (expect.counts) extend(this.expected.counts, expect.counts);
-                    if (expect.transitions) extend(this.expected.transitions, expect.transitions);
-                }
-                assert.deepEqual(
-                    this.the.counts,
-                    this.expected.counts,
-                    'expected counts ' + mess);
-                assert.deepEqual(
-                    this.the.transitions,
-                    this.expected.transitions,
-                    'expected transitions ' + mess);
-            },
-            okStep: function assertStep(step, i) {
-                var desc;
-                if (typeof step.op === 'function') {
-                    step.op(this.the);
-                    desc = step.op.name || ('step ' + i);
-                } else {
-                    var method = step.op[0];
-                    var args = step.op.slice(1);
-                    desc = util.format('after %s.%s(%s)', this.name, method,
-                        args.map(function(arg) {return JSON.stringify(arg);}).join(', '));
-                    this.the[method].apply(this.the, args);
-                }
-                this.okState(desc, step.expect);
-            },
-            okSteps: function assertSteps(steps) {
-                steps.forEach(this.okStep, this);
-            }
-        };
-        names.forEach(function(name) {
-            assert[name] = Object.create(proto);
-            assert[name].name = name;
-            assert[name].the = new Markov();
-            assert[name].expected = {
-                counts: {},
-                    transitions: {
-                        __START_TOKEN__: [],
-                    }
-            };
-            assert[name].okState('inital ' + name);
-        });
-        func(assert);
-    });
-}
+}, ['markov']);
 
 markovTest('Markov addTokens', function(assert) {
     assert.markov.okSteps([
