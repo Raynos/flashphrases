@@ -12,6 +12,35 @@ document.head.appendChild(
         href: 'style.css'
     }));
 
+// XXX use a module for this
+function loadHash() {
+    var hash = window.location.hash;
+    if (hash && hash[0] === '#') hash = hash.slice(1);
+    var parts = hash.split(';');
+    var out = {};
+    parts.forEach(function(part) {
+        var i = part.indexOf('=');
+        if (i === -1) {
+            out[part] = true;
+        } else {
+            var key = part.slice(0, i);
+            var val = part.slice(i + 1);
+            out[key] = val;
+        }
+    });
+    return out;
+}
+
+var Hash = loadHash();
+
+var style = Hash.style || 'light';
+document.head.appendChild(
+    h('link', {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: 'style-' + style + '.css'
+    }));
+
 ////
 
 var PhraseData = require('./data');
