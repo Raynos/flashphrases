@@ -8,6 +8,7 @@ function PhrasePrompt(options) {
         return new PhrasePrompt(options);
     }
     options = options || {};
+    this.running = false;
     this.maxErrorPerWord = options.maxErrorPerWord || 1;
     this.repromptDelay = options.repromptDelay || 100;
 
@@ -18,9 +19,24 @@ function PhrasePrompt(options) {
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
+    this.on('expire', this.onPromptExpire.bind(this));
 }
 
 inherits(PhrasePrompt, GenerativePrompt);
+
+PhrasePrompt.prototype.start = function() {
+    if (!this.running) {
+        this.running = true;
+        this.prompt();
+    }
+};
+
+PhrasePrompt.prototype.stop = function() {
+    if (this.running) {
+        this.running = false;
+        this.expireInput();
+    }
+};
 
 PhrasePrompt.prototype.emitRecord = function() {
     if (this.record) {
@@ -108,6 +124,10 @@ PhrasePrompt.prototype.onInput = function(force) {
             this.reprompt();
         }
     }
+};
+
+PhrasePrompt.prototype.onPromptExpire = function() {
+    if (this.running) this.reprompt();
 };
 
 module.exports = PhrasePrompt;

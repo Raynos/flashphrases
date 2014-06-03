@@ -37,9 +37,6 @@ var prompt = new PhrasePrompt({
     complexity: eng.complexity
 });
 
-var PromptLoop = require('./prompt_loop');
-var loop = new PromptLoop(prompt);
-
 var StartStop = require('./start_stop');
 var ss = new StartStop();
 ss.contentElement.appendChild(prompt.element);
@@ -48,8 +45,8 @@ document.body.appendChild(ss.element);
 prompt.on('stopkey', function(event) {
     if (event.keyCode === 0x1b) ss.stop();
 });
-ss.on('start', loop.start.bind(loop));
-ss.on('stop', loop.stop.bind(loop));
+ss.on('start', prompt.start.bind(prompt));
+ss.on('stop', prompt.stop.bind(prompt));
 ss.on('keypress', function(event) {
     if (prompt.inputing) return;
     var char = String.fromCharCode(event.charCode);
