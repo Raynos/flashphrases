@@ -8,7 +8,7 @@ var markovTest = createTestObjects.wrapper({
     expected: {
         counts: {},
         transitions: {
-            __START_TOKEN__: [],
+            '': [],
         }
     }
 }, ['markov']);
@@ -26,7 +26,7 @@ markovTest('Markov addTokens', function(assert) {
                     sentence: 1,
                 },
                 transitions: {
-                    __START_TOKEN__: ['this'],
+                    '': ['this'],
                     this: ['is'],
                     is: ['a'],
                     a: ['testing'],
@@ -46,7 +46,7 @@ markovTest('Markov addTokens', function(assert) {
                     sentence: 2,
                 },
                 transitions: {
-                    __START_TOKEN__: ['here', 'this'],
+                    '': ['here', 'this'],
                     here: ['is'],
                     is: ['a', 'another'],
                     another: ['testing'],
@@ -70,7 +70,7 @@ markovTest('Markov special keywords', function(assert) {
                 special: 1
             },
             transitions: {
-                __START_TOKEN__: ['the'],
+                '': ['the'],
                 the: ['token'],
                 token: ['constructor'],
                 constructor: ['is'],
@@ -99,7 +99,7 @@ markovTest('Markov save/load', function(assert) {
                 g: 1,
             },
             transitions: {
-                __START_TOKEN__: ['a', 'c'],
+                '': ['a', 'c'],
                 a: ['b'],
                 b: ['c', 'd'],
                 c: ['e', null],
@@ -132,7 +132,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
                 sentence: 1,
             },
             transitions: {
-                __START_TOKEN__: ['this'],
+                '': ['this'],
                 this: ['is'],
                 is: ['a'],
                 a: ['testing'],
@@ -152,7 +152,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
                 sentence: 1,
             },
             transitions: {
-                __START_TOKEN__: ['here'],
+                '': ['here'],
                 here: ['is'],
                 is: ['another'],
                 another: ['testing'],
@@ -173,7 +173,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
             sentence: 2,
         },
         transitions: {
-            __START_TOKEN__: ['here', 'this'],
+            '': ['here', 'this'],
             this: ['is'],
             here: ['is'],
             is: ['a', 'another'],
