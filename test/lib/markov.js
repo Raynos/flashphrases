@@ -5,11 +5,16 @@ var createTestObjects = require('../object');
 
 var markovTest = createTestObjects.wrapper({
     type: Markov,
-    expected: {
-        counts: {},
-        transitions: {
-            '': [],
-        }
+    expected: function() {
+        var start = new Array(this.args && this.args[0] && this.args[0].stateSize || 1);
+        for (var i=0, n=start.length; i<n; i++) start[i] = null;
+        start = String(start);
+        var exp = {
+            counts: {},
+            transitions: {}
+        };
+        exp.transitions[start] = [];
+        return exp;
     }
 }, ['markov']);
 
@@ -114,6 +119,7 @@ markovTest('Markov save/load', function(assert) {
     });
     var data = assert.markov.the.save();
     assert.deepEqual(data, {
+        stateSize: 1,
         counts: assert.markov.expected.counts,
         transitions: assert.markov.expected.transitions
     }, 'saved data matches');
@@ -123,7 +129,79 @@ markovTest('Markov save/load', function(assert) {
     assert.end();
 });
 
-markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
+markovTest('Markov createState', {
+    markov1: null,
+    markov2: {
+        args: [{stateSize: 2}]
+    },
+    markov3: {
+        args: [{stateSize: 3}]
+    }
+}, function(assert) {
+
+    assert.equal(
+        String(assert.markov1.the.createState('wat')),
+        'wat',
+        'markov1 createState wats'
+    );
+
+    assert.equal(
+        String(assert.markov2.the.createState('wat')),
+        ',wat',
+        'markov2 createState wats'
+    );
+
+    assert.equal(
+        String(assert.markov3.the.createState('wat')),
+        ',,wat',
+        'markov3 createState wats'
+    );
+
+    assert.equal(
+        String(assert.markov1.the.createState('beep', 'boop')),
+        'beep',
+        'markov2 createState beeps but doesn\'t boop'
+    );
+
+    assert.equal(
+        String(assert.markov2.the.createState('beep', 'boop')),
+        'beep,boop',
+        'markov2 createState beep boops'
+    );
+
+    assert.equal(
+        String(assert.markov3.the.createState('beep', 'boop')),
+        ',beep,boop',
+        'markov3 createState beep boops'
+    );
+
+    assert.equal(
+        String(assert.markov1.the.createState('beep', 'boop', 'blip')),
+        'beep',
+        'markov2 createState beeps but doesn\'t boop or blip'
+    );
+
+    assert.equal(
+        String(assert.markov2.the.createState('beep', 'boop', 'blip')),
+        'beep,boop',
+        'markov2 createState beep and boops but doesn\'t blip'
+    );
+
+    assert.equal(
+        String(assert.markov3.the.createState('beep', 'boop', 'blip')),
+        'beep,boop,blip',
+        'markov3 createState beep boops and blips'
+    );
+
+
+    assert.end();
+});
+
+markovTest('Markov merge', {
+    markova: null,
+    markovb: null,
+    markovc: {args: [{stateSize: 2}]}
+}, function(assert) {
     assert.markova.okStep({
         op: ['addTokens', ['this', 'is', 'a', 'testing', 'sentence']],
         expect: {
@@ -186,6 +264,64 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
             sentence: [null],
         }
     });
+    assert.throws(function() {
+        assert.markova.the.merge(assert.markovc.the);
+    }, /differing state size/, 'cannot merge different sized markovs');
+    assert.end();
+});
+
+markovTest('Build a 2-markov', {
+    markov: {
+        args: [{stateSize: 2}]
+    }
+}, function(assert) {
+    assert.markov.okSteps([
+        {
+            op: ['addTokens', 'now is the time for action'.split(' ')],
+            expect: {
+                counts: {
+                    now: 1,
+                    is: 1,
+                    the: 1,
+                    time: 1,
+                    for: 1,
+                    action: 1
+                },
+                transitions: {
+                    ',': ['now'],
+                    ',now': ['is'],
+                    'now,is': ['the'],
+                    'is,the': ['time'],
+                    'the,time': ['for'],
+                    'time,for': ['action'],
+                    'for,action': [null]
+                }
+            }
+        },
+
+        {
+            op: ['addTokens', 'tomorrow is the time for sleep'.split(' ')],
+            expect: {
+                counts: {
+                    tomorrow: 1,
+                    is: 2,
+                    the: 2,
+                    time: 2,
+                    for: 2,
+                    sleep: 1
+                },
+                transitions: {
+                    ',': ['now', 'tomorrow'],
+                    ',tomorrow': ['is'],
+                    'tomorrow,is': ['the'],
+                    'time,for': ['action', 'sleep'],
+                    'for,sleep': [null]
+                }
+            }
+        }
+
+    ]);
+
     assert.end();
 });
 
@@ -274,7 +410,7 @@ test('Markov chain', function(assert) {
     seq.reset();
 
     assert.equal(
-        markov.chain(10, 'what', seq).join(' '),
+        markov.chain(10, markov.createState('what'), seq).join(' '),
         'license for at'
     );
     seq.reset();
