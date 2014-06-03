@@ -54,7 +54,8 @@ PhrasePrompt.prototype.finishRecord = function(force) {
         .reduce(function(a, b) {return a + b;})
         ;
     this.record.correct = this.record.dist <= this.record.maxErrors;
-    if (force || this.record.correct) {
+    this.record.finished = this.record.forced || this.record.correct;
+    if (this.record.finished) {
         this.record.forced = force;
         if (this.record.inputShownAt) {
             if (!this.record.elapsed.input) {
@@ -118,7 +119,7 @@ PhrasePrompt.prototype.onInput = function(force) {
         this.record.got = this.got;
         this.record.dist = editdist(this.got, this.expected);
         this.finishRecord(force);
-        if (this.record.forced || this.record.correct) {
+        if (this.record.finished) {
             this.clearTimer();
             this.emitRecord();
             this.reprompt();
