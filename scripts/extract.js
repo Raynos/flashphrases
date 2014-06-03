@@ -12,9 +12,15 @@ if (argv.transform && ! Array.isArray(argv.transform))
     argv.transform = [argv.transform];
 
 var extract = require('../lib/extract');
-var extractQ = async.queue(extract.bind(null, {
+var extractStream = extract.bind(null, {
     stateSize: argv['state-size']
-}), 32);
+});
+var loadDone = function(err, markovs) {
+    var markov = markovs.reduce(function(markov, other) {
+        return markov ? markov.merge(other) : other;
+    }, null);
+    if (markov) process.stdout.write(JSON.stringify(markov.save()));
+};
 
 var transforms = argv.transform && argv.transform.map(function(spec) {
     // jshint evil:true, unused:false
@@ -29,20 +35,16 @@ var transforms = argv.transform && argv.transform.map(function(spec) {
     };
 });
 
+var loadQ = async.queue(function load(path, done) {
+    var stream = fs.createReadStream(path, {
+        encoding: 'utf8'
+    });
+    if (transforms)
+        transforms.forEach(function(transform) {stream = transform(stream);});
+    extractStream(stream, done);
+}, 32);
+
 async.parallel(
     argv._.map(function(path) {
-        return function(callback) {
-            var stream = fs.createReadStream(path, {
-                encoding: 'utf8'
-            });
-            if (transforms)
-                transforms.forEach(function(transform) {stream = transform(stream);});
-            extractQ.push(stream, callback);
-        };
-    }),
-    function loadDone(err, markovs) {
-        var markov = markovs.reduce(function(markov, other) {
-            return markov ? markov.merge(other) : other;
-        }, null);
-        if (markov) process.stdout.write(JSON.stringify(markov.save()));
-    });
+        return loadQ.push.bind(loadQ, path);
+    }), loadDone);
