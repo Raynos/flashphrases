@@ -16,6 +16,9 @@ var markovTest = createTestObjects.wrapper({
 markovTest('Markov addTokens', function(assert) {
     assert.markov.okSteps([
         {
+            op: ['addTokens', []]
+        },
+        {
             op: ['addTokens', 'this is a testing sentence'.split(' ')],
             expect: {
                 counts: {
