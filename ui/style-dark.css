@@ -1,0 +1,10 @@
+html, body {
+    background-color: #303030;
+    color: #d7d7d7;
+}
+
+input, textarea, button, select {
+    background-color: #303030;
+    border: 1px solid #d7d7af;
+    color: #d7d7d7;
+}
