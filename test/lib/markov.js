@@ -31,7 +31,7 @@ markovTest('Markov addTokens', function(assert) {
                     is: ['a'],
                     a: ['testing'],
                     testing: ['sentence'],
-                    sentence: ['__END_TOKEN__'],
+                    sentence: [null],
                 }
             }
         },
@@ -75,7 +75,7 @@ markovTest('Markov special keywords', function(assert) {
                 token: ['constructor'],
                 constructor: ['is'],
                 is: ['special'],
-                special: ['__END_TOKEN__']
+                special: [null]
             }
         },
     });
@@ -102,10 +102,10 @@ markovTest('Markov save/load', function(assert) {
                 __START_TOKEN__: ['a', 'c'],
                 a: ['b'],
                 b: ['c', 'd'],
-                c: ['__END_TOKEN__', 'e'],
-                d: ['__END_TOKEN__'],
+                c: ['e', null],
+                d: [null],
                 e: ['g'],
-                g: ['__END_TOKEN__'],
+                g: [null],
             }
         }
     });
@@ -137,7 +137,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
                 is: ['a'],
                 a: ['testing'],
                 testing: ['sentence'],
-                sentence: ['__END_TOKEN__'],
+                sentence: [null],
             }
         }
     });
@@ -157,7 +157,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
                 is: ['another'],
                 another: ['testing'],
                 testing: ['sentence'],
-                sentence: ['__END_TOKEN__'],
+                sentence: [null],
             }
         }
     });
@@ -180,7 +180,7 @@ markovTest('Markov merge', ['markova', 'markovb'], function(assert) {
             a: ['testing'],
             another: ['testing'],
             testing: ['sentence'],
-            sentence: ['__END_TOKEN__'],
+            sentence: [null],
         }
     });
     assert.end();
@@ -266,13 +266,13 @@ test('Markov chain', function(assert) {
     seq.set(4);
     assert.equal(
         markov.chain(10, null, seq).join(' '),
-        'the output of vim you add'
+        'the output of vim you are also allowed to include'
     );
     seq.reset();
 
     assert.equal(
         markov.chain(10, 'what', seq).join(' '),
-        'license for at least three years after last distributing the'
+        'license for at'
     );
     seq.reset();
 
