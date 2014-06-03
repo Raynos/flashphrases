@@ -4,14 +4,17 @@ var util = require('util');
 
 var argv = require('minimist')(process.argv.slice(2), {
     alias: {
-        t: 'transform'
+        t: 'transform',
+        n: 'state-size'
     }
 });
 if (argv.transform && ! Array.isArray(argv.transform))
     argv.transform = [argv.transform];
 
 var extract = require('../lib/extract');
-var extractQ = async.queue(extract, 32);
+var extractQ = async.queue(extract.bind(null, {
+    stateSize: argv['state-size']
+}), 32);
 
 var transforms = argv.transform && argv.transform.map(function(spec) {
     // jshint evil:true, unused:false
