@@ -18,12 +18,8 @@ var PhraseData = require('./data');
 var Engine = require('./engine');
 
 var PhrasePrompt = require('./phrase_prompt');
-var prompt = new PhrasePrompt({
-    generatePhrase: PhraseData.generatePhrase,
-    displayTime: 1500,
-    inputTime: 10000,
-    maxErrorPerWord: 1,
-    repromptDelay: 200,
+
+var eng = new Engine({
     complexity: {
         initial: [2, 10],
         step: [1, 5],
@@ -32,8 +28,13 @@ var prompt = new PhrasePrompt({
     }
 });
 
-var eng = new Engine({
-    complexity: prompt.complexity
+var prompt = new PhrasePrompt({
+    generatePhrase: PhraseData.generatePhrase,
+    displayTime: 1500,
+    inputTime: 10000,
+    maxErrorPerWord: 1,
+    repromptDelay: 200,
+    complexity: eng.complexity
 });
 
 var PromptLoop = require('./prompt_loop');

@@ -1,4 +1,3 @@
-var Complexity = require('../lib/complexity');
 var inherits = require('inherits');
 
 var TimedPrompt = require('./timed_prompt');
@@ -18,7 +17,7 @@ function GenerativePrompt(options) {
     TimedPrompt.call(this, options);
 
     this.generatePhrase = options.generatePhrase;
-    this.complexity = new Complexity(options.complexity);
+    this.complexity = options.complexity;
 }
 
 inherits(GenerativePrompt, TimedPrompt);

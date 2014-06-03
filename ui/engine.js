@@ -1,11 +1,13 @@
 var EE = require('events').EventEmitter;
 var inherits = require('inherits');
 
+var Complexity = require('../lib/complexity');
+
 function Engine(options) {
     options = options || {};
     if (!options.complexity) throw new Error ('missing complexity');
 
-    this.complexity = options.complexity;
+    this.complexity = new Complexity(options.complexity);
     this.history = [];
     this.levelScore = 0;
     this.setGoal();
