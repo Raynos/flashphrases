@@ -14,51 +14,11 @@ document.head.appendChild(
 
 ////
 
-var fs = require('fs');
-var Markov = require('../lib/markov');
-
-function loadMarkovMap(data) {
-    var markovMap = {};
-    if (data.transitions) {
-        var markov = Markov.load(data);
-        markovMap[markov.stateSize] = markov;
-    } else {
-        Object.keys(data).forEach(function(key) {
-            markovMap[key] = Markov.load(data[key]);
-        });
-    }
-    return markovMap;
-}
-
-var data = JSON.parse(fs.readFileSync('markov_source.json'));
-var markovMap = loadMarkovMap(data);
-
-function getMarkov(k) {
-    if (markovMap[k]) return markovMap[k];
-    var best = null;
-    Object.keys(markovMap).forEach(function(key) {
-        var markov = markovMap[key];
-        if (!best ||
-            (markov.stateSize <= k && markov.stateSize > best.stateSize)
-        ) best = markov;
-    });
-    if (best) markovMap[k] = best;
-    return best;
-}
-
-function generatePhrase(numPhrases, minLength) {
-    var markov = getMarkov(numPhrases);
-    if (!markov) throw new Error('unable to get a markov for ' + numPhrases + '-phrases');
-    var phrase = '';
-    while (phrase.length < minLength) {
-        phrase = markov.chain(numPhrases).join(' ');
-    }
-    return phrase.toLowerCase();
-}
+var PhraseData = require('./data');
 
 var PhrasePrompt = require('./phrase_prompt');
 var prompt = new PhrasePrompt({
-    generatePhrase: generatePhrase,
+    generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
     inputTime: 10000,
     maxErrorPerWord: 1,
@@ -89,8 +49,13 @@ function scoreResult(result) {
     return diffError + diffInput + diffDisplay;
 }
 
+function calcGoal() {
+    return 2 + (2 * prompt.complexity.level) * 100;
+}
+
 var history = [];
 var levelScore = 0;
+var levelGoal = calcGoal();
 function onResult(result) {
     // TODO: prune and/or archive history?
     history.push(result);
@@ -109,18 +74,18 @@ function onResult(result) {
     // TODO: adjust dispalyTime and inputTime in addition to complexity
 
     levelScore += result.score;
-    var threshold = 2 + (2 * prompt.complexity.level) * 100;
-    if (levelScore > threshold) {
-        levelScore = 0;
+    if (levelScore > levelGoal) {
         prompt.complexity.level++;
+        levelScore = 0;
+        levelGoal = calcGoal();
     }
 
     var util = require('util');
     console.log(util.format(
         'level %s (%s/%s = %s%%)',
         prompt.complexity.level,
-        levelScore, threshold,
-        (100 * Math.round(levelScore) / threshold).toFixed(2)));
+        levelScore, levelGoal,
+        (100 * Math.round(levelScore) / levelGoal).toFixed(2)));
     console.log(result);
 }
 
