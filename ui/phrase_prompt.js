@@ -61,7 +61,6 @@ PhrasePrompt.prototype.finishRecord = function(force) {
             if (!this.record.elapsed.input) {
                 this.record.elapsed.input = now - this.record.inputShownAt;
             }
-            delete this.record.inputShownAt;
         }
     }
 };
@@ -102,7 +101,6 @@ PhrasePrompt.prototype.onShowInput = function() {
         if (!this.record.elapsed.display) {
             this.record.elapsed.display = this.record.inputShownAt - this.record.displayedAt;
         }
-        delete this.record.displayedAt;
     }
 };
 
