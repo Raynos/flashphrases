@@ -13,9 +13,14 @@ var argv = require('minimist')(process.argv.slice(2), {
 if (argv.transform && ! Array.isArray(argv.transform))
     argv.transform = [argv.transform];
 
+var stateSize = argv['state-size'];
+if (typeof stateSize !== 'number') {
+    throw new Error('invalid state-size option');
+}
+
 var extract = require('../lib/extract');
 var extractStream = extract.bind(null, {
-    stateSize: argv['state-size']
+    stateSize: stateSize
 });
 var loadDone = function(err, markovs) {
     if (argv.verbose) console.error('merging');
