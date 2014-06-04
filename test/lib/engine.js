@@ -14,7 +14,7 @@ test('Engine construction', function(assert) {
     assert.equal(eng.complexity.level, 1, 'start at level 1');
     assert.deepEqual(eng.history, [], 'no history');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 202, 'correct level 1 goal');
+    assert.equal(eng.levelGoal, 400, 'correct level 1 goal');
     assert.end();
 });
 
@@ -32,19 +32,19 @@ test('Engine tracks complexity level', function(assert) {
     eng.complexity.level++;
     assert.equal(eng.complexity.level, 2, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 402, 'correct level 2 goal');
+    assert.equal(eng.levelGoal, 600, 'correct level 2 goal');
 
     eng.levelScore = 42;
     eng.complexity.level++;
     assert.equal(eng.complexity.level, 3, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 602, 'correct level 3 goal');
+    assert.equal(eng.levelGoal, 800, 'correct level 3 goal');
 
     eng.levelScore = 42;
     eng.complexity.level = 1;
     assert.equal(eng.complexity.level, 1, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 202, 'correct level 1 goal');
+    assert.equal(eng.levelGoal, 400, 'correct level 1 goal');
 
     assert.end();
 });
