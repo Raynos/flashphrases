@@ -60,7 +60,7 @@ Engine.prototype.onResult = function onResult(result) {
     if (this.levelScore > this.levelGoal) {
         this.complexity.level++;
         this.levelScore = 0;
-        this.levelGoal = this.setGoal();
+        this.setGoal();
     }
 
     var util = require('util');
