@@ -44,7 +44,7 @@ document.head.appendChild(
 ////
 
 var PhraseData = require('./data');
-var Engine = require('./engine');
+var Engine = require('../lib/engine');
 
 var PhrasePrompt = require('./phrase_prompt');
 
