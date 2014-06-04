@@ -57,7 +57,7 @@ test('Engine.scoreResult', function(assert) {
             lo: [2, 8],
             hi: [8, 32],
         },
-        maxErrorPerWord: 2
+        maxErrorRate: 0.3
     });
 
     assert.deepEqual(eng.scoreResult({
@@ -77,7 +77,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: '',
         dist: 15,
-        maxErrors: 6,
+        maxDist: 4,
         correct: false,
         finished: false,
         score: 0
@@ -104,7 +104,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: '',
         dist: 15,
-        maxErrors: 6,
+        maxDist: 4,
         correct: false,
         finished: false,
         score: 0
@@ -133,7 +133,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: '',
         dist: 15,
-        maxErrors: 6,
+        maxDist: 4,
         correct: false,
         finished: false,
         score: 0
@@ -162,7 +162,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: 'alpha b',
         dist: 9,
-        maxErrors: 6,
+        maxDist: 4,
         correct: false,
         finished: false,
         score: 0
@@ -178,7 +178,7 @@ test('Engine.scoreResult', function(assert) {
             input: 500
         },
         expected: 'alpha bravo gamma',
-        got: 'alpha brvo g',
+        got: 'alpha brvo gam',
     }), {
         timeout: {
             display: 1500,
@@ -189,12 +189,12 @@ test('Engine.scoreResult', function(assert) {
             input: 500
         },
         expected: 'alpha bravo gamma',
-        got: 'alpha brvo g',
-        dist: 5,
-        maxErrors: 6,
+        got: 'alpha brvo gam',
+        dist: 3,
+        maxDist: 4,
         correct: true,
         finished: true,
-        score: 101 // (6 - 5) + (10000 - 500) / 100 + (1500 - 1000) / 100
+        score: 101 // (4 - 3) + (10000 - 500) / 100 + (1500 - 1000) / 100
     }, 'enough input');
 
     assert.deepEqual(eng.scoreResult({
@@ -220,7 +220,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: 'wat',
         dist: 14,
-        maxErrors: 6,
+        maxDist: 4,
         correct: false,
         finished: true,
         score: 0

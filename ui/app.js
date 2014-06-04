@@ -55,7 +55,7 @@ var eng = new Engine({
         lo: [2, 10],
         hi: [10, 50]
     },
-    maxErrorPerWord: 1
+    maxErrorRate: 0.3
 });
 
 var prompt = new PhrasePrompt({
