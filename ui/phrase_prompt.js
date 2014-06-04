@@ -69,6 +69,7 @@ PhrasePrompt.prototype.prompt = function() {
     this.record.expected = this.expected;
     this.record.got = this.got;
     this.record.dist = editdist.lossy(this.got, this.expected);
+    this.finishRecord();
 };
 
 PhrasePrompt.prototype.reprompt = function() {
