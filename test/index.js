@@ -14,4 +14,5 @@ require('./lib/stream/match');
 require('./lib/stream/sentence');
 require('./lib/complexity');
 require('./lib/editdist');
+require('./lib/engine');
 require('./lib/extract');
