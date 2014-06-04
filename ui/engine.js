@@ -16,13 +16,16 @@ function Engine(options) {
 inherits(Engine, EE);
 
 Engine.prototype.scoreResult = function scoreResult(result) {
-    if (!result.correct) return 0;
-    var diffDisplay = Math.max(0, result.timeout.display - result.elapsed.display);
-    var diffInput = Math.max(0, result.timeout.input - result.elapsed.input);
-    var diffError = result.maxErrors - result.dist;
-    diffDisplay /= 100; // milli -> deci seconds
-    diffInput /= 100; // milli -> deci seconds
-    return diffError + diffInput + diffDisplay;
+    if (result.correct) {
+        var diffDisplay = Math.max(0, result.timeout.display - result.elapsed.display);
+        var diffInput = Math.max(0, result.timeout.input - result.elapsed.input);
+        var diffError = result.maxErrors - result.dist;
+        diffDisplay /= 100; // milli -> deci seconds
+        diffInput /= 100; // milli -> deci seconds
+        result.score = diffError + diffInput + diffDisplay;
+    } else {
+        result.score = 0;
+    }
 };
 
 Engine.prototype.setGoal = function setGoal() {
@@ -42,7 +45,7 @@ Engine.prototype.onResult = function onResult(result) {
         }, lastK.length >= k);
     if (lastKExpired) return this.emit('idle');
 
-    result.score = this.scoreResult(result);
+    this.scoreResult(result);
 
     // TODO: adjust dispalyTime and inputTime in addition to complexity
 
