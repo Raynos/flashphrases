@@ -2,12 +2,14 @@ var EE = require('events').EventEmitter;
 var inherits = require('inherits');
 
 var Complexity = require('../lib/complexity');
+var editdist = require('../lib/editdist');
 
 function Engine(options) {
     options = options || {};
     if (!options.complexity) throw new Error ('missing complexity');
 
     this.complexity = new Complexity(options.complexity);
+    this.maxErrorPerWord = options.maxErrorPerWord || 1;
     this.history = [];
     this.levelScore = 0;
     this.setGoal();
@@ -15,7 +17,14 @@ function Engine(options) {
 
 inherits(Engine, EE);
 
-Engine.prototype.scoreResult = function scoreResult(result) {
+Engine.prototype.scoreResult = function scoreResult(result, force) {
+    result.dist = editdist.lossy(result.got, result.expected);
+    result.maxErrors = result.expected.split(/ +/)
+        .map(function(word) {return Math.min(this.maxErrorPerWord, word.length);}.bind(this))
+        .reduce(function(a, b) {return a + b;})
+        ;
+    result.correct = result.dist <= result.maxErrors;
+    result.finished = force || result.correct;
     if (result.correct) {
         var diffDisplay = Math.max(0, result.timeout.display - result.elapsed.display);
         var diffInput = Math.max(0, result.timeout.input - result.elapsed.input);
@@ -44,8 +53,6 @@ Engine.prototype.onResult = function onResult(result) {
             return allExpired && Boolean(result.expired);
         }, lastK.length >= k);
     if (lastKExpired) return this.emit('idle');
-
-    this.scoreResult(result);
 
     // TODO: adjust dispalyTime and inputTime in addition to complexity
 

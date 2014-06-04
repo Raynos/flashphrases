@@ -1,6 +1,5 @@
 var inherits = require('inherits');
 
-var editdist = require('../lib/editdist');
 var GenerativePrompt = require('./generative_prompt');
 
 function PhrasePrompt(options) {
@@ -8,9 +7,11 @@ function PhrasePrompt(options) {
         return new PhrasePrompt(options);
     }
     options = options || {};
+    if (!options.scoreResult) throw new Error('missing scoreResult option');
+
     this.running = false;
-    this.maxErrorPerWord = options.maxErrorPerWord || 1;
     this.repromptDelay = options.repromptDelay || 100;
+    this.scoreResult = options.scoreResult;
 
     GenerativePrompt.call(this, options);
 
@@ -51,14 +52,7 @@ PhrasePrompt.prototype.finishRecord = function(force) {
         this.record.elapsed.input = Date.now() - this.record.inputShownAt;
     }
     this.record.forced = force;
-    this.record.dist = editdist.lossy(this.record.got, this.record.expected);
-    var maxErrorPerWord = this.maxErrorPerWord;
-    this.record.maxErrors = this.record.expected.split(/ +/)
-        .map(function(word) {return Math.min(maxErrorPerWord, word.length);})
-        .reduce(function(a, b) {return a + b;})
-        ;
-    this.record.correct = this.record.dist <= this.record.maxErrors;
-    this.record.finished = this.record.forced || this.record.correct;
+    this.scoreResult(this.record, force);
 };
 
 PhrasePrompt.prototype.prompt = function() {

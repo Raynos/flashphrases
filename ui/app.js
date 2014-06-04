@@ -54,16 +54,17 @@ var eng = new Engine({
         step: [1, 5],
         lo: [2, 10],
         hi: [10, 50]
-    }
+    },
+    maxErrorPerWord: 1
 });
 
 var prompt = new PhrasePrompt({
     generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
     inputTime: 10000,
-    maxErrorPerWord: 1,
     repromptDelay: 200,
-    complexity: eng.complexity
+    complexity: eng.complexity,
+    scoreResult: eng.scoreResult.bind(eng)
 });
 
 var StartStop = require('./start_stop');
