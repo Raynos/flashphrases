@@ -51,6 +51,7 @@ PhrasePrompt.prototype.finishRecord = function(force) {
         this.record.elapsed.input = Date.now() - this.record.inputShownAt;
     }
     this.record.forced = force;
+    this.record.dist = editdist.lossy(this.record.got, this.record.expected);
     var maxErrorPerWord = this.maxErrorPerWord;
     this.record.maxErrors = this.record.expected.split(/ +/)
         .map(function(word) {return Math.min(maxErrorPerWord, word.length);})
@@ -68,7 +69,6 @@ PhrasePrompt.prototype.prompt = function() {
     GenerativePrompt.prototype.prompt.call(this);
     this.record.expected = this.expected;
     this.record.got = this.got;
-    this.record.dist = editdist.lossy(this.got, this.expected);
     this.finishRecord();
 };
 
@@ -111,7 +111,6 @@ PhrasePrompt.prototype.onPhraseExpired = function() {
 PhrasePrompt.prototype.onInput = function(force) {
     if (this.record) {
         this.record.got = this.got;
-        this.record.dist = editdist(this.got, this.expected);
         this.finishRecord(force);
         if (this.record.finished) {
             this.clearTimer();
