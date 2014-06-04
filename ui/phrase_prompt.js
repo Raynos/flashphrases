@@ -47,7 +47,10 @@ PhrasePrompt.prototype.emitRecord = function() {
 
 PhrasePrompt.prototype.finishRecord = function(force) {
     if (!this.record) return;
-    var now = Date.now();
+    if (this.record.inputShownAt) {
+        this.record.elapsed.input = Date.now() - this.record.inputShownAt;
+    }
+    this.record.forced = force;
     var maxErrorPerWord = this.maxErrorPerWord;
     this.record.maxErrors = this.record.expected.split(/ +/)
         .map(function(word) {return Math.min(maxErrorPerWord, word.length);})
@@ -55,14 +58,6 @@ PhrasePrompt.prototype.finishRecord = function(force) {
         ;
     this.record.correct = this.record.dist <= this.record.maxErrors;
     this.record.finished = this.record.forced || this.record.correct;
-    if (this.record.finished) {
-        this.record.forced = force;
-        if (this.record.inputShownAt) {
-            if (!this.record.elapsed.input) {
-                this.record.elapsed.input = now - this.record.inputShownAt;
-            }
-        }
-    }
 };
 
 PhrasePrompt.prototype.prompt = function() {
