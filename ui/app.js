@@ -93,3 +93,6 @@ ss.addListeners(window);
 
 prompt.on('result', eng.onResult.bind(eng));
 eng.on('idle', ss.stop.bind(ss));
+eng.on('setTimeout', function(kind, val) {
+    prompt[kind + 'Time'] = val;
+});
