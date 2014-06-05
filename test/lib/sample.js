@@ -36,12 +36,12 @@ test('Sample', function(assert) {
     });
 
     [
-        {value: 7, values: [3, 4, 5, 6, 7], median: 5, iqr: 2, lo: 2, hi: 8, range: [2, 5, 8]},
+        {value: 7, values: [3, 4, 5, 6, 7], median: 5, iqr: 2, lo: 1, hi: 9, range: [1, 5, 9]},
         {value: 8, values: [3, 4, 5, 6, 7, 8], median: (5 + 6)/2,
             iqr: (6 + 7)/2 - (4 + 5)/2,
-            lo: 2.5,
-            hi: 8.5,
-            range: [2.5, 5.5, 8.5]
+            lo: 1.5,
+            hi: 9.5,
+            range: [1.5, 5.5, 9.5]
         },
     ].forEach(function (testCase, i) {
         var n = i + 5;
