@@ -9,3 +9,12 @@ input, textarea, button, select {
     border: 1px solid #af5f00;
 }
 
+.lightsOut {
+    border-color: #303030;
+    color: #444;
+}
+
+.lightsOut:hover {
+    background-color: #303030;
+    color: #d7d7d7;
+}

@@ -14,12 +14,18 @@ document.head.appendChild(
     }));
 
 var style = Hash.get('style') || 'light';
-document.head.appendChild(
+var styleLink = document.head.appendChild(
     h('link', {
         rel: 'stylesheet',
         type: 'text/css',
         href: 'style-' + style + '.css'
     }));
+
+function changeStyle(name) {
+    styleLink.href = 'style-' + name + '.css';
+    Hash.set('style', name);
+    style = name;
+}
 
 ////
 
@@ -54,11 +60,26 @@ var ss = new StartStop();
 ss.contentElement.appendChild(prompt.element);
 document.body.appendChild(ss.element);
 
+var lightsOut = document.body.appendChild(h(
+    'div.lightsOut', {
+        onclick: function() {
+            changeStyle(style === 'light' ? 'dark' : 'light');
+            lightsOut.innerHTML = style === 'light' ? 'Lights Out' : 'Lights On';
+        }
+    }, style === 'light' ? 'Lights Out' : 'Lights On'
+));
+
 prompt.on('stopkey', function(event) {
     if (event.keyCode === 0x1b) ss.stop();
 });
-ss.on('start', prompt.start.bind(prompt));
-ss.on('stop', prompt.stop.bind(prompt));
+ss.on('start', function() {
+    lightsOut.style.display = 'none';
+    prompt.start();
+});
+ss.on('stop', function() {
+    lightsOut.style.display = '';
+    prompt.stop();
+});
 ss.on('keypress', function(event) {
     if (prompt.inputing) return;
     var char = String.fromCharCode(event.charCode);
