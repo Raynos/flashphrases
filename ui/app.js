@@ -63,7 +63,7 @@ var eng = new Engine({
 var prompt = new PhrasePrompt({
     generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
-    inputTime: 10000,
+    inputTime: 5000,
     repromptDelay: 200,
     complexity: eng.complexity,
     scoreResult: eng.scoreResult.bind(eng)
