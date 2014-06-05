@@ -49,6 +49,8 @@ var Engine = require('../lib/engine');
 var PhrasePrompt = require('./phrase_prompt');
 
 var eng = new Engine({
+    base: 10,
+    perLevel: 10,
     complexity: {
         initial: [2, 10],
         step: [1, 5],
