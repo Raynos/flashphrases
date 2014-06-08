@@ -25,7 +25,6 @@
     "pre-commit": "0.0.5",
     "beefy": "^1.1.0",
     "browserify": "^4.1.5",
-    "brfs": "^1.1.1",
     "hyperscript": "^1.4.0",
     "inherits": "^2.0.1"
   },
@@ -33,8 +32,8 @@
     "BSD 3-Clause"
   ],
   "scripts": {
-    "ui": "beefy --cwd ui app.js --open -- -t brfs",
-    "ui-dev": "beefy --cwd ui app.js --live --open -- -t brfs",
+    "ui": "beefy --cwd ui app.js --open",
+    "ui-dev": "beefy --cwd ui app.js --live --open",
     "test": "npm run jshint -s && NODE_ENV=test node test/index.js | tap-spec",
     "fast-test": "NODE_ENV=test node test/index.js | tap-spec",
     "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",

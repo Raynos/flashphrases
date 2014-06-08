@@ -1,6 +1,4 @@
-var fs = require('fs');
 var Markov = require('../lib/markov');
-var data = JSON.parse(fs.readFileSync('markov_source.json'));
 
 function loadMarkovMap(data) {
     var markovMap = {};
@@ -15,9 +13,20 @@ function loadMarkovMap(data) {
     return markovMap;
 }
 
-var markovMap = loadMarkovMap(data);
+var markovMap = null;
+
+/* global XMLHttpRequest */
+var xhr = new XMLHttpRequest();
+xhr.open('GET', '/markov_source.json');
+xhr.onreadystatechange = function() {
+    if (this.readyState !== XMLHttpRequest.DONE) return;
+    var data = JSON.parse(this.responseText);
+    markovMap = loadMarkovMap(data);
+};
+xhr.send(null);
 
 function getMarkov(k) {
+    if (!markovMap) return null;
     if (markovMap[k]) return markovMap[k];
     var best = null;
     Object.keys(markovMap).forEach(function(key) {
