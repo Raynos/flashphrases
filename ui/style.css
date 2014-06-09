@@ -1,8 +1,7 @@
 html, body {
     margin: 0;
     padding: 0
-    font-family: sans-serif;
-    font-size: 14pt;
+    font: 14pt sans-serif;
     line-height: 1.1;
 }
 
