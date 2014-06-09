@@ -30,6 +30,7 @@ function changeStyle(name) {
 ////
 
 var Engine = require('../lib/engine');
+var Mode = require('./mode');
 var PhraseData = require('./data');
 var PhrasePrompt = require('./phrase_prompt');
 
@@ -54,10 +55,15 @@ var prompt = new PhrasePrompt({
     scoreResult: eng.scoreResult.bind(eng)
 });
 
-var StartStop = require('./start_stop');
-var ss = new StartStop();
-ss.contentElement.appendChild(prompt.element);
-document.body.appendChild(ss.element);
+var mode = new Mode({
+    initial: 'pause',
+    modes: {
+        pause: h('div.pause', 'press <enter> to start'),
+        play: h('div.play')
+    }
+});
+mode.panes.play.appendChild(prompt.element);
+document.body.appendChild(mode.element);
 
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
@@ -69,30 +75,56 @@ var lightsOut = document.body.appendChild(h(
 ));
 
 prompt.on('stopkey', function(event) {
-    if (event.keyCode === 0x1b) ss.stop();
+    if (event.keyCode === 0x1b) {
+        mode.setMode('pause', 'play');
+    }
 });
-ss.on('start', function() {
-    lightsOut.style.display = 'none';
-    prompt.start();
+mode.on('change', function(mode) {
+    switch(mode) {
+        case 'play':
+            lightsOut.style.display = 'none';
+            prompt.start();
+            break;
+        case 'pause':
+            lightsOut.style.display = '';
+            prompt.stop();
+            break;
+    }
 });
-ss.on('stop', function() {
-    lightsOut.style.display = '';
-    prompt.stop();
+
+window.addEventListener('keydown', function(event) {
+    if (event.keyCode === 0x1b) { // <esc>
+        event.preventDefault();
+        event.stopPropagation();
+        mode.setMode('pause', 'play');
+    }
 });
-ss.on('keypress', function(event) {
-    if (prompt.inputing) return;
-    var char = String.fromCharCode(event.charCode);
-    if (char !== prompt.expected[0]) return;
-    event.stopPropagation();
-    event.preventDefault();
-    prompt.showInput();
-    prompt.inputElement.value = char;
-    prompt.updateInput();
+
+window.addEventListener('keypress', function(event) {
+    switch(event.charCode) {
+        case 0x0a: // nl
+        case 0x0d: // cr
+        case 0x20: // <space>
+            mode.setMode('play', 'pause');
+            break;
+        default:
+            if (prompt.inputing) return;
+            var char = String.fromCharCode(event.charCode);
+            if (char !== prompt.expected[0]) return;
+            event.stopPropagation();
+            event.preventDefault();
+            prompt.showInput();
+            prompt.inputElement.value = char;
+            prompt.updateInput();
+    }
 });
-ss.addListeners(window);
+
+window.addEventListener('blur', function() {
+    mode.setMode('pause', 'play');
+});
 
 prompt.on('result', eng.onResult.bind(eng));
-eng.on('idle', ss.stop.bind(ss));
+eng.on('idle', mode.setMode.bind(mode, 'pause', 'play'));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
