@@ -29,9 +29,8 @@ function changeStyle(name) {
 
 ////
 
-var PhraseData = require('./data');
 var Engine = require('../lib/engine');
-
+var PhraseData = require('./data');
 var PhrasePrompt = require('./phrase_prompt');
 
 var eng = new Engine({
