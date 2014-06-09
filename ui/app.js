@@ -7,19 +7,21 @@ var extend = require('xtend');
 var window = require('global/window');
 var document = require('global/document');
 
+///
+var Engine = require('../lib/engine');
+var PhraseData = require('./data');
+var StartStop = require('./start_stop');
+var PhrasePrompt = require('./phrase_prompt');
+
 // hack the title
 document.title = 'Flash Phrases';
 
+// mercury stuff
 var hash = (window.location.hash || '').slice(1);
 var initialState = querystring.parse(hash);
 
 var state = createApp(initialState).state;
-
-///
-var Engine = require('../lib/engine');
-var PhraseData = require('./data');
-
-var PhrasePrompt = require('./phrase_prompt');
+// end mercury
 
 var eng = new Engine({
     base: 10,
@@ -42,7 +44,6 @@ var prompt = new PhrasePrompt({
     scoreResult: eng.scoreResult.bind(eng)
 });
 
-var StartStop = require('./start_stop');
 var ss = new StartStop();
 ss.contentElement.appendChild(prompt.element);
 document.body.appendChild(ss.element);
@@ -75,6 +76,8 @@ eng.on('idle', ss.stop.bind(ss));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
+
+// Mercury stuff*
 
 function createApp(initialState) {
     var events = mercury.input(['toggleStyle']);

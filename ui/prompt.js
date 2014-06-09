@@ -1,14 +1,55 @@
 var EE = require('events').EventEmitter;
-var h = require('hyperscript');
+var mercury = require('mercury');
+var hyperscript = require('hyperscript');
+var h = mercury.h;
 var inherits = require('inherits');
+
+var focusHook = require('./lib/do-mutable-focus.js');
+
+Prompt.prompt = prompt;
+Prompt.promptRender = promptRender;
+
+function prompt() {
+    var events = mercury.input(['stopkey']);
+    var state = mercury.struct({
+        expected: mercury.value(''),
+        got: mercury.value(''),
+        inputing: mercury.value(false)
+    });
+
+    return { state: state, events: events };
+}
+
+function promptRender(state) {
+    var events = state.events;
+
+    return h('div.prompt', [
+        h('span', {
+            style: { display: state.inputing ? 'none': '' }
+        }, state.expected),
+        h('input', {
+            style: { display: state.inputing ? '' : 'none' },
+            type: 'text',
+            value: state.got,
+            disabled: false,
+            'data-focus': state.inputing ? focusHook() : null,
+            size: state.expected.length + 2,
+            'ev-keydown': mercury(events.keydown),
+            'ev-keypress': mercury(events.keypress),
+            'ev-change': mercury(events.change),
+            'ev-blur': mercury(events.blur)
+        })
+    ]);
+}
+
 
 function Prompt(options) {
     if (!this instanceof Prompt) {
         return new Prompt(options);
     }
-    this.element = h('div.prompt');
-    this.displayElement = this.element.appendChild(h('span'));
-    this.inputElement = this.element.appendChild(h('input', {
+    this.element = hyperscript('div.prompt');
+    this.displayElement = this.element.appendChild(hyperscript('span'));
+    this.inputElement = this.element.appendChild(hyperscript('input', {
         style: {display: 'none'},
         type: 'text',
         onkeydown: this.onInputKeyDown.bind(this),
