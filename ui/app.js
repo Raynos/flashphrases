@@ -35,6 +35,7 @@ var PhraseData = require('./data');
 var PhrasePrompt = require('./phrase_prompt');
 
 var eng = new Engine({
+    sessionCookie: 'session-key',
     base: 10,
     perLevel: 10,
     complexity: {
@@ -56,8 +57,10 @@ var prompt = new PhrasePrompt({
 });
 
 var mode = new Mode({
-    initial: 'pause',
+    initial: 'loading',
     modes: {
+        error: h('div.error', ''),
+        loading: h('div.loading', 'Loading...'),
         pause: h('div.pause', 'press <enter> to start'),
         play: h('div.play')
     }
@@ -124,6 +127,14 @@ window.addEventListener('blur', function() {
 });
 
 prompt.on('result', eng.onResult.bind(eng));
+eng.on('ready', function() {
+    mode.setMode('pause', 'loading');
+});
+eng.on('error', function(err) {
+    mode.setMode('error');
+    mode.panes.error.innerHTML = String(err);
+    console.error(err);
+});
 eng.on('idle', mode.setMode.bind(mode, 'pause', 'play'));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
