@@ -1,6 +1,6 @@
 var test = require('tape');
 
-var Markov = require('../../lib/Markov');
+var Markov = require('../../lib/markov');
 var createTestObjects = require('../object');
 
 var markovTest = createTestObjects.wrapper({

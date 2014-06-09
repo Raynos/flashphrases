@@ -1,6 +1,7 @@
 // var h = require('hyperscript');
 var mercury = require('mercury');
 var h = mercury.h;
+var hyperscript = require('hyperscript');
 var querystring = require('querystring/');
 var extend = require('xtend');
 var window = require('global/window');
@@ -39,10 +40,10 @@ var prompt = new PhrasePrompt({
 var mode = new Mode({
     initial: 'loading',
     modes: {
-        error: h('div.error', ''),
-        loading: h('div.loading', 'Loading...'),
-        pause: h('div.pause', 'press <enter> to start'),
-        play: h('div.play')
+        error: hyperscript('div.error', ''),
+        loading: hyperscript('div.loading', 'Loading...'),
+        pause: hyperscript('div.pause', 'press <enter> to start'),
+        play: hyperscript('div.play')
     }
 });
 mode.panes.play.appendChild(prompt.element);
