@@ -14,7 +14,7 @@ test('Engine construction', function(assert) {
     assert.equal(eng.complexity.level, 1, 'start at level 1');
     assert.deepEqual(eng.history, [], 'no history');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 400, 'correct level 1 goal');
+    assert.equal(eng.levelGoal, 200, 'correct level 1 goal');
     assert.end();
 });
 
@@ -32,19 +32,19 @@ test('Engine tracks complexity level', function(assert) {
     eng.complexity.level++;
     assert.equal(eng.complexity.level, 2, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 600, 'correct level 2 goal');
+    assert.equal(eng.levelGoal, 300, 'correct level 2 goal');
 
     eng.levelScore = 42;
     eng.complexity.level++;
     assert.equal(eng.complexity.level, 3, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 800, 'correct level 3 goal');
+    assert.equal(eng.levelGoal, 400, 'correct level 3 goal');
 
     eng.levelScore = 42;
     eng.complexity.level = 1;
     assert.equal(eng.complexity.level, 1, 'start at level 1');
     assert.equal(eng.levelScore, 0, 'no score');
-    assert.equal(eng.levelGoal, 400, 'correct level 1 goal');
+    assert.equal(eng.levelGoal, 200, 'correct level 1 goal');
 
     assert.end();
 });
@@ -76,12 +76,15 @@ test('Engine.scoreResult', function(assert) {
         elapsed: {},
         expected: 'alpha bravo gamma',
         got: '',
+        errorRate: 1,
+        level: 1,
         dist: 15,
         maxDist: 4,
         correct: false,
         finished: false,
         score: 0
     }, 'initially');
+
 
     assert.deepEqual(eng.scoreResult({
         timeout: {
@@ -103,6 +106,8 @@ test('Engine.scoreResult', function(assert) {
         },
         expected: 'alpha bravo gamma',
         got: '',
+        errorRate: 1,
+        level: 1,
         dist: 15,
         maxDist: 4,
         correct: false,
@@ -132,6 +137,8 @@ test('Engine.scoreResult', function(assert) {
         },
         expected: 'alpha bravo gamma',
         got: '',
+        errorRate: 1,
+        level: 1,
         dist: 15,
         maxDist: 4,
         correct: false,
@@ -161,6 +168,8 @@ test('Engine.scoreResult', function(assert) {
         },
         expected: 'alpha bravo gamma',
         got: 'alpha b',
+        errorRate: 0.6,
+        level: 1,
         dist: 9,
         maxDist: 4,
         correct: false,
@@ -190,11 +199,13 @@ test('Engine.scoreResult', function(assert) {
         },
         expected: 'alpha bravo gamma',
         got: 'alpha brvo gam',
+        errorRate: 0.2,
+        level: 1,
         dist: 3,
         maxDist: 4,
         correct: true,
         finished: true,
-        score: 101 // (4 - 3) + (10000 - 500) / 100 + (1500 - 1000) / 100
+        score: 33
     }, 'enough input');
 
     assert.deepEqual(eng.scoreResult({
@@ -219,6 +230,8 @@ test('Engine.scoreResult', function(assert) {
         },
         expected: 'alpha bravo gamma',
         got: 'wat',
+        errorRate: 14/15,
+        level: 1,
         dist: 14,
         maxDist: 4,
         correct: false,
