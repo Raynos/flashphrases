@@ -5,6 +5,10 @@ html, body {
     line-height: 1.1;
 }
 
+html, body {
+    height: 100%;
+}
+
 .startstop {
     width: 80%;
     margin: 1em auto;
@@ -24,8 +28,8 @@ html, body {
 
 .lightsOut {
     position: absolute;
-    bottom 0.3em;
-    right: 0.5em;
+    bottom: 1em;
+    right: 1em;
     border-radius: 0.15em;
     cursor: pointer;
     padding: 0.15em;
