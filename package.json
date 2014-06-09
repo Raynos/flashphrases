@@ -17,7 +17,7 @@
     "minimist": "^0.1.0",
     "binarysearch": "^0.2.4",
     "uuid": "^1.4.1",
-    "routes-router": "^1.5.4",
+    "routes-router": "^3.1.0",
     "send-data": "^3.1.2",
     "body": "^4.4.2",
     "cookie-cutter": "^0.1.1",
