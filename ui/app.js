@@ -1,36 +1,23 @@
-var h = require('hyperscript');
-var Hash = require('./hash');
+// var h = require('hyperscript');
+var mercury = require('mercury');
+var h = mercury.h;
+var querystring = require('querystring/');
+var extend = require('xtend');
 
-// XXX require('global/mumble')
-var window = global.window;
-var document = global.document;
+var window = require('global/window');
+var document = require('global/document');
 
+// hack the title
 document.title = 'Flash Phrases';
-document.head.appendChild(
-    h('link', {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: 'style.css'
-    }));
 
-var style = Hash.get('style') || 'light';
-var styleLink = document.head.appendChild(
-    h('link', {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: 'style-' + style + '.css'
-    }));
+var hash = (window.location.hash || '').slice(1);
+var initialState = querystring.parse(hash);
 
-function changeStyle(name) {
-    styleLink.href = 'style-' + name + '.css';
-    Hash.set('style', name);
-    style = name;
-}
+var state = createApp(initialState).state;
 
-////
-
-var PhraseData = require('./data');
+///
 var Engine = require('../lib/engine');
+var PhraseData = require('./data');
 
 var PhrasePrompt = require('./phrase_prompt');
 
@@ -60,24 +47,15 @@ var ss = new StartStop();
 ss.contentElement.appendChild(prompt.element);
 document.body.appendChild(ss.element);
 
-var lightsOut = document.body.appendChild(h(
-    'div.lightsOut', {
-        onclick: function() {
-            changeStyle(style === 'light' ? 'dark' : 'light');
-            lightsOut.innerHTML = style === 'light' ? 'Lights Out' : 'Lights On';
-        }
-    }, style === 'light' ? 'Lights Out' : 'Lights On'
-));
-
 prompt.on('stopkey', function(event) {
     if (event.keyCode === 0x1b) ss.stop();
 });
 ss.on('start', function() {
-    lightsOut.style.display = 'none';
+    state.lightsOutVisible.set(false);
     prompt.start();
 });
 ss.on('stop', function() {
-    lightsOut.style.display = '';
+    state.lightsOutVisible.set(true);
     prompt.stop();
 });
 ss.on('keypress', function(event) {
@@ -97,3 +75,58 @@ eng.on('idle', ss.stop.bind(ss));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
+
+function createApp(initialState) {
+    var events = mercury.input(['toggleStyle']);
+    var state = mercury.struct({
+        hash: mercury.struct({
+            style: mercury.value(initialState.style || 'light')
+        }),
+        lightsOutVisible: mercury.value(true),
+        events: events
+    });
+
+    events.toggleStyle(function () {
+        var curr = state.hash.style();
+        state.hash.style.set(curr === 'light' ? 'dark': 'light');
+    });
+
+    return { state: state };
+}
+
+
+state.hash(function (hashState) {
+    hashState = extend(hashState);
+    delete hashState._diff;
+    window.location.hash =
+        '#' + querystring.stringify(hashState);
+});
+
+function render(state) {
+    var events = state.events;
+    var lightsOutText = state.hash.style === 'light' ?
+        'Lights Out' : 'Lights On';
+
+    return h('div', [
+        h('.links', [
+            h('link', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: 'style.css'
+            }),
+            h('link', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: 'style-' + state.hash.style + '.css'
+            })
+        ]),
+        h('div.lightsOut', {
+            'ev-click': mercury.event(events.toggleStyle),
+            hidden: !state.lightsOutVisible
+        }, lightsOutText)
+    ]);
+}
+
+mercury.app(document.body, state, render);
+
+////
