@@ -1,38 +1,18 @@
-var h = require('hyperscript');
-var Hash = require('./hash');
-
-// XXX require('global/mumble')
-var window = global.window;
-var document = global.document;
-
-document.title = 'Flash Phrases';
-document.head.appendChild(
-    h('link', {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: 'style.css'
-    }));
-
-var style = Hash.get('style') || 'light';
-var styleLink = document.head.appendChild(
-    h('link', {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: 'style-' + style + '.css'
-    }));
-
-function changeStyle(name) {
-    styleLink.href = 'style-' + name + '.css';
-    Hash.set('style', name);
-    style = name;
-}
-
-////
+// var h = require('hyperscript');
+var mercury = require('mercury');
+var h = mercury.h;
+var querystring = require('querystring/');
+var extend = require('xtend');
+var window = require('global/window');
+var document = require('global/document');
 
 var Engine = require('../lib/engine');
 var Mode = require('./mode');
 var PhraseData = require('./data');
 var PhrasePrompt = require('./phrase_prompt');
+
+// hack the title
+document.title = 'Flash Phrases';
 
 var eng = new Engine({
     sessionCookie: 'session-key',
@@ -68,30 +48,9 @@ var mode = new Mode({
 mode.panes.play.appendChild(prompt.element);
 document.body.appendChild(mode.element);
 
-var lightsOut = document.body.appendChild(h(
-    'div.lightsOut', {
-        onclick: function() {
-            changeStyle(style === 'light' ? 'dark' : 'light');
-            lightsOut.innerHTML = style === 'light' ? 'Lights Out' : 'Lights On';
-        }
-    }, style === 'light' ? 'Lights Out' : 'Lights On'
-));
-
 prompt.on('stopkey', function(event) {
     if (event.keyCode === 0x1b) {
         mode.setMode('pause', 'play');
-    }
-});
-mode.on('change', function(mode) {
-    switch(mode) {
-        case 'play':
-            lightsOut.style.display = 'none';
-            prompt.start();
-            break;
-        case 'pause':
-            lightsOut.style.display = '';
-            prompt.stop();
-            break;
     }
 });
 
@@ -139,3 +98,75 @@ eng.on('idle', mode.setMode.bind(mode, 'pause', 'play'));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
+
+function createApp(initialState) {
+    var events = mercury.input(['toggleStyle']);
+    var state = mercury.struct({
+        hash: mercury.struct({
+            style: mercury.value(initialState.style || 'light')
+        }),
+        lightsOutVisible: mercury.value(true),
+        events: events
+    });
+
+    events.toggleStyle(function () {
+        var curr = state.hash.style();
+        state.hash.style.set(curr === 'light' ? 'dark': 'light');
+    });
+
+    return { state: state };
+}
+
+var hash = (window.location.hash || '').slice(1);
+var initialState = querystring.parse(hash);
+
+var state = createApp(initialState).state;
+
+mode.on('change', function(mode) {
+    switch(mode) {
+        case 'play':
+            state.lightsOutVisible.set(false);
+            prompt.start();
+            break;
+        case 'pause':
+            state.lightsOutVisible.set(true);
+            prompt.stop();
+            break;
+    }
+});
+
+state.hash(function (hashState) {
+    hashState = extend(hashState);
+    delete hashState._diff;
+    window.location.hash =
+        '#' + querystring.stringify(hashState);
+});
+
+function render(state) {
+    var events = state.events;
+    var lightsOutText = state.hash.style === 'light' ?
+        'Lights Out' : 'Lights On';
+
+    return h('div', [
+        h('.links', [
+            h('link', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: 'style.css'
+            }),
+            h('link', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: 'style-' + state.hash.style + '.css'
+            })
+        ]),
+        h('div.lightsOut', {
+            'ev-click': mercury.event(events.toggleStyle),
+            hidden: !state.lightsOutVisible
+        }, lightsOutText)
+    ]);
+}
+
+mercury.app(document.body, state, render);
+
+////
