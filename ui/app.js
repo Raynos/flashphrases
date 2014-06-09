@@ -99,6 +99,8 @@ eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
 
+// Mercury stuff*
+
 function createApp(initialState) {
     var events = mercury.input(['toggleStyle']);
     var state = mercury.struct({

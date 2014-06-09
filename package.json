@@ -23,6 +23,7 @@
     "global": "^4.2.1",
     "mercury": "^5.0.2",
     "minimist": "^0.1.0",
+    "next-tick": "^0.2.2",
     "querystring": "^0.2.0",
     "xtend": "^3.0.0"
   },
