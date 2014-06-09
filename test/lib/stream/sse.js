@@ -26,3 +26,18 @@ test('SSEStream', function(assert) {
 
     assert.end();
 });
+
+test('SSEStream keepalive', function(assert) {
+    var stream = new SSEStream({
+        keepalive: 10
+    });
+    setTimeout(function() {
+        var got = String(stream.read()).split('\n');
+        assert.deepEqual(got, [
+            ':keepalive', '',
+            ':keepalive', '',
+            ':keepalive', '', ''
+        ], 'expected 3 keepalives');
+        assert.end();
+    }, 30);
+});
