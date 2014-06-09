@@ -36,3 +36,8 @@ html, body {
     font-size: 0.75em;
     border: 0.1em solid red;
 }
+
+div.error {
+    border-radius: 0.4em;
+    padding: 0.4em;
+}

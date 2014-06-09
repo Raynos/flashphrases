@@ -18,3 +18,8 @@ input, textarea, button, select {
     background-color: #303030;
     color: #d7d7d7;
 }
+
+div.error {
+    background-color: #d7afaf;
+    color: #af0000;
+}
