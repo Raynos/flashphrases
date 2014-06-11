@@ -2,23 +2,28 @@ var EE = require('events').EventEmitter;
 var h = require('hyperscript');
 var inherits = require('inherits');
 
+var Input = require('./input');
+
 function Prompt(options) {
     if (!this instanceof Prompt) {
         return new Prompt(options);
     }
+    this.input = new Input();
+    this.input.element.style.display = 'none';
     this.element = h('div.prompt');
     this.displayElement = this.element.appendChild(h('span'));
-    this.inputElement = this.element.appendChild(h('input', {
-        style: {display: 'none'},
-        type: 'text',
-        onkeydown: this.onInputKeyDown.bind(this),
-        onkeypress: this.onInputKeyPress.bind(this),
-        onchange: this.updateInput.bind(this, true),
-        onblur: this.updateInput.bind(this, true)
-    }));
+    this.inputElement = this.element.appendChild(this.input.element);
     this.expected = '';
     this.got = '';
     this.inputing = null;
+    var self = this;
+    this.input.on('stop', function(event) {
+        self.emit('stopkey', event);
+    });
+    this.input.on('data', function(got, force) {
+        self.got = got;
+        self.emit('input', force);
+    });
 }
 
 inherits(Prompt, EE);
@@ -54,48 +59,6 @@ Prompt.prototype.showInput = function() {
         this.inputElement.disabled = false;
         this.inputElement.focus();
         this.emit('showinput');
-    }
-};
-
-Prompt.prototype.onInputKeyDown = function(event) {
-    if (event.keyCode  <  0x20 &&
-        event.keyCode !== 0x0a &&
-        event.keyCode !== 0x0d) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.emit('stopkey', event);
-    }
-};
-
-Prompt.prototype.onInputKeyPress = function(event) {
-    if (event.keyCode === 0x0a ||
-        event.keyCode === 0x0d) {
-        this.updateInput(true);
-    } else {
-        this.eventuallyUpdateInput();
-    }
-};
-
-Prompt.prototype.eventuallyUpdateInput = function(force) {
-    if (this.inputUpdateTimer) {
-        clearTimeout(this.inputUpdateTimer);
-    }
-    var self = this;
-    this.inputUpdateTimer = setTimeout(function() {
-        delete self.inputUpdateTimer;
-        self.updateInput(force);
-    }, 200);
-};
-
-Prompt.prototype.updateInput = function(force) {
-    if (this.inputUpdateTimer) {
-        clearTimeout(this.inputUpdateTimer);
-        delete this.inputUpdateTimer;
-    }
-    if (this.inputing && !this.inputElement.disabled) {
-        this.got = this.inputElement.value;
-        if (force) this.inputElement.disabled = true;
-        this.emit('input', Boolean(force));
     }
 };
 
