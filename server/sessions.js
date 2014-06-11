@@ -4,9 +4,9 @@ var sendJson = require('send-data/json');
 
 var Session = require('../lib/session');
 
-var sessionRoutes = new Router();
-
 var sessions = {};
+
+var sessionRoutes = new Router();
 
 sessionRoutes.addRoute('/all', function(req, res, opts, done) {
     var keys = Object.keys(sessions).sort();
