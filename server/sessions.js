@@ -1,12 +1,14 @@
 var Router = require('routes-router');
 var jsonBody = require('body/json');
+var path = require('path');
 var sendError = require('send-data/error');
 var sendJson = require('send-data/json');
 
+var config = require('./config');
 var Session = require('../lib/session');
 var SessionStore = require('./session_store');
 
-var sessions = new SessionStore();
+var sessions = new SessionStore(path.resolve(path.join(config.var, 'sessions')));
 
 var sessionRoutes = new Router();
 
