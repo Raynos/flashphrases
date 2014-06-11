@@ -1,32 +1,43 @@
 var Router = require('routes-router');
 var jsonBody = require('body/json');
+var sendError = require('send-data/error');
 var sendJson = require('send-data/json');
 
 var Session = require('../lib/session');
+var SessionStore = require('./session_store');
 
-var sessions = {};
+var sessions = new SessionStore();
 
 var sessionRoutes = new Router();
 
 sessionRoutes.addRoute('/all', function(req, res, opts, done) {
-    var keys = Object.keys(sessions).sort();
-    sendJson(req, res, keys, done);
+    sessions.keys(function(err, keys) {
+        if (err) return sendError(req, res, err, done);
+        sendJson(req, res, keys, done);
+    });
 });
 
 sessionRoutes.addRoute('/create', {
     PUT: function(req, res, opts, done) {
-        var session = new Session();
-        sessions[session.id] = session;
-        sendJson(req, res, session.getData(), done);
+        sessions.save(new Session(), function(err, session) {
+            if (err) return sendError(req, res, err, done);
+            sendJson(req, res, session.getData(), done);
+        });
     }
 });
 
 function loadSession(func) {
     return function(req, res, opts, done) {
-        var session = sessions[opts.key];
-        if (!session) return done({statusCode: 404, message: 'no such session'});
-        opts.session = session;
-        return func.call(this, req, res, opts, done);
+        sessions.load(opts.key, function(err, session) {
+            if (!session) {
+                return done({
+                    statusCode: 404,
+                    message: 'no such session'
+                });
+            }
+            opts.session = session;
+            return func.call(this, req, res, opts, done);
+        });
     };
 }
 
