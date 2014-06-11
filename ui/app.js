@@ -10,7 +10,7 @@ document.head.appendChild(
     h('link', {
         rel: 'stylesheet',
         type: 'text/css',
-        href: 'style.css'
+        href: 'ui/style.css'
     }));
 
 var style = Hash.get('style') || 'light';
@@ -18,11 +18,11 @@ var styleLink = document.head.appendChild(
     h('link', {
         rel: 'stylesheet',
         type: 'text/css',
-        href: 'style-' + style + '.css'
+        href: 'ui/style-' + style + '.css'
     }));
 
 function changeStyle(name) {
-    styleLink.href = 'style-' + name + '.css';
+    styleLink.href = 'ui/style-' + name + '.css';
     Hash.set('style', name);
     style = name;
 }
@@ -117,8 +117,8 @@ window.addEventListener('keypress', function(event) {
             event.stopPropagation();
             event.preventDefault();
             prompt.showInput();
-            prompt.inputElement.value = char;
-            prompt.updateInput();
+            prompt.input.element.value = char;
+            prompt.input.update();
     }
 });
 

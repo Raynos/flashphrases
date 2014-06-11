@@ -38,8 +38,8 @@
     "BSD 3-Clause"
   ],
   "scripts": {
-    "ui": "beefy --cwd ui app.js --custom ./dev_handler --open",
-    "ui-dev": "beefy --cwd ui app.js --live --custom ./dev_handler --open",
+    "ui": "beefy ui/app.js --custom ./ui/dev_handler --open",
+    "ui-dev": "beefy ui/app.js --live --custom ./ui/dev_handler --open",
     "test": "npm run jshint -s && NODE_ENV=test node test/index.js | tap-spec",
     "fast-test": "NODE_ENV=test node test/index.js | tap-spec",
     "jshint-pre-commit": "jshint --verbose $(git diff --cached --name-only | grep '\\.js$')",
