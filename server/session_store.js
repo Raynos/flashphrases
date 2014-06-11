@@ -14,6 +14,19 @@ SessionStore.prototype.keys = function(done) {
     fs.readdir(this.dir, done);
 };
 
+SessionStore.prototype.hook = function(session) {
+    var self = this;
+    session.on('change', function() {
+        self.save(session, function(err) {
+            if (err) {
+                console.error(
+                    'failed to save changes to session %s: %s',
+                    session.id, err);
+            }
+        });
+    });
+};
+
 SessionStore.prototype.load = function(id, done) {
     var self = this;
     if (this.cache[id]) {
@@ -29,6 +42,7 @@ SessionStore.prototype.load = function(id, done) {
         var data = JSON.parse(String(buf)); // TODO safe parse
         var session = new Session(data);
         self.cache[session.id] = session;
+        self.hook(session);
         done(null, session);
     });
 };
@@ -41,6 +55,7 @@ SessionStore.prototype.save = function(session, done) {
         fs.writeFile(path.join(self.dir, session.id), data, function(err) {
             if (err) return done(err, session);
             if (self.cache[session.id] !== session) {
+                self.hook(session);
                 self.cache[session.id] = session;
             }
             done(err, session);
