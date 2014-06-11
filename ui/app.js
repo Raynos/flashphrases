@@ -47,15 +47,6 @@ var eng = new Engine({
     maxErrorRate: 0.3
 });
 
-var prompt = new PhrasePrompt({
-    generatePhrase: PhraseData.generatePhrase,
-    displayTime: 1500,
-    inputTime: 5000,
-    repromptDelay: 200,
-    complexity: eng.complexity,
-    scoreResult: eng.scoreResult.bind(eng)
-});
-
 var mode = new Mode({
     initial: 'loading',
     modes: {
@@ -65,8 +56,17 @@ var mode = new Mode({
         play: h('div.play')
     }
 });
-mode.panes.play.appendChild(prompt.element);
 document.body.appendChild(mode.element);
+
+var prompt = new PhrasePrompt({
+    generatePhrase: PhraseData.generatePhrase,
+    displayTime: 1500,
+    inputTime: 5000,
+    repromptDelay: 200,
+    complexity: eng.complexity,
+    scoreResult: eng.scoreResult.bind(eng)
+});
+mode.panes.play.appendChild(prompt.element);
 
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
