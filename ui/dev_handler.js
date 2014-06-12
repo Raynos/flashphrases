@@ -1,3 +1,4 @@
+var http = require('http');
 var routes = require('../server/sessions');
 var sendError = require("send-data/error");
 
@@ -5,13 +6,19 @@ function devHandler(req, res) {
     var handled = true;
     routes(req, res, function(err) {
         if (err) {
-            if (err.notFound || err.statusCode === 404) {
+            if (err.notFound) {
                 handled = false;
             } else {
-                sendError(req, res, {
-                    body: err,
-                    statusCode: err.statusCode || 500
-                });
+                if (err.statusCode) {
+                    var mess = err.message || http.STATUS_CODES[err.statusCode];
+                    res.writeHead(err.statusCode, mess, {'content-type': 'text/plain'});
+                    res.end(mess);
+                } else {
+                    sendError(req, res, {
+                        body: err,
+                        statusCode: 500
+                    });
+                }
             }
         }
     });
