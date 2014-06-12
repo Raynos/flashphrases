@@ -47,7 +47,7 @@ TimedPrompt.prototype.clearTimer = function() {
     }
 };
 
-Prompt.prototype.expireInput = function() {
+TimedPrompt.prototype.expireInput = function() {
     this.clearTimer();
     this.input.element.disabled = true;
     this.emit('expire');
