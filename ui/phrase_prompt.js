@@ -97,7 +97,6 @@ PhrasePrompt.prototype.clearTimer = function() {
 PhrasePrompt.prototype.expireInput = function() {
     this.finishRecord(true);
     this.emitRecord();
-    this.reprompt();
 };
 
 PhrasePrompt.prototype.start = function() {
@@ -119,6 +118,7 @@ PhrasePrompt.prototype.emitRecord = function() {
         this.emit('result', this.record);
         this.record = null;
     }
+    this.reprompt();
 };
 
 PhrasePrompt.prototype.finishRecord = function(force) {
@@ -167,7 +167,6 @@ PhrasePrompt.prototype.onInput = function(got, force) {
         this.finishRecord(force);
         if (this.record.finished) {
             this.emitRecord();
-            this.reprompt();
         }
     }
 };
