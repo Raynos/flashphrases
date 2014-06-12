@@ -1,19 +1,39 @@
+var EE = require('events').EventEmitter;
 var inherits = require('inherits');
-
-var GenerativePrompt = require('./generative_prompt');
 
 function PhrasePrompt(options) {
     if (!this instanceof PhrasePrompt) {
         return new PhrasePrompt(options);
     }
+    // TODO: ick
     options = options || {};
     if (!options.scoreResult) throw new Error('missing scoreResult option');
+    if (!options.generatePhrase) throw new Error('missing generatePhrase option');
+    if (!options.complexity) throw new Error('missing complexity option');
+    if (!options.input) throw new Error('missing input');
+    if (!options.display) throw new Error('missing display');
 
     this.running = false;
     this.repromptDelay = options.repromptDelay || 100;
     this.scoreResult = options.scoreResult;
+    this.displayTime = options.displayTime || 1000;
+    this.inputTime = options.inputTime || 10000;
+    this.input = options.input;
+    this.displayElement = options.display;
+    this.expected = '';
+    this.got = '';
+    this.inputing = null;
+    this.generatePhrase = options.generatePhrase;
+    this.complexity = options.complexity;
 
-    GenerativePrompt.call(this, options);
+    var self = this;
+    this.input.on('stop', function(event) {
+        self.emit('stopkey', event);
+    });
+    this.input.on('data', function(got, force) {
+        self.got = got;
+        self.emit('input', force);
+    });
 
     this.on('expire', this.onPhraseExpired.bind(this));
     this.on('input', this.onInput.bind(this));
@@ -23,7 +43,76 @@ function PhrasePrompt(options) {
     this.on('expire', this.onPromptExpire.bind(this));
 }
 
-inherits(PhrasePrompt, GenerativePrompt);
+inherits(PhrasePrompt, EE);
+
+PhrasePrompt.prototype.prompt = function() {
+    this.record = {
+        elapsed: {},
+        timeout: {}
+    };
+    var text = this.generatePhrase.apply(this, this.complexity.value);
+    this.expected = text;
+    this.got = '';
+    this.display(text);
+    this.setTimer();
+    this.record.expected = this.expected;
+    this.record.got = this.got;
+    this.finishRecord();
+};
+
+PhrasePrompt.prototype.display = function(text) {
+    this.displayElement.innerHTML = text;
+    this.got = this.input.element.value = '';
+    this.input.element.size = text.length + 2;
+    this.showDisplay(text);
+    this.emit('display');
+};
+
+PhrasePrompt.prototype.showDisplay = function() {
+    if (this.inputing !== false) {
+        this.inputing = false;
+        this.emit('showdisplay');
+    }
+};
+
+PhrasePrompt.prototype.showInput = function() {
+    this.clearTimer();
+    if (this.inputing !== true) {
+        this.inputing = true;
+        this.emit('showinput');
+        this.input.element.disabled = false;
+        this.input.element.focus();
+    }
+    this.setTimer();
+};
+
+PhrasePrompt.prototype.setTimer = function() {
+    this.clearTimer();
+    if (this.inputing) {
+        this.timer = setTimeout(function() {
+            if (this.inputing) this.expireInput();
+        }.bind(this), this.inputTime);
+        this.emit('settimeout', 'input', this.inputTime);
+    } else {
+        this.timer = setTimeout(function() {
+            if (!this.inputing) this.showInput();
+        }.bind(this), this.displayTime);
+        this.emit('settimeout', 'display', this.displayTime);
+    }
+};
+
+PhrasePrompt.prototype.clearTimer = function() {
+    if (this.timer) {
+        clearTimeout(this.timer);
+        delete this.timer;
+    }
+};
+
+PhrasePrompt.prototype.expireInput = function() {
+    this.clearTimer();
+    this.input.element.disabled = true;
+    this.emit('expire');
+};
 
 PhrasePrompt.prototype.start = function() {
     if (!this.running) {
@@ -53,17 +142,6 @@ PhrasePrompt.prototype.finishRecord = function(force) {
     }
     this.record.forced = force;
     this.scoreResult(this.record, force);
-};
-
-PhrasePrompt.prototype.prompt = function() {
-    this.record = {
-        elapsed: {},
-        timeout: {}
-    };
-    GenerativePrompt.prototype.prompt.call(this);
-    this.record.expected = this.expected;
-    this.record.got = this.got;
-    this.finishRecord();
 };
 
 PhrasePrompt.prototype.reprompt = function() {
