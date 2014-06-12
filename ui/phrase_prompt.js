@@ -113,7 +113,13 @@ PhrasePrompt.prototype.stop = function() {
 };
 
 PhrasePrompt.prototype.emitRecord = function(force) {
-    this.finishRecord(force);
+    if (this.record) {
+        if (this.record.inputShownAt) {
+            this.record.elapsed.input = Date.now() - this.record.inputShownAt;
+        }
+        this.record.forced = force;
+        this.scoreResult(this.record, force);
+    }
     if (force || this.record && this.record.finished) {
         if (this.record) {
             this.emit('result', this.record);
@@ -121,15 +127,6 @@ PhrasePrompt.prototype.emitRecord = function(force) {
         }
         this.reprompt();
     }
-};
-
-PhrasePrompt.prototype.finishRecord = function(force) {
-    if (!this.record) return;
-    if (this.record.inputShownAt) {
-        this.record.elapsed.input = Date.now() - this.record.inputShownAt;
-    }
-    this.record.forced = force;
-    this.scoreResult(this.record, force);
 };
 
 PhrasePrompt.prototype.reprompt = function() {
