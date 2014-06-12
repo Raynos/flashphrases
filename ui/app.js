@@ -88,8 +88,12 @@ function doPrompt() { // TODO rename
     prompt.display(text);
 }
 
-prompt.on('showdisplay', function() {mode.setMode('display');});
-prompt.on('showinput', function() {mode.setMode('input');});
+prompt.on('showdisplay', function() {
+    mode.setMode('display');
+});
+prompt.on('showinput', function() {
+    mode.setMode('input');
+});
 
 input.on('stop', function(event) {
     if (event.keyCode === 0x1b) {
