@@ -62,13 +62,14 @@ var mode = new Mode({
 });
 document.body.appendChild(mode.element);
 
+var repromptDelay = 200;
+
 var prompt = new PhrasePrompt({
     input: input,
     display: mode.panes.display,
     generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
     inputTime: 5000,
-    repromptDelay: 200,
     complexity: eng.complexity,
     scoreResult: eng.scoreResult.bind(eng)
 });
@@ -138,7 +139,12 @@ window.addEventListener('blur', function() {
     mode.setMode('pause', ['display', 'input']);
 });
 
-prompt.on('result', eng.onResult.bind(eng));
+prompt.on('result', function(result) {
+    eng.onResult(result);
+    if (mode.mode !== 'pause') {
+        setTimeout(prompt.prompt.bind(prompt), repromptDelay);
+    }
+});
 eng.on('ready', function() {
     mode.setMode('pause', 'loading');
 });

@@ -14,7 +14,6 @@ function PhrasePrompt(options) {
     if (!options.display) throw new Error('missing display');
 
     this.running = false;
-    this.repromptDelay = options.repromptDelay || 100;
     this.scoreResult = options.scoreResult;
     this.displayTime = options.displayTime || 1000;
     this.inputTime = options.inputTime || 10000;
@@ -116,9 +115,6 @@ PhrasePrompt.prototype.emitRecord = function(force) {
         if (this.record) {
             this.emit('result', this.record);
             this.record = null;
-        }
-        if (this.running) {
-            setTimeout(this.prompt.bind(this), this.repromptDelay);
         }
     }
 };
