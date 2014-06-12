@@ -20,7 +20,6 @@ function PhrasePrompt(options) {
     this.inputTime = options.inputTime || 10000;
     this.input = options.input;
     this.displayElement = options.display;
-    this.expected = '';
     this.inputing = null;
     this.generatePhrase = options.generatePhrase;
     this.complexity = options.complexity;
@@ -34,19 +33,18 @@ function PhrasePrompt(options) {
 inherits(PhrasePrompt, EE);
 
 PhrasePrompt.prototype.prompt = function() {
+    var text = this.generatePhrase.apply(this, this.complexity.value);
     this.record = {
         elapsed: {},
-        timeout: {}
+        timeout: {},
+        expected: text
     };
-    var text = this.generatePhrase.apply(this, this.complexity.value);
-    this.expected = text;
     this.display(text);
     this.clearTimer();
     this.timer = setTimeout(function() {
         if (!this.inputing) this.showInput();
     }.bind(this), this.displayTime);
     this.emit('settimeout', 'display', this.displayTime);
-    this.record.expected = this.expected;
     this.onInput('');
 };
 
