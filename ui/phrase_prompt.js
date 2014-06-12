@@ -41,7 +41,11 @@ PhrasePrompt.prototype.prompt = function() {
     var text = this.generatePhrase.apply(this, this.complexity.value);
     this.expected = text;
     this.display(text);
-    this.setTimer();
+    this.clearTimer();
+    this.timer = setTimeout(function() {
+        if (!this.inputing) this.showInput();
+    }.bind(this), this.displayTime);
+    this.emit('settimeout', 'display', this.displayTime);
     this.record.expected = this.expected;
     this.onInput('');
 };
@@ -62,29 +66,17 @@ PhrasePrompt.prototype.showDisplay = function() {
 };
 
 PhrasePrompt.prototype.showInput = function() {
-    this.clearTimer();
     if (this.inputing !== true) {
         this.inputing = true;
         this.emit('showinput');
         this.input.element.disabled = false;
         this.input.element.focus();
     }
-    this.setTimer();
-};
-
-PhrasePrompt.prototype.setTimer = function() {
     this.clearTimer();
-    if (this.inputing) {
-        this.timer = setTimeout(function() {
-            if (this.inputing) this.emitRecord(true);
-        }.bind(this), this.inputTime);
-        this.emit('settimeout', 'input', this.inputTime);
-    } else {
-        this.timer = setTimeout(function() {
-            if (!this.inputing) this.showInput();
-        }.bind(this), this.displayTime);
-        this.emit('settimeout', 'display', this.displayTime);
-    }
+    this.timer = setTimeout(function() {
+        if (this.inputing) this.emitRecord(true);
+    }.bind(this), this.inputTime);
+    this.emit('settimeout', 'input', this.inputTime);
 };
 
 PhrasePrompt.prototype.clearTimer = function() {
