@@ -107,13 +107,11 @@ PhrasePrompt.prototype.emitRecord = function(force) {
         this.scoreResult(this.record, force);
     }
     if (force || this.record && this.record.finished) {
+        this.clearTimer();
+        if (this.inputing) this.input.element.disabled = true;
         if (this.record) {
             this.emit('result', this.record);
             this.record = null;
-        }
-        this.clearTimer();
-        if (this.inputing) {
-            this.input.element.disabled = true;
         }
         if (this.running) {
             setTimeout(this.prompt.bind(this), this.repromptDelay);
