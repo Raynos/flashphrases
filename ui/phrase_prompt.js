@@ -103,7 +103,6 @@ PhrasePrompt.prototype.emitRecord = function(force) {
         if (this.record.inputShownAt) {
             this.record.elapsed.input = Date.now() - this.record.inputShownAt;
         }
-        this.record.forced = force;
         this.scoreResult(this.record, force);
     }
     if (force || this.record && this.record.finished) {

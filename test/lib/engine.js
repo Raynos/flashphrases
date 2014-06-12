@@ -70,6 +70,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: ''
     }), {
+        forced: false,
         timeout: {
             display: 1500,
             input: 10000
@@ -98,6 +99,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: ''
     }), {
+        forced: false,
         timeout: {
             display: 1500,
             input: 10000
@@ -128,6 +130,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: ''
     }), {
+        forced: false,
         timeout: {
             display: 1500,
             input: 10000
@@ -159,6 +162,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: 'alpha b',
     }), {
+        forced: false,
         timeout: {
             display: 1500,
             input: 10000
@@ -190,6 +194,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: 'alpha brvo gam',
     }), {
+        forced: false,
         timeout: {
             display: 1500,
             input: 10000
@@ -222,6 +227,7 @@ test('Engine.scoreResult', function(assert) {
         expected: 'alpha bravo gamma',
         got: 'wat',
     }, true), {
+        forced: true,
         timeout: {
             display: 1500,
             input: 10000
