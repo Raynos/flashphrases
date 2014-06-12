@@ -56,9 +56,9 @@ Prompt.prototype.showInput = function() {
         this.inputing = true;
         this.displayElement.style.display = 'none';
         this.input.element.style.display = '';
+        this.emit('showinput');
         this.input.element.disabled = false;
         this.input.element.focus();
-        this.emit('showinput');
     }
 };
 
