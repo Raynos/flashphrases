@@ -78,9 +78,7 @@ PhrasePrompt.prototype.showInput = function() {
         clearTimeout(this.timer);
         delete this.timer;
     }
-    this.timer = setTimeout(function() {
-        if (this.inputing) this.evaluate(true);
-    }.bind(this), this.inputTime);
+    this.timer = setTimeout(this.evaluate.bind(this, true), this.inputTime);
     this.emit('settimeout', 'input', this.inputTime);
 };
 
