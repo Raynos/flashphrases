@@ -40,7 +40,11 @@ PhrasePrompt.prototype.prompt = function() {
         expected: text
     };
     this.display(text);
-    this.clearTimer();
+
+    if (this.timer) {
+        clearTimeout(this.timer);
+        delete this.timer;
+    }
     this.timer = setTimeout(function() {
         if (!this.inputing) this.showInput();
     }.bind(this), this.displayTime);
@@ -70,18 +74,15 @@ PhrasePrompt.prototype.showInput = function() {
         this.input.element.disabled = false;
         this.input.element.focus();
     }
-    this.clearTimer();
-    this.timer = setTimeout(function() {
-        if (this.inputing) this.emitRecord(true);
-    }.bind(this), this.inputTime);
-    this.emit('settimeout', 'input', this.inputTime);
-};
 
-PhrasePrompt.prototype.clearTimer = function() {
     if (this.timer) {
         clearTimeout(this.timer);
         delete this.timer;
     }
+    this.timer = setTimeout(function() {
+        if (this.inputing) this.emitRecord(true);
+    }.bind(this), this.inputTime);
+    this.emit('settimeout', 'input', this.inputTime);
 };
 
 PhrasePrompt.prototype.start = function() {
@@ -107,7 +108,10 @@ PhrasePrompt.prototype.emitRecord = function(force) {
         this.scoreResult(this.record, force);
     }
     if (force || this.record && this.record.finished) {
-        this.clearTimer();
+        if (this.timer) {
+            clearTimeout(this.timer);
+            delete this.timer;
+        }
         if (this.inputing) this.input.element.disabled = true;
         if (this.record) {
             this.emit('result', this.record);
