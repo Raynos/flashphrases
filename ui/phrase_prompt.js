@@ -26,14 +26,8 @@ function PhrasePrompt(options) {
     this.generatePhrase = options.generatePhrase;
     this.complexity = options.complexity;
 
-    var self = this;
-    this.input.on('data', function(got, force) {
-        self.got = got;
-        self.emit('input', force);
-    });
-
+    this.input.on('data', this.onInput.bind(this));
     this.on('expire', this.onPhraseExpired.bind(this));
-    this.on('input', this.onInput.bind(this));
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
@@ -177,7 +171,8 @@ PhrasePrompt.prototype.onPhraseExpired = function() {
     }
 };
 
-PhrasePrompt.prototype.onInput = function(force) {
+PhrasePrompt.prototype.onInput = function(got, force) {
+    this.got = got;
     if (this.record) {
         this.record.got = this.got;
         this.finishRecord(force);
