@@ -67,11 +67,9 @@ var repromptDelay = 200;
 var prompt = new PhrasePrompt({
     input: input,
     display: mode.panes.display,
-    generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
     inputTime: 5000,
     complexity: eng.complexity,
-    initResult: eng.initResult.bind(eng),
     scoreResult: eng.scoreResult.bind(eng)
 });
 
@@ -83,6 +81,12 @@ var lightsOut = document.body.appendChild(h(
         }
     }, style === 'light' ? 'Lights Out' : 'Lights On'
 ));
+
+function doPrompt() { // TODO rename
+    var text = PhraseData.generatePhrase.apply(null, prompt.complexity.value);
+    prompt.record = eng.initResult(text);
+    prompt.display(text);
+}
 
 prompt.on('showdisplay', function() {mode.setMode('display');});
 prompt.on('showinput', function() {mode.setMode('input');});
@@ -97,7 +101,7 @@ mode.on('change', function(mode) {
     switch(mode) {
         case 'display':
             lightsOut.style.display = 'none';
-            prompt.prompt();
+            doPrompt();
             break;
         case 'input':
             break;
@@ -143,7 +147,7 @@ window.addEventListener('blur', function() {
 prompt.on('result', function(result) {
     eng.onResult(result);
     if (mode.mode !== 'pause') {
-        setTimeout(prompt.prompt.bind(prompt), repromptDelay);
+        setTimeout(doPrompt, repromptDelay);
     }
 });
 eng.on('ready', function() {

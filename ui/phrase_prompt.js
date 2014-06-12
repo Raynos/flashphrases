@@ -9,7 +9,6 @@ function PhrasePrompt(options) {
     options = options || {};
     if (!options.initResult) throw new Error('missing initResult option');
     if (!options.scoreResult) throw new Error('missing scoreResult option');
-    if (!options.generatePhrase) throw new Error('missing generatePhrase option');
     if (!options.complexity) throw new Error('missing complexity option');
     if (!options.input) throw new Error('missing input');
     if (!options.display) throw new Error('missing display');
@@ -21,7 +20,6 @@ function PhrasePrompt(options) {
     this.input = options.input;
     this.displayElement = options.display;
     this.inputing = null;
-    this.generatePhrase = options.generatePhrase;
     this.complexity = options.complexity;
 
     var self = this;
@@ -36,12 +34,6 @@ function PhrasePrompt(options) {
 }
 
 inherits(PhrasePrompt, EE);
-
-PhrasePrompt.prototype.prompt = function() {
-    var text = this.generatePhrase.apply(this, this.complexity.value);
-    this.record = this.initResult(text);
-    this.display(text);
-};
 
 PhrasePrompt.prototype.display = function(text) {
     this.displayElement.innerHTML = text;
