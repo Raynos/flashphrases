@@ -95,8 +95,7 @@ PhrasePrompt.prototype.clearTimer = function() {
 };
 
 PhrasePrompt.prototype.expireInput = function() {
-    this.finishRecord(true);
-    this.emitRecord();
+    this.emitRecord(true);
 };
 
 PhrasePrompt.prototype.start = function() {
@@ -113,12 +112,15 @@ PhrasePrompt.prototype.stop = function() {
     }
 };
 
-PhrasePrompt.prototype.emitRecord = function() {
-    if (this.record) {
-        this.emit('result', this.record);
-        this.record = null;
+PhrasePrompt.prototype.emitRecord = function(force) {
+    this.finishRecord(force);
+    if (force || this.record && this.record.finished) {
+        if (this.record) {
+            this.emit('result', this.record);
+            this.record = null;
+        }
+        this.reprompt();
     }
-    this.reprompt();
 };
 
 PhrasePrompt.prototype.finishRecord = function(force) {
@@ -162,13 +164,8 @@ PhrasePrompt.prototype.onShowInput = function() {
 };
 
 PhrasePrompt.prototype.onInput = function(got, force) {
-    if (this.record) {
-        this.record.got = got;
-        this.finishRecord(force);
-        if (this.record.finished) {
-            this.emitRecord();
-        }
-    }
+    if (this.record) this.record.got = got;
+    this.emitRecord(force);
 };
 
 module.exports = PhrasePrompt;
