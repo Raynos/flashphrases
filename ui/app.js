@@ -111,14 +111,15 @@ window.addEventListener('keypress', function(event) {
             mode.setMode('play', 'pause');
             break;
         default:
-            if (prompt.inputing) return;
-            var char = String.fromCharCode(event.charCode);
-            if (char !== prompt.expected[0]) return;
-            event.stopPropagation();
-            event.preventDefault();
-            prompt.showInput();
-            prompt.input.element.value = char;
-            prompt.input.update();
+            if (!prompt.inputing) {
+                var char = String.fromCharCode(event.charCode);
+                if (char !== prompt.expected[0]) return;
+                event.stopPropagation();
+                event.preventDefault();
+                prompt.showInput();
+                prompt.input.element.value = char;
+                prompt.input.update();
+            }
     }
 });
 
