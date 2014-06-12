@@ -25,7 +25,12 @@ function PhrasePrompt(options) {
     this.generatePhrase = options.generatePhrase;
     this.complexity = options.complexity;
 
-    this.input.on('data', this.onInput.bind(this));
+    var self = this;
+    this.input.on('data', function(got, force) {
+        if (self.record) self.record.got = got;
+        self.evaluate(force);
+    });
+
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
@@ -46,7 +51,7 @@ PhrasePrompt.prototype.prompt = function() {
         if (!this.inputing) this.showInput();
     }.bind(this), this.displayTime);
     this.emit('settimeout', 'display', this.displayTime);
-    this.onInput('');
+    this.evaluate();
 };
 
 PhrasePrompt.prototype.display = function(text) {
@@ -121,11 +126,6 @@ PhrasePrompt.prototype.onDisplay = function() {
 
 PhrasePrompt.prototype.onShowInput = function() {
     if (this.record) this.record.inputShownAt = Date.now();
-};
-
-PhrasePrompt.prototype.onInput = function(got, force) {
-    if (this.record) this.record.got = got;
-    this.evaluate(force);
 };
 
 module.exports = PhrasePrompt;
