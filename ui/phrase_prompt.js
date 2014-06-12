@@ -77,7 +77,7 @@ PhrasePrompt.prototype.showInput = function() {
         delete this.timer;
     }
     this.timer = setTimeout(function() {
-        if (this.inputing) this.emitRecord(true);
+        if (this.inputing) this.evaluate(true);
     }.bind(this), this.inputTime);
     this.emit('settimeout', 'input', this.inputTime);
 };
@@ -92,11 +92,11 @@ PhrasePrompt.prototype.start = function() {
 PhrasePrompt.prototype.stop = function() {
     if (this.running) {
         this.running = false;
-        this.emitRecord(true);
+        this.evaluate(true);
     }
 };
 
-PhrasePrompt.prototype.emitRecord = function(force) {
+PhrasePrompt.prototype.evaluate = function(force) {
     if (this.record) this.scoreResult(this.record, force);
     if (force || this.record && this.record.finished) {
         if (this.timer) {
@@ -125,7 +125,7 @@ PhrasePrompt.prototype.onShowInput = function() {
 
 PhrasePrompt.prototype.onInput = function(got, force) {
     if (this.record) this.record.got = got;
-    this.emitRecord(force);
+    this.evaluate(force);
 };
 
 module.exports = PhrasePrompt;
