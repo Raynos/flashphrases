@@ -111,17 +111,13 @@ PhrasePrompt.prototype.emitRecord = function(force) {
             this.emit('result', this.record);
             this.record = null;
         }
-        this.reprompt();
-    }
-};
-
-PhrasePrompt.prototype.reprompt = function() {
-    this.clearTimer();
-    if (this.inputing) {
-        this.input.element.disabled = true;
-    }
-    if (this.running) {
-        setTimeout(this.prompt.bind(this), this.repromptDelay);
+        this.clearTimer();
+        if (this.inputing) {
+            this.input.element.disabled = true;
+        }
+        if (this.running) {
+            setTimeout(this.prompt.bind(this), this.repromptDelay);
+        }
     }
 };
 
