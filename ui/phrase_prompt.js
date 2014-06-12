@@ -46,9 +46,7 @@ PhrasePrompt.prototype.prompt = function() {
         clearTimeout(this.timer);
         delete this.timer;
     }
-    this.timer = setTimeout(function() {
-        if (!this.inputing) this.showInput();
-    }.bind(this), this.displayTime);
+    this.timer = setTimeout(this.showInput.bind(this), this.displayTime);
     this.emit('settimeout', 'display', this.displayTime);
     this.evaluate();
 };
