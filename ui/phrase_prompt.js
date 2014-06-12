@@ -97,8 +97,8 @@ PhrasePrompt.prototype.clearTimer = function() {
 PhrasePrompt.prototype.expireInput = function() {
     this.clearTimer();
     this.input.element.disabled = true;
+    this.finishRecord(true);
     if (this.record) {
-        this.finishRecord(true);
         this.record.expired = true;
         this.emitRecord();
     }
