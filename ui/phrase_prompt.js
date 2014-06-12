@@ -97,12 +97,7 @@ PhrasePrompt.prototype.stop = function() {
 };
 
 PhrasePrompt.prototype.emitRecord = function(force) {
-    if (this.record) {
-        if (this.record.inputShownAt) {
-            this.record.elapsed.input = Date.now() - this.record.inputShownAt;
-        }
-        this.scoreResult(this.record, force);
-    }
+    if (this.record) this.scoreResult(this.record, force);
     if (force || this.record && this.record.finished) {
         if (this.timer) {
             clearTimeout(this.timer);
@@ -130,11 +125,6 @@ PhrasePrompt.prototype.onDisplay = function() {
 
 PhrasePrompt.prototype.onShowInput = function() {
     this.record.inputShownAt = Date.now();
-    if (this.record.displayedAt) {
-        if (!this.record.elapsed.display) {
-            this.record.elapsed.display = this.record.inputShownAt - this.record.displayedAt;
-        }
-    }
 };
 
 PhrasePrompt.prototype.onInput = function(got, force) {
