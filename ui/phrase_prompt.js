@@ -76,7 +76,7 @@ PhrasePrompt.prototype.setTimer = function() {
     this.clearTimer();
     if (this.inputing) {
         this.timer = setTimeout(function() {
-            if (this.inputing) this.expireInput();
+            if (this.inputing) this.emitRecord(true);
         }.bind(this), this.inputTime);
         this.emit('settimeout', 'input', this.inputTime);
     } else {
@@ -94,10 +94,6 @@ PhrasePrompt.prototype.clearTimer = function() {
     }
 };
 
-PhrasePrompt.prototype.expireInput = function() {
-    this.emitRecord(true);
-};
-
 PhrasePrompt.prototype.start = function() {
     if (!this.running) {
         this.running = true;
@@ -108,7 +104,7 @@ PhrasePrompt.prototype.start = function() {
 PhrasePrompt.prototype.stop = function() {
     if (this.running) {
         this.running = false;
-        this.expireInput();
+        this.emitRecord(true);
     }
 };
 
