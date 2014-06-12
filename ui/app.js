@@ -97,13 +97,13 @@ mode.on('change', function(mode) {
     switch(mode) {
         case 'display':
             lightsOut.style.display = 'none';
-            prompt.start();
+            prompt.prompt();
             break;
         case 'input':
             break;
         case 'pause':
             lightsOut.style.display = '';
-            prompt.stop();
+            prompt.evaluate(true);
             break;
     }
 });

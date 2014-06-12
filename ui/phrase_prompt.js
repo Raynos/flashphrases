@@ -14,7 +14,6 @@ function PhrasePrompt(options) {
     if (!options.input) throw new Error('missing input');
     if (!options.display) throw new Error('missing display');
 
-    this.running = false;
     this.initResult = options.initResult;
     this.scoreResult = options.scoreResult;
     this.displayTime = options.displayTime || 1000;
@@ -85,20 +84,6 @@ PhrasePrompt.prototype.showInput = function() {
         if (this.inputing) this.evaluate(true);
     }.bind(this), this.inputTime);
     this.emit('settimeout', 'input', this.inputTime);
-};
-
-PhrasePrompt.prototype.start = function() {
-    if (!this.running) {
-        this.running = true;
-        this.prompt();
-    }
-};
-
-PhrasePrompt.prototype.stop = function() {
-    if (this.running) {
-        this.running = false;
-        this.evaluate(true);
-    }
 };
 
 PhrasePrompt.prototype.evaluate = function(force) {
