@@ -112,19 +112,15 @@ PhrasePrompt.prototype.emitRecord = function(force) {
 };
 
 PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
-    if (this.record) {
-        this.record.timeout[kind] = time;
-    }
+    if (this.record) this.record.timeout[kind] = time;
 };
 
 PhrasePrompt.prototype.onDisplay = function() {
-    if (this.record && !this.record.displayedAt) {
-        this.record.displayedAt = Date.now();
-    }
+    if (this.record) this.record.displayedAt = Date.now();
 };
 
 PhrasePrompt.prototype.onShowInput = function() {
-    this.record.inputShownAt = Date.now();
+    if (this.record) this.record.inputShownAt = Date.now();
 };
 
 PhrasePrompt.prototype.onInput = function(got, force) {
