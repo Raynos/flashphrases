@@ -26,11 +26,9 @@ function PhrasePrompt(options) {
     this.complexity = options.complexity;
 
     this.input.on('data', this.onInput.bind(this));
-    this.on('expire', this.onPhraseExpired.bind(this));
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));
-    this.on('expire', this.onPromptExpire.bind(this));
 }
 
 inherits(PhrasePrompt, EE);
@@ -99,7 +97,14 @@ PhrasePrompt.prototype.clearTimer = function() {
 PhrasePrompt.prototype.expireInput = function() {
     this.clearTimer();
     this.input.element.disabled = true;
-    this.emit('expire');
+    if (this.record) {
+        this.finishRecord(true);
+        this.record.expired = true;
+        this.emitRecord();
+    }
+    if (this.running) {
+        this.reprompt();
+    }
 };
 
 PhrasePrompt.prototype.start = function() {
@@ -160,14 +165,6 @@ PhrasePrompt.prototype.onShowInput = function() {
     }
 };
 
-PhrasePrompt.prototype.onPhraseExpired = function() {
-    if (this.record) {
-        this.finishRecord(true);
-        this.record.expired = true;
-        this.emitRecord();
-    }
-};
-
 PhrasePrompt.prototype.onInput = function(got, force) {
     if (this.record) {
         this.record.got = got;
@@ -178,10 +175,6 @@ PhrasePrompt.prototype.onInput = function(got, force) {
             this.reprompt();
         }
     }
-};
-
-PhrasePrompt.prototype.onPromptExpire = function() {
-    if (this.running) this.reprompt();
 };
 
 module.exports = PhrasePrompt;
