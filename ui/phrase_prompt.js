@@ -27,9 +27,6 @@ function PhrasePrompt(options) {
     this.complexity = options.complexity;
 
     var self = this;
-    this.input.on('stop', function(event) {
-        self.emit('stopkey', event);
-    });
     this.input.on('data', function(got, force) {
         self.got = got;
         self.emit('input', force);

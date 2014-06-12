@@ -84,11 +84,13 @@ var lightsOut = document.body.appendChild(h(
 
 prompt.on('showdisplay', function() {mode.setMode('display');});
 prompt.on('showinput', function() {mode.setMode('input');});
-prompt.on('stopkey', function(event) {
+
+input.on('stop', function(event) {
     if (event.keyCode === 0x1b) {
         mode.setMode('pause', ['display', 'input']);
     }
 });
+
 mode.on('change', function(mode) {
     switch(mode) {
         case 'display':
