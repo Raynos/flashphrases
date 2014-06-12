@@ -71,6 +71,7 @@ var prompt = new PhrasePrompt({
     displayTime: 1500,
     inputTime: 5000,
     complexity: eng.complexity,
+    initResult: eng.initResult.bind(eng),
     scoreResult: eng.scoreResult.bind(eng)
 });
 
