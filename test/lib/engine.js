@@ -57,7 +57,8 @@ test('Engine.scoreResult', function(assert) {
             lo: [2, 8],
             hi: [8, 32],
         },
-        maxErrorRate: 0.3
+        maxErrorRate: 0.3,
+        now: function() {return 42;}
     });
 
     assert.deepEqual(eng.scoreResult({
@@ -205,6 +206,7 @@ test('Engine.scoreResult', function(assert) {
         maxDist: 4,
         correct: true,
         finished: true,
+        finishedAt: 42,
         score: 33
     }, 'enough input');
 
@@ -236,6 +238,7 @@ test('Engine.scoreResult', function(assert) {
         maxDist: 4,
         correct: false,
         finished: true,
+        finishedAt: 42,
         score: 0
     }, 'aborted');
 
