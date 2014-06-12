@@ -21,7 +21,6 @@ function PhrasePrompt(options) {
     this.input = options.input;
     this.displayElement = options.display;
     this.expected = '';
-    this.got = '';
     this.inputing = null;
     this.generatePhrase = options.generatePhrase;
     this.complexity = options.complexity;
@@ -43,17 +42,15 @@ PhrasePrompt.prototype.prompt = function() {
     };
     var text = this.generatePhrase.apply(this, this.complexity.value);
     this.expected = text;
-    this.got = '';
     this.display(text);
     this.setTimer();
     this.record.expected = this.expected;
-    this.record.got = this.got;
-    this.finishRecord();
+    this.onInput('');
 };
 
 PhrasePrompt.prototype.display = function(text) {
     this.displayElement.innerHTML = text;
-    this.got = this.input.element.value = '';
+    this.input.element.value = '';
     this.input.element.size = text.length + 2;
     this.showDisplay(text);
     this.emit('display');
@@ -172,9 +169,8 @@ PhrasePrompt.prototype.onPhraseExpired = function() {
 };
 
 PhrasePrompt.prototype.onInput = function(got, force) {
-    this.got = got;
     if (this.record) {
-        this.record.got = this.got;
+        this.record.got = got;
         this.finishRecord(force);
         if (this.record.finished) {
             this.clearTimer();
