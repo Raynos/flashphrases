@@ -96,10 +96,9 @@ PhrasePrompt.prototype.clearTimer = function() {
 
 PhrasePrompt.prototype.expireInput = function() {
     this.clearTimer();
-    this.input.element.disabled = true;
     this.finishRecord(true);
     this.emitRecord();
-    if (this.running) this.reprompt();
+    this.reprompt();
 };
 
 PhrasePrompt.prototype.start = function() {
@@ -136,7 +135,9 @@ PhrasePrompt.prototype.reprompt = function() {
     if (this.inputing) {
         this.input.element.disabled = true;
     }
-    setTimeout(this.prompt.bind(this), this.repromptDelay);
+    if (this.running) {
+        setTimeout(this.prompt.bind(this), this.repromptDelay);
+    }
 };
 
 PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
