@@ -95,7 +95,6 @@ PhrasePrompt.prototype.clearTimer = function() {
 };
 
 PhrasePrompt.prototype.expireInput = function() {
-    this.clearTimer();
     this.finishRecord(true);
     this.emitRecord();
     this.reprompt();
@@ -132,6 +131,7 @@ PhrasePrompt.prototype.finishRecord = function(force) {
 };
 
 PhrasePrompt.prototype.reprompt = function() {
+    this.clearTimer();
     if (this.inputing) {
         this.input.element.disabled = true;
     }
@@ -166,7 +166,6 @@ PhrasePrompt.prototype.onInput = function(got, force) {
         this.record.got = got;
         this.finishRecord(force);
         if (this.record.finished) {
-            this.clearTimer();
             this.emitRecord();
             this.reprompt();
         }
