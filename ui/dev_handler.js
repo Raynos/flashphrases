@@ -1,6 +1,10 @@
 var http = require('http');
-var routes = require('../server/sessions');
+var Router = require('routes-router');
 var sendError = require("send-data/error");
+
+var routes = new Router();
+
+routes.addRoute('/session*?', require('../server/sessions'));
 
 function devHandler(req, res) {
     var handled = true;
