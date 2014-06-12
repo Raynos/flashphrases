@@ -1,18 +1,14 @@
 var EE = require('events').EventEmitter;
-var h = require('hyperscript');
 var inherits = require('inherits');
-
-var Input = require('./input');
 
 function Prompt(options) {
     if (!this instanceof Prompt) {
         return new Prompt(options);
     }
-    this.input = new Input();
-    this.input.element.style.display = 'none';
-    this.element = h('div.prompt');
-    this.displayElement = this.element.appendChild(h('span'));
-    this.element.appendChild(this.input.element);
+    if (!options.input) throw new Error('missing input');
+    if (!options.display) throw new Error('missing display');
+    this.input = options.input;
+    this.displayElement = options.display;
     this.expected = '';
     this.got = '';
     this.inputing = null;
@@ -45,8 +41,6 @@ Prompt.prototype.display = function(text) {
 Prompt.prototype.showDisplay = function() {
     if (this.inputing !== false) {
         this.inputing = false;
-        this.displayElement.style.display = '';
-        this.input.element.style.display = 'none';
         this.emit('showdisplay');
     }
 };
@@ -54,8 +48,6 @@ Prompt.prototype.showDisplay = function() {
 Prompt.prototype.showInput = function() {
     if (this.inputing !== true) {
         this.inputing = true;
-        this.displayElement.style.display = 'none';
-        this.input.element.style.display = '';
         this.emit('showinput');
         this.input.element.disabled = false;
         this.input.element.focus();

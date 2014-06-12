@@ -30,6 +30,7 @@ function changeStyle(name) {
 ////
 
 var Engine = require('../lib/engine');
+var Input = require('./input');
 var Mode = require('./mode');
 var PhraseData = require('./data');
 var PhrasePrompt = require('./phrase_prompt');
@@ -47,18 +48,23 @@ var eng = new Engine({
     maxErrorRate: 0.3
 });
 
+var input = new Input();
+
 var mode = new Mode({
     initial: 'loading',
     modes: {
         error: h('div.error', ''),
         loading: h('div.loading', 'Loading...'),
         pause: h('div.pause', 'press <enter> to start'),
-        play: h('div.play')
+        display: h('div.display'),
+        input: h('div.input', input.element)
     }
 });
 document.body.appendChild(mode.element);
 
 var prompt = new PhrasePrompt({
+    input: input,
+    display: mode.panes.display,
     generatePhrase: PhraseData.generatePhrase,
     displayTime: 1500,
     inputTime: 5000,
@@ -66,7 +72,6 @@ var prompt = new PhrasePrompt({
     complexity: eng.complexity,
     scoreResult: eng.scoreResult.bind(eng)
 });
-mode.panes.play.appendChild(prompt.element);
 
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
@@ -77,16 +82,20 @@ var lightsOut = document.body.appendChild(h(
     }, style === 'light' ? 'Lights Out' : 'Lights On'
 ));
 
+prompt.on('showdisplay', function() {mode.setMode('display');});
+prompt.on('showinput', function() {mode.setMode('input');});
 prompt.on('stopkey', function(event) {
     if (event.keyCode === 0x1b) {
-        mode.setMode('pause', 'play');
+        mode.setMode('pause', ['display', 'input']);
     }
 });
 mode.on('change', function(mode) {
     switch(mode) {
-        case 'play':
+        case 'display':
             lightsOut.style.display = 'none';
             prompt.start();
+            break;
+        case 'input':
             break;
         case 'pause':
             lightsOut.style.display = '';
@@ -99,7 +108,7 @@ window.addEventListener('keydown', function(event) {
     if (event.keyCode === 0x1b) { // <esc>
         event.preventDefault();
         event.stopPropagation();
-        mode.setMode('pause', 'play');
+        mode.setMode('pause', ['display', 'input']);
     }
 });
 
@@ -108,10 +117,10 @@ window.addEventListener('keypress', function(event) {
         case 0x0a: // nl
         case 0x0d: // cr
         case 0x20: // <space>
-            mode.setMode('play', 'pause');
+            mode.setMode('display', 'pause');
             break;
         default:
-            if (!prompt.inputing) {
+            if (mode.mode === 'display' && !prompt.inputing) {
                 var char = String.fromCharCode(event.charCode);
                 if (char !== prompt.expected[0]) return;
                 event.stopPropagation();
@@ -124,7 +133,7 @@ window.addEventListener('keypress', function(event) {
 });
 
 window.addEventListener('blur', function() {
-    mode.setMode('pause', 'play');
+    mode.setMode('pause', ['display', 'input']);
 });
 
 prompt.on('result', eng.onResult.bind(eng));
@@ -136,7 +145,7 @@ eng.on('error', function(err) {
     mode.panes.error.innerHTML = String(err);
     console.error(err);
 });
-eng.on('idle', mode.setMode.bind(mode, 'pause', 'play'));
+eng.on('idle', mode.setMode.bind(mode, 'pause', ['display', 'input']));
 eng.on('setTimeout', function(kind, val) {
     prompt[kind + 'Time'] = val;
 });
