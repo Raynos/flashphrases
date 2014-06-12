@@ -99,9 +99,7 @@ PhrasePrompt.prototype.expireInput = function() {
     this.input.element.disabled = true;
     this.finishRecord(true);
     this.emitRecord();
-    if (this.running) {
-        this.reprompt();
-    }
+    if (this.running) this.reprompt();
 };
 
 PhrasePrompt.prototype.start = function() {
