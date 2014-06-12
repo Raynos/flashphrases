@@ -41,20 +41,19 @@ PhrasePrompt.prototype.prompt = function() {
     var text = this.generatePhrase.apply(this, this.complexity.value);
     this.record = this.initResult(text);
     this.display(text);
-
-    if (this.timer) {
-        clearTimeout(this.timer);
-        delete this.timer;
-    }
-    this.timer = setTimeout(this.showInput.bind(this), this.displayTime);
-    this.emit('settimeout', 'display', this.displayTime);
-    this.evaluate();
 };
 
 PhrasePrompt.prototype.display = function(text) {
     this.displayElement.innerHTML = text;
     this.input.element.value = '';
     this.input.element.size = text.length + 2;
+    this.evaluate();
+    if (this.timer) {
+        clearTimeout(this.timer);
+        delete this.timer;
+    }
+    this.timer = setTimeout(this.showInput.bind(this), this.displayTime);
+    this.emit('settimeout', 'display', this.displayTime);
     this.showDisplay(text);
     this.emit('display');
 };
