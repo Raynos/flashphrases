@@ -68,7 +68,7 @@ PhrasePrompt.prototype.prompt = function() {
 
 PhrasePrompt.prototype.reprompt = function() {
     if (this.inputing) {
-        this.inputElement.disabled = true;
+        this.input.element.disabled = true;
     }
     setTimeout(this.prompt.bind(this), this.repromptDelay);
 };

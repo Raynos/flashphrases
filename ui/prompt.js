@@ -12,7 +12,7 @@ function Prompt(options) {
     this.input.element.style.display = 'none';
     this.element = h('div.prompt');
     this.displayElement = this.element.appendChild(h('span'));
-    this.inputElement = this.element.appendChild(this.input.element);
+    this.element.appendChild(this.input.element);
     this.expected = '';
     this.got = '';
     this.inputing = null;
@@ -36,8 +36,8 @@ Prompt.prototype.prompt = function(text) {
 
 Prompt.prototype.display = function(text) {
     this.displayElement.innerHTML = text;
-    this.got = this.inputElement.value = '';
-    this.inputElement.size = text.length + 2;
+    this.got = this.input.element.value = '';
+    this.input.element.size = text.length + 2;
     this.showDisplay(text);
     this.emit('display');
 };
@@ -46,7 +46,7 @@ Prompt.prototype.showDisplay = function() {
     if (this.inputing !== false) {
         this.inputing = false;
         this.displayElement.style.display = '';
-        this.inputElement.style.display = 'none';
+        this.input.element.style.display = 'none';
         this.emit('showdisplay');
     }
 };
@@ -55,9 +55,9 @@ Prompt.prototype.showInput = function() {
     if (this.inputing !== true) {
         this.inputing = true;
         this.displayElement.style.display = 'none';
-        this.inputElement.style.display = '';
-        this.inputElement.disabled = false;
-        this.inputElement.focus();
+        this.input.element.style.display = '';
+        this.input.element.disabled = false;
+        this.input.element.focus();
         this.emit('showinput');
     }
 };

@@ -49,7 +49,7 @@ TimedPrompt.prototype.clearTimer = function() {
 
 Prompt.prototype.expireInput = function() {
     this.clearTimer();
-    this.inputElement.disabled = true;
+    this.input.element.disabled = true;
     this.emit('expire');
 };
 
