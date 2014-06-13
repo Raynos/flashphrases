@@ -95,7 +95,7 @@ prompt.on('showinput', function() {
     mode.setMode('input');
 });
 prompt.on('finished', function() {
-    if (prompt.inputing) prompt.input.element.disabled = true;
+    if (mode.mode === 'input') input.element.disabled = true;
     if (prompt.record) {
         eng.onResult(prompt.record);
         if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
