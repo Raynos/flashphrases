@@ -86,6 +86,7 @@ newRecord();
 
 var displayTime = 1500;
 var inputTime = 5000;
+var promptTimeout = null;
 
 var prompt = new PhrasePrompt({
     complexity: eng.complexity
@@ -94,9 +95,9 @@ var prompt = new PhrasePrompt({
 function evaluate(force) {
     eng.scoreResult(record, force);
     if (force || record.finished) {
-        if (prompt.timer) {
-            clearTimeout(prompt.timer);
-            delete prompt.timer;
+        if (promptTimeout) {
+            clearTimeout(promptTimeout);
+            promptTimeout = null;
         }
         if (mode.mode === 'input') input.element.disabled = true;
         eng.onResult(record);
@@ -125,11 +126,11 @@ function doPrompt() { // TODO rename
 
     evaluate();
 
-    if (prompt.timer) {
-        clearTimeout(prompt.timer);
-        delete prompt.timer;
+    if (promptTimeout) {
+        clearTimeout(promptTimeout);
+        promptTimeout = null;
     }
-    prompt.timer = setTimeout(showInput, displayTime);
+    promptTimeout = setTimeout(showInput, displayTime);
     record.timeout.display = displayTime;
     mode.setMode('display');
 }
@@ -140,11 +141,11 @@ function showInput() {
     input.element.focus();
     mode.setMode('input');
 
-    if (prompt.timer) {
-        clearTimeout(prompt.timer);
-        delete prompt.timer;
+    if (promptTimeout) {
+        clearTimeout(promptTimeout);
+        promptTimeout = null;
     }
-    prompt.timer = setTimeout(evaluate.bind(null, true), inputTime);
+    promptTimeout = setTimeout(evaluate.bind(null, true), inputTime);
     record.timeout.input = inputTime;
 }
 
