@@ -88,8 +88,6 @@ var displayTime = 1500;
 var inputTime = 5000;
 
 var prompt = new PhrasePrompt({
-    input: input,
-    inputTime: inputTime,
     complexity: eng.complexity,
     evaluate: evaluate
 });
@@ -132,17 +130,25 @@ function doPrompt() { // TODO rename
         clearTimeout(prompt.timer);
         delete prompt.timer;
     }
-    prompt.timer = setTimeout(prompt.showInput.bind(prompt), displayTime);
+    prompt.timer = setTimeout(showInput, displayTime);
     prompt.emit('settimeout', 'display', displayTime);
     mode.setMode('display');
 }
 
-prompt.on('showinput', function() {
+function showInput() {
     record.inputShownAt = Date.now();
     input.element.disabled = false;
     input.element.focus();
     mode.setMode('input');
-});
+
+    if (prompt.timer) {
+        clearTimeout(prompt.timer);
+        delete prompt.timer;
+    }
+    prompt.timer = setTimeout(prompt.evaluate.bind(prompt, true), inputTime);
+    prompt.emit('settimeout', 'input', inputTime);
+}
+
 prompt.on('settimeout', PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
     record.timeout[kind] = time;
 });
@@ -195,9 +201,9 @@ window.addEventListener('keypress', function(event) {
                 if (char !== record.expected[0]) return;
                 event.stopPropagation();
                 event.preventDefault();
-                prompt.showInput();
-                prompt.input.element.value = char;
-                prompt.input.update();
+                showInput();
+                input.element.value = char;
+                input.update();
             }
     }
 });
@@ -221,7 +227,7 @@ eng.on('setTimeout', function(kind, val) {
             displayTime = val;
             break;
         case 'input':
-            prompt.inputTime = val;
+            inputTime = val;
             break;
     }
 });

@@ -11,20 +11,9 @@ function PhrasePrompt(options) {
     if (!options.complexity) throw new Error('missing complexity option');
 
     this.evaluate = options.evaluate;
-    this.inputTime = options.inputTime || 10000;
     this.complexity = options.complexity;
 }
 
 inherits(PhrasePrompt, EE);
-
-PhrasePrompt.prototype.showInput = function() {
-    this.emit('showinput');
-    if (this.timer) {
-        clearTimeout(this.timer);
-        delete this.timer;
-    }
-    this.timer = setTimeout(this.evaluate.bind(this, true), this.inputTime);
-    this.emit('settimeout', 'input', this.inputTime);
-};
 
 module.exports = PhrasePrompt;
