@@ -65,7 +65,7 @@ document.body.appendChild(mode.element);
 var repromptDelay = 200;
 
 var record = null;
-function newRecord(expected) {
+function newRecord() {
     record = {
         displayedAt: NaN,
         inputShownAt: NaN,
@@ -78,10 +78,11 @@ function newRecord(expected) {
             display: NaN,
             input: NaN,
         },
-        expected: expected,
-        got: ''
+        expected: null,
+        got: null
     };
 }
+newRecord();
 
 var displayTime = 1500;
 var inputTime = 5000;
@@ -96,8 +97,8 @@ var prompt = new PhrasePrompt({
 });
 
 function evaluate(force) {
-    if (record) eng.scoreResult(record, force);
-    if (force || (record && record.finished)) {
+    eng.scoreResult(record, force);
+    if (force || record.finished) {
         if (prompt.timer) {
             clearTimeout(prompt.timer);
             delete prompt.timer;
@@ -117,36 +118,36 @@ var lightsOut = document.body.appendChild(h(
 
 function doPrompt() { // TODO rename
     var text = PhraseData.generatePhrase.apply(null, prompt.complexity.value);
-    newRecord(text);
+    record.expected = text;
+    record.got = '';
+    record.displayedAt = Date.now();
     input.element.value = '';
     input.element.size = text.length + 2;
     prompt.display(text);
 }
 
 prompt.on('display', function() {
-    if (record) record.displayedAt = Date.now();
+    record.displayedAt = Date.now();
     mode.setMode('display');
 });
 prompt.on('showinput', function() {
-    if (record) record.inputShownAt = Date.now();
+    record.inputShownAt = Date.now();
     input.element.disabled = false;
     input.element.focus();
     mode.setMode('input');
 });
 prompt.on('finished', function() {
     if (mode.mode === 'input') input.element.disabled = true;
-    if (record) {
-        eng.onResult(record);
-        if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
-        record = null;
-    }
+    eng.onResult(record);
+    if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
+    newRecord();
 });
 prompt.on('settimeout', PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
-    if (record) record.timeout[kind] = time;
+    record.timeout[kind] = time;
 });
 
 input.on('data', function(got, force) {
-    if (record) record.got = got;
+    record.got = got;
     prompt.evaluate(force);
 });
 
