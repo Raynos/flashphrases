@@ -116,7 +116,7 @@ var lightsOut = document.body.appendChild(h(
 ));
 
 function doPrompt() { // TODO rename
-    var text = PhraseData.generatePhrase.apply(null, prompt.complexity.value);
+    var text = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.expected = text;
     record.got = '';
     record.displayedAt = Date.now();
