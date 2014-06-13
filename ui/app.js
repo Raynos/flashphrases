@@ -88,8 +88,7 @@ var displayTime = 1500;
 var inputTime = 5000;
 
 var prompt = new PhrasePrompt({
-    complexity: eng.complexity,
-    evaluate: evaluate
+    complexity: eng.complexity
 });
 
 function evaluate(force) {
@@ -145,13 +144,13 @@ function showInput() {
         clearTimeout(prompt.timer);
         delete prompt.timer;
     }
-    prompt.timer = setTimeout(prompt.evaluate.bind(prompt, true), inputTime);
+    prompt.timer = setTimeout(evaluate.bind(null, true), inputTime);
     record.timeout.input = inputTime;
 }
 
 input.on('data', function(got, force) {
     record.got = got;
-    prompt.evaluate(force);
+    evaluate(force);
 });
 
 input.on('stop', function(event) {
@@ -171,7 +170,7 @@ mode.on('change', function(mode) {
             break;
         case 'pause':
             lightsOut.style.display = '';
-            prompt.evaluate(true);
+            evaluate(true);
             break;
     }
 });
