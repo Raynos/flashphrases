@@ -138,6 +138,10 @@ mode.on('change', function(mode) {
 });
 
 function doDisplay() {
+    if (record.expected !== null) {
+        console.error('throwing away previous record', record);
+        newRecord();
+    }
     record.expected = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.got = '';
     record.displayedAt = Date.now();
