@@ -33,6 +33,7 @@ var Engine = require('../lib/engine');
 var Input = require('./input');
 var Mode = require('./mode');
 var PhraseData = require('./data');
+var Timeout = require('./timeout');
 
 var eng = new Engine({
     sessionCookie: 'session-key',
@@ -85,15 +86,12 @@ newRecord();
 
 var displayTime = 1500;
 var inputTime = 5000;
-var promptTimeout = null;
+var timeout = new Timeout();
 
 function evaluate(force) {
     eng.scoreResult(record, force);
     if (force || record.finished) {
-        if (promptTimeout) {
-            clearTimeout(promptTimeout);
-            promptTimeout = null;
-        }
+        timeout.clear();
         if (mode.mode === 'input') input.element.disabled = true;
         eng.onResult(record);
         newRecord();
@@ -152,11 +150,7 @@ function doDisplay() {
     evaluate();
 
     record.timeout.display = displayTime;
-    if (promptTimeout) {
-        clearTimeout(promptTimeout);
-        promptTimeout = null;
-    }
-    promptTimeout = setTimeout(mode.setMode.bind(mode, 'input'), displayTime);
+    timeout.set(mode.setMode.bind(mode, 'input'), displayTime);
 }
 
 function showInput() {
@@ -164,11 +158,7 @@ function showInput() {
     input.element.focus();
     record.inputShownAt = Date.now();
     record.timeout.input = inputTime;
-    if (promptTimeout) {
-        clearTimeout(promptTimeout);
-        promptTimeout = null;
-    }
-    promptTimeout = setTimeout(evaluate.bind(null, true), inputTime);
+    timeout.set(evaluate.bind(null, true), inputTime);
 }
 
 window.addEventListener('keydown', function(event) {
