@@ -95,6 +95,7 @@ prompt.on('display', function() {
     mode.setMode('display');
 });
 prompt.on('showinput', function() {
+    if (prompt.record) prompt.record.inputShownAt = Date.now();
     input.element.disabled = false;
     input.element.focus();
     mode.setMode('input');
@@ -106,6 +107,9 @@ prompt.on('finished', function() {
         if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
         prompt.record = null;
     }
+});
+prompt.on('settimeout', PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
+    if (prompt.record) prompt.record.timeout[kind] = time;
 });
 
 input.on('data', function(got, force) {
