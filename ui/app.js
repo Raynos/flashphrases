@@ -212,5 +212,12 @@ eng.on('error', function(err) {
 });
 eng.on('idle', mode.setMode.bind(mode, 'pause', ['display', 'input']));
 eng.on('setTimeout', function(kind, val) {
-    prompt[kind + 'Time'] = val;
+    switch (kind) {
+        case 'display':
+            prompt.displayTime = val;
+            break;
+        case 'input':
+            prompt.inputTime = val;
+            break;
+    }
 });
