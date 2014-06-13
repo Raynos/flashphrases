@@ -70,12 +70,14 @@ var prompt = new PhrasePrompt({
     displayTime: 1500,
     inputTime: 5000,
     complexity: eng.complexity,
-    scoreResult: function(record, force) {
-        if (record) {
-            eng.scoreResult(record, force);
-            return record.finished;
-        } else {
-            return force;
+    evaluate: function(force) {
+        if (prompt.record) eng.scoreResult(prompt.record, force);
+        if (force || (prompt.record && prompt.record.finished)) {
+            if (prompt.timer) {
+                clearTimeout(prompt.timer);
+                delete prompt.timer;
+            }
+            prompt.emit('finished');
         }
     }
 });

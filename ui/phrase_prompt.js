@@ -7,11 +7,11 @@ function PhrasePrompt(options) {
     }
     // TODO: ick
     options = options || {};
-    if (!options.scoreResult) throw new Error('missing scoreResult option');
+    if (!options.evaluate) throw new Error('missing evaluate option');
     if (!options.complexity) throw new Error('missing complexity option');
     if (!options.display) throw new Error('missing display');
 
-    this.scoreResult = options.scoreResult;
+    this.evaluate = options.evaluate;
     this.displayTime = options.displayTime || 1000;
     this.inputTime = options.inputTime || 10000;
     this.displayElement = options.display;
@@ -40,16 +40,6 @@ PhrasePrompt.prototype.showInput = function() {
     }
     this.timer = setTimeout(this.evaluate.bind(this, true), this.inputTime);
     this.emit('settimeout', 'input', this.inputTime);
-};
-
-PhrasePrompt.prototype.evaluate = function(force) {
-    if (this.scoreResult(this.record, force)) {
-        if (this.timer) {
-            clearTimeout(this.timer);
-            delete this.timer;
-        }
-        this.emit('finished');
-    }
 };
 
 module.exports = PhrasePrompt;
