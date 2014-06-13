@@ -125,7 +125,7 @@ mode.on('change', function(mode) {
     switch(mode) {
         case 'display':
             lightsOut.style.display = 'none';
-            doPrompt();
+            doDisplay();
             break;
         case 'input':
             showInput();
@@ -137,7 +137,7 @@ mode.on('change', function(mode) {
     }
 });
 
-function doPrompt() { // TODO rename
+function doDisplay() {
     var text = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.expected = text;
     record.got = '';
