@@ -97,7 +97,8 @@ prompt.on('showinput', function() {
 prompt.on('finished', function() {
     if (prompt.inputing) prompt.input.element.disabled = true;
     if (prompt.record) {
-        prompt.emit('result', prompt.record);
+        eng.onResult(prompt.record);
+        if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
         prompt.record = null;
     }
 });
@@ -155,12 +156,6 @@ window.addEventListener('blur', function() {
     mode.setMode('pause', ['display', 'input']);
 });
 
-prompt.on('result', function(result) {
-    eng.onResult(result);
-    if (mode.mode !== 'pause') {
-        setTimeout(doPrompt, repromptDelay);
-    }
-});
 eng.on('ready', function() {
     mode.setMode('pause', 'loading');
 });
