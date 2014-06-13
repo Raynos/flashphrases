@@ -7,13 +7,11 @@ function PhrasePrompt(options) {
     }
     // TODO: ick
     options = options || {};
-    if (!options.initResult) throw new Error('missing initResult option');
     if (!options.scoreResult) throw new Error('missing scoreResult option');
     if (!options.complexity) throw new Error('missing complexity option');
     if (!options.input) throw new Error('missing input');
     if (!options.display) throw new Error('missing display');
 
-    this.initResult = options.initResult;
     this.scoreResult = options.scoreResult;
     this.displayTime = options.displayTime || 1000;
     this.inputTime = options.inputTime || 10000;
