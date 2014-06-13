@@ -138,22 +138,21 @@ mode.on('change', function(mode) {
 });
 
 function doDisplay() {
-    var text = PhraseData.generatePhrase.apply(null, eng.complexity.value);
-    record.expected = text;
+    record.expected = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.got = '';
     record.displayedAt = Date.now();
     input.element.value = '';
-    input.element.size = text.length + 2;
-    mode.panes.display.innerHTML = text;
+    input.element.size = record.expected.length + 2;
+    mode.panes.display.innerHTML = record.expected;
 
     evaluate();
 
+    record.timeout.display = displayTime;
     if (promptTimeout) {
         clearTimeout(promptTimeout);
         promptTimeout = null;
     }
     promptTimeout = setTimeout(mode.setMode.bind(mode, 'input'), displayTime);
-    record.timeout.display = displayTime;
 }
 
 function showInput() {
