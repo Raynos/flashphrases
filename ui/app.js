@@ -70,7 +70,14 @@ var prompt = new PhrasePrompt({
     displayTime: 1500,
     inputTime: 5000,
     complexity: eng.complexity,
-    scoreResult: eng.scoreResult.bind(eng)
+    scoreResult: function(record, force) {
+        if (record) {
+            eng.scoreResult(record, force);
+            return record.finished;
+        } else {
+            return force;
+        }
+    }
 });
 
 var lightsOut = document.body.appendChild(h(

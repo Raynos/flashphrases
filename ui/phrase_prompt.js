@@ -43,8 +43,7 @@ PhrasePrompt.prototype.showInput = function() {
 };
 
 PhrasePrompt.prototype.evaluate = function(force) {
-    if (this.record) this.scoreResult(this.record, force);
-    if (force || this.record && this.record.finished) {
+    if (this.scoreResult(this.record, force)) {
         if (this.timer) {
             clearTimeout(this.timer);
             delete this.timer;
