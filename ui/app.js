@@ -188,7 +188,7 @@ window.addEventListener('keypress', function(event) {
         default:
             if (mode.mode === 'display') {
                 var char = String.fromCharCode(event.charCode);
-                if (char !== prompt.expected[0]) return;
+                if (char !== record.expected[0]) return;
                 event.stopPropagation();
                 event.preventDefault();
                 prompt.showInput();
