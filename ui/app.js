@@ -132,7 +132,7 @@ mode.on('change', function(mode) {
             break;
         case 'pause':
             lightsOut.style.display = '';
-            evaluate(true);
+            if (record.expected !== null) evaluate(true);
             break;
     }
 });
