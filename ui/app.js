@@ -64,23 +64,28 @@ document.body.appendChild(mode.element);
 
 var repromptDelay = 200;
 
+var displayTime = 1500;
+var inputTime = 5000;
+
 var prompt = new PhrasePrompt({
     input: input,
     display: mode.panes.display,
-    displayTime: 1500,
-    inputTime: 5000,
+    displayTime: displayTime,
+    inputTime: inputTime,
     complexity: eng.complexity,
-    evaluate: function(force) {
-        if (prompt.record) eng.scoreResult(prompt.record, force);
-        if (force || (prompt.record && prompt.record.finished)) {
-            if (prompt.timer) {
-                clearTimeout(prompt.timer);
-                delete prompt.timer;
-            }
-            prompt.emit('finished');
-        }
-    }
+    evaluate: evaluate
 });
+
+function evaluate(force) {
+    if (prompt.record) eng.scoreResult(prompt.record, force);
+    if (force || (prompt.record && prompt.record.finished)) {
+        if (prompt.timer) {
+            clearTimeout(prompt.timer);
+            delete prompt.timer;
+        }
+        prompt.emit('finished');
+    }
+}
 
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
