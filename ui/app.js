@@ -150,7 +150,7 @@ window.addEventListener('keypress', function(event) {
             mode.setMode('display', 'pause');
             break;
         default:
-            if (mode.mode === 'display' && !prompt.inputing) {
+            if (mode.mode === 'display') {
                 var char = String.fromCharCode(event.charCode);
                 if (char !== prompt.expected[0]) return;
                 event.stopPropagation();

@@ -15,7 +15,6 @@ function PhrasePrompt(options) {
     this.displayTime = options.displayTime || 1000;
     this.inputTime = options.inputTime || 10000;
     this.displayElement = options.display;
-    this.inputing = null;
     this.complexity = options.complexity;
 
     this.on('showdisplay', this.onDisplay.bind(this));
@@ -39,18 +38,11 @@ PhrasePrompt.prototype.display = function(text) {
 };
 
 PhrasePrompt.prototype.showDisplay = function() {
-    if (this.inputing !== false) {
-        this.inputing = false;
-        this.emit('showdisplay');
-    }
+    this.emit('showdisplay');
 };
 
 PhrasePrompt.prototype.showInput = function() {
-    if (this.inputing !== true) {
-        this.inputing = true;
-        this.emit('showinput');
-    }
-
+    this.emit('showinput');
     if (this.timer) {
         clearTimeout(this.timer);
         delete this.timer;
