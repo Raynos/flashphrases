@@ -128,7 +128,6 @@ mode.on('change', function(mode) {
             doPrompt();
             break;
         case 'input':
-            input.element.disabled = false;
             showInput();
             break;
         case 'pause':
@@ -159,15 +158,15 @@ function doPrompt() { // TODO rename
 }
 
 function showInput() {
-    record.inputShownAt = Date.now();
     input.element.disabled = false;
     input.element.focus();
+    record.inputShownAt = Date.now();
+    record.timeout.input = inputTime;
     if (promptTimeout) {
         clearTimeout(promptTimeout);
         promptTimeout = null;
     }
     promptTimeout = setTimeout(evaluate.bind(null, true), inputTime);
-    record.timeout.input = inputTime;
 }
 
 window.addEventListener('keydown', function(event) {
