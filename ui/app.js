@@ -110,6 +110,33 @@ var lightsOut = document.body.appendChild(h(
     }, style === 'light' ? 'Lights Out' : 'Lights On'
 ));
 
+input.on('data', function(got, force) {
+    record.got = got;
+    evaluate(force);
+});
+
+input.on('stop', function(event) {
+    if (event.keyCode === 0x1b) {
+        mode.setMode('pause', ['display', 'input']);
+    }
+});
+
+mode.on('change', function(mode) {
+    switch(mode) {
+        case 'display':
+            lightsOut.style.display = 'none';
+            doPrompt();
+            break;
+        case 'input':
+            input.element.disabled = false;
+            break;
+        case 'pause':
+            lightsOut.style.display = '';
+            evaluate(true);
+            break;
+    }
+});
+
 function doPrompt() { // TODO rename
     var text = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.expected = text;
@@ -143,33 +170,6 @@ function showInput() {
     promptTimeout = setTimeout(evaluate.bind(null, true), inputTime);
     record.timeout.input = inputTime;
 }
-
-input.on('data', function(got, force) {
-    record.got = got;
-    evaluate(force);
-});
-
-input.on('stop', function(event) {
-    if (event.keyCode === 0x1b) {
-        mode.setMode('pause', ['display', 'input']);
-    }
-});
-
-mode.on('change', function(mode) {
-    switch(mode) {
-        case 'display':
-            lightsOut.style.display = 'none';
-            doPrompt();
-            break;
-        case 'input':
-            input.element.disabled = false;
-            break;
-        case 'pause':
-            lightsOut.style.display = '';
-            evaluate(true);
-            break;
-    }
-});
 
 window.addEventListener('keydown', function(event) {
     if (event.keyCode === 0x1b) { // <esc>
