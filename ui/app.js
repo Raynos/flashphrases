@@ -90,13 +90,15 @@ var timeout = new Timeout();
 
 function evaluate(force) {
     eng.scoreResult(record, force);
-    if (force || record.finished) {
+    var done = force || record.finished;
+    if (done) {
         timeout.clear();
         if (mode.mode === 'input') input.element.disabled = true;
         eng.onResult(record);
         newRecord();
         if (mode.mode !== 'pause') setTimeout(mode.setMode.bind(mode, 'display'), repromptDelay);
     }
+    return done;
 }
 
 var lightsOut = document.body.appendChild(h(
@@ -144,11 +146,8 @@ function doDisplay() {
     record.got = '';
     record.displayedAt = Date.now();
     mode.panes.display.innerHTML = record.expected;
-
-    evaluate();
-
     record.timeout.display = displayTime;
-    timeout.set(mode.setMode.bind(mode, 'input'), displayTime);
+    if (!evaluate()) timeout.set(mode.setMode.bind(mode, 'input'), displayTime);
 }
 
 function showInput() {
