@@ -33,7 +33,6 @@ var Engine = require('../lib/engine');
 var Input = require('./input');
 var Mode = require('./mode');
 var PhraseData = require('./data');
-var PhrasePrompt = require('./phrase_prompt');
 
 var eng = new Engine({
     sessionCookie: 'session-key',
@@ -87,10 +86,6 @@ newRecord();
 var displayTime = 1500;
 var inputTime = 5000;
 var promptTimeout = null;
-
-var prompt = new PhrasePrompt({
-    complexity: eng.complexity
-});
 
 function evaluate(force) {
     eng.scoreResult(record, force);
