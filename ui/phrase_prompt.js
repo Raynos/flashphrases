@@ -80,11 +80,7 @@ PhrasePrompt.prototype.evaluate = function(force) {
             clearTimeout(this.timer);
             delete this.timer;
         }
-        if (this.inputing) this.input.element.disabled = true;
-        if (this.record) {
-            this.emit('result', this.record);
-            this.record = null;
-        }
+        this.emit('finished');
     }
 };
 

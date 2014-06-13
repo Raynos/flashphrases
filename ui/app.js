@@ -94,6 +94,13 @@ prompt.on('showdisplay', function() {
 prompt.on('showinput', function() {
     mode.setMode('input');
 });
+prompt.on('finished', function() {
+    if (prompt.inputing) prompt.input.element.disabled = true;
+    if (prompt.record) {
+        prompt.emit('result', prompt.record);
+        prompt.record = null;
+    }
+});
 
 input.on('stop', function(event) {
     if (event.keyCode === 0x1b) {
