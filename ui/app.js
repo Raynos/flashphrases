@@ -103,7 +103,10 @@ function evaluate(force) {
             clearTimeout(prompt.timer);
             delete prompt.timer;
         }
-        prompt.emit('finished');
+        if (mode.mode === 'input') input.element.disabled = true;
+        eng.onResult(record);
+        newRecord();
+        if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
     }
 }
 
@@ -135,12 +138,6 @@ prompt.on('showinput', function() {
     input.element.disabled = false;
     input.element.focus();
     mode.setMode('input');
-});
-prompt.on('finished', function() {
-    if (mode.mode === 'input') input.element.disabled = true;
-    eng.onResult(record);
-    if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
-    newRecord();
 });
 prompt.on('settimeout', PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
     record.timeout[kind] = time;
