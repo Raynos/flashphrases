@@ -131,7 +131,7 @@ function doPrompt() { // TODO rename
         delete prompt.timer;
     }
     prompt.timer = setTimeout(showInput, displayTime);
-    prompt.emit('settimeout', 'display', displayTime);
+    record.timeout.display = displayTime;
     mode.setMode('display');
 }
 
@@ -146,12 +146,8 @@ function showInput() {
         delete prompt.timer;
     }
     prompt.timer = setTimeout(prompt.evaluate.bind(prompt, true), inputTime);
-    prompt.emit('settimeout', 'input', inputTime);
+    record.timeout.input = inputTime;
 }
-
-prompt.on('settimeout', PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
-    record.timeout[kind] = time;
-});
 
 input.on('data', function(got, force) {
     record.got = got;
