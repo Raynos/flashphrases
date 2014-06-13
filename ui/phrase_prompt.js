@@ -16,9 +16,7 @@ function PhrasePrompt(options) {
     this.inputTime = options.inputTime || 10000;
     this.displayElement = options.display;
     this.complexity = options.complexity;
-
     this.on('settimeout', this.onSetTimeout.bind(this));
-    this.on('showinput', this.onShowInput.bind(this));
 }
 
 inherits(PhrasePrompt, EE);
@@ -37,6 +35,7 @@ PhrasePrompt.prototype.display = function(text) {
 
 PhrasePrompt.prototype.showInput = function() {
     this.emit('showinput');
+    if (this.record) this.record.inputShownAt = Date.now();
     if (this.timer) {
         clearTimeout(this.timer);
         delete this.timer;
@@ -58,10 +57,6 @@ PhrasePrompt.prototype.evaluate = function(force) {
 
 PhrasePrompt.prototype.onSetTimeout = function(kind, time) {
     if (this.record) this.record.timeout[kind] = time;
-};
-
-PhrasePrompt.prototype.onShowInput = function() {
-    if (this.record) this.record.inputShownAt = Date.now();
 };
 
 module.exports = PhrasePrompt;
