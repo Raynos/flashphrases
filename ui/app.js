@@ -143,8 +143,6 @@ function doDisplay() {
     record.expected = PhraseData.generatePhrase.apply(null, eng.complexity.value);
     record.got = '';
     record.displayedAt = Date.now();
-    input.element.value = '';
-    input.element.size = record.expected.length + 2;
     mode.panes.display.innerHTML = record.expected;
 
     evaluate();
@@ -154,6 +152,8 @@ function doDisplay() {
 }
 
 function showInput() {
+    input.element.value = '';
+    input.element.size = record.expected.length + 2;
     input.element.disabled = false;
     input.element.focus();
     record.inputShownAt = Date.now();
