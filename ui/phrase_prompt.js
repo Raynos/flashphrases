@@ -20,12 +20,6 @@ function PhrasePrompt(options) {
     this.inputing = null;
     this.complexity = options.complexity;
 
-    var self = this;
-    this.input.on('data', function(got, force) {
-        if (self.record) self.record.got = got;
-        self.evaluate(force);
-    });
-
     this.on('showdisplay', this.onDisplay.bind(this));
     this.on('settimeout', this.onSetTimeout.bind(this));
     this.on('showinput', this.onShowInput.bind(this));

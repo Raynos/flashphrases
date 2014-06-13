@@ -103,6 +103,11 @@ prompt.on('finished', function() {
     }
 });
 
+input.on('data', function(got, force) {
+    if (prompt.record) prompt.record.got = got;
+    prompt.evaluate(force);
+});
+
 input.on('stop', function(event) {
     if (event.keyCode === 0x1b) {
         mode.setMode('pause', ['display', 'input']);
