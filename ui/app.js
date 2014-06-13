@@ -89,8 +89,6 @@ var inputTime = 5000;
 
 var prompt = new PhrasePrompt({
     input: input,
-    display: mode.panes.display,
-    displayTime: displayTime,
     inputTime: inputTime,
     complexity: eng.complexity,
     evaluate: evaluate
@@ -126,13 +124,19 @@ function doPrompt() { // TODO rename
     record.displayedAt = Date.now();
     input.element.value = '';
     input.element.size = text.length + 2;
-    prompt.display(text);
+    mode.panes.display.innerHTML = text;
+
+    evaluate();
+
+    if (prompt.timer) {
+        clearTimeout(prompt.timer);
+        delete prompt.timer;
+    }
+    prompt.timer = setTimeout(prompt.showInput.bind(prompt), displayTime);
+    prompt.emit('settimeout', 'display', displayTime);
+    mode.setMode('display');
 }
 
-prompt.on('display', function() {
-    record.displayedAt = Date.now();
-    mode.setMode('display');
-});
 prompt.on('showinput', function() {
     record.inputShownAt = Date.now();
     input.element.disabled = false;
@@ -214,7 +218,7 @@ eng.on('idle', mode.setMode.bind(mode, 'pause', ['display', 'input']));
 eng.on('setTimeout', function(kind, val) {
     switch (kind) {
         case 'display':
-            prompt.displayTime = val;
+            displayTime = val;
             break;
         case 'input':
             prompt.inputTime = val;
