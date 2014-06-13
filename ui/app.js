@@ -90,7 +90,8 @@ function doPrompt() { // TODO rename
     prompt.display(text);
 }
 
-prompt.on('showdisplay', function() {
+prompt.on('display', function() {
+    if (prompt.record) prompt.record.displayedAt = Date.now();
     mode.setMode('display');
 });
 prompt.on('showinput', function() {
