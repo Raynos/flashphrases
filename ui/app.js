@@ -129,6 +129,7 @@ mode.on('change', function(mode) {
             break;
         case 'input':
             input.element.disabled = false;
+            showInput();
             break;
         case 'pause':
             lightsOut.style.display = '';
@@ -152,7 +153,7 @@ function doPrompt() { // TODO rename
         clearTimeout(promptTimeout);
         promptTimeout = null;
     }
-    promptTimeout = setTimeout(showInput, displayTime);
+    promptTimeout = setTimeout(mode.setMode.bind(mode, 'input'), displayTime);
     record.timeout.display = displayTime;
     mode.setMode('display');
 }
@@ -161,8 +162,6 @@ function showInput() {
     record.inputShownAt = Date.now();
     input.element.disabled = false;
     input.element.focus();
-    mode.setMode('input');
-
     if (promptTimeout) {
         clearTimeout(promptTimeout);
         promptTimeout = null;
@@ -192,7 +191,7 @@ window.addEventListener('keypress', function(event) {
                 if (char !== record.expected[0]) return;
                 event.stopPropagation();
                 event.preventDefault();
-                showInput();
+                mode.setMode('input');
                 input.element.value = char;
                 input.update();
             }
