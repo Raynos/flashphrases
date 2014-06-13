@@ -9,13 +9,11 @@ function PhrasePrompt(options) {
     options = options || {};
     if (!options.scoreResult) throw new Error('missing scoreResult option');
     if (!options.complexity) throw new Error('missing complexity option');
-    if (!options.input) throw new Error('missing input');
     if (!options.display) throw new Error('missing display');
 
     this.scoreResult = options.scoreResult;
     this.displayTime = options.displayTime || 1000;
     this.inputTime = options.inputTime || 10000;
-    this.input = options.input;
     this.displayElement = options.display;
     this.inputing = null;
     this.complexity = options.complexity;
@@ -29,8 +27,6 @@ inherits(PhrasePrompt, EE);
 
 PhrasePrompt.prototype.display = function(text) {
     this.displayElement.innerHTML = text;
-    this.input.element.value = '';
-    this.input.element.size = text.length + 2;
     this.evaluate();
     if (this.timer) {
         clearTimeout(this.timer);
@@ -53,8 +49,6 @@ PhrasePrompt.prototype.showInput = function() {
     if (this.inputing !== true) {
         this.inputing = true;
         this.emit('showinput');
-        this.input.element.disabled = false;
-        this.input.element.focus();
     }
 
     if (this.timer) {

@@ -85,6 +85,8 @@ var lightsOut = document.body.appendChild(h(
 function doPrompt() { // TODO rename
     var text = PhraseData.generatePhrase.apply(null, prompt.complexity.value);
     prompt.record = eng.initResult(text);
+    input.element.value = '';
+    input.element.size = text.length + 2;
     prompt.display(text);
 }
 
@@ -92,6 +94,8 @@ prompt.on('showdisplay', function() {
     mode.setMode('display');
 });
 prompt.on('showinput', function() {
+    input.element.disabled = false;
+    input.element.focus();
     mode.setMode('input');
 });
 prompt.on('finished', function() {
@@ -121,6 +125,7 @@ mode.on('change', function(mode) {
             doPrompt();
             break;
         case 'input':
+            input.element.disabled = false;
             break;
         case 'pause':
             lightsOut.style.display = '';
