@@ -97,7 +97,7 @@ function evaluate(force) {
         if (mode.mode === 'input') input.element.disabled = true;
         eng.onResult(record);
         newRecord();
-        if (mode.mode !== 'pause') setTimeout(doPrompt, repromptDelay);
+        if (mode.mode !== 'pause') setTimeout(mode.setMode.bind(mode, 'display'), repromptDelay);
     }
 }
 
@@ -154,7 +154,6 @@ function doPrompt() { // TODO rename
     }
     promptTimeout = setTimeout(mode.setMode.bind(mode, 'input'), displayTime);
     record.timeout.display = displayTime;
-    mode.setMode('display');
 }
 
 function showInput() {
