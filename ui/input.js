@@ -23,10 +23,7 @@ Input.prototype.update = function(force) {
         clearTimeout(this.updateTimer);
         delete this.updateTimer;
     }
-    if (!this.element.disabled) {
-        this.element.disabled = force;
-        this.emit('data', this.element.value, force);
-    }
+    this.emit('data', this.element.value, force);
 };
 
 Input.prototype.eventuallyUpdate = function(force) {

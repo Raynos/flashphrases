@@ -58,7 +58,8 @@ var mode = new Mode({
         loading: h('div.loading', 'Loading...'),
         pause: h('div.pause', 'press <enter> to start'),
         display: h('div.display'),
-        input: h('div.input', input.element)
+        input: h('div.input', input.element),
+        limbo: h('div.limbo')
     }
 });
 document.body.appendChild(mode.element);
@@ -93,10 +94,7 @@ function evaluate(force) {
     if (done) {
         timeout.clear();
         eng.onResult(record);
-        if (mode.mode === 'input') {
-            input.element.disabled = true;
-            setTimeout(mode.setMode.bind(mode, 'display', 'input'), repromptDelay);
-        }
+        mode.setMode('limbo', 'input');
     }
     return done;
 }
@@ -134,6 +132,9 @@ mode.on('change', function(mode) {
         case 'input':
             showInput();
             break;
+        case 'limbo':
+            timeout.set(mode.setMode.bind(mode, 'display', 'limbo'), repromptDelay);
+            break;
     }
 });
 
@@ -154,7 +155,6 @@ function doDisplay() {
 function showInput() {
     input.element.value = '';
     input.element.size = record.expected.length + 2;
-    input.element.disabled = false;
     input.element.focus();
     record.got = '';
     record.inputShownAt = Date.now();
@@ -166,7 +166,7 @@ window.addEventListener('keydown', function(event) {
     if (event.keyCode === 0x1b) { // <esc>
         event.preventDefault();
         event.stopPropagation();
-        mode.setMode('pause', ['display', 'input']);
+        mode.setMode('pause', ['display', 'input', 'limbo']);
     }
 });
 
@@ -191,7 +191,7 @@ window.addEventListener('keypress', function(event) {
 });
 
 window.addEventListener('blur', function() {
-    mode.setMode('pause', ['display', 'input']);
+    mode.setMode('pause', ['display', 'input', 'limbo']);
 });
 
 eng.on('ready', function() {
