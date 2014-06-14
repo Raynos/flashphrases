@@ -140,12 +140,7 @@ mode.on('change', function(newMode) {
 });
 
 function doDisplay() {
-    if (!record) {
-        newRecord();
-    } else if (record.expected !== null) {
-        console.error('throwing away previous record', record);
-        newRecord();
-    }
+    newRecord();
     record.expected = eng.generate();
     record.displayedAt = Date.now();
     mode.panes.display.innerHTML = record.expected;
