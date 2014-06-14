@@ -52,7 +52,7 @@ test('Engine tracks complexity level', function(assert) {
 function fillna(obj, fill) {
     if (Array.isArray(obj)) {
         return obj.map(function(val) {return fillna(val, fill);});
-    } else if (typeof obj === 'object') {
+    } else if (typeof obj === 'object' && obj !== null) {
         var r = {};
         Object.keys(obj).forEach(function(key) {
             r[key] = fillna(obj[key], fill);
@@ -80,6 +80,72 @@ test('Engine.scoreResult', function(assert) {
     [
         {
             desc: 'initially',
+            result: {
+                timeout: {
+                    display: NaN,
+                    input: NaN
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: null,
+                got: null
+            },
+            expected: {
+                doneAt: 42,
+                forced: false,
+                finished: false,
+                timeout: {
+                    display: 0,
+                    input: 0
+                },
+                elapsed: {
+                    display: 0,
+                    input: 0
+                },
+                expected: null,
+                got: null,
+                level: 1,
+                score: 0
+            }
+        },
+
+        {
+            desc: 'with expectation, null got',
+            result: {
+                timeout: {
+                    display: 1000,
+                    input: NaN
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'watch out',
+                got: null
+            },
+            expected: {
+                doneAt: 42,
+                forced: false,
+                finished: false,
+                timeout: {
+                    display: 1000,
+                    input: 0
+                },
+                elapsed: {
+                    display: 0,
+                    input: 0
+                },
+                expected: 'watch out',
+                got: null,
+                level: 1,
+                score: 0
+            }
+        },
+
+        {
+            desc: 'with expectation, empty got',
             result: {
                 timeout: {
                     display: 1500,
