@@ -147,7 +147,7 @@ function doDisplay() {
     record.displayedAt = Date.now();
     mode.panes.display.innerHTML = record.expected;
     record.timeout.display = displayTime;
-    if (!evaluate()) timeout.set(mode.setMode.bind(mode, 'input'), displayTime);
+    if (!evaluate()) timeout.set(mode.setMode.bind(mode, 'input', 'display'), displayTime);
 }
 
 function showInput() {
