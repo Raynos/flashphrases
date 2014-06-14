@@ -77,226 +77,257 @@ test('Engine.scoreResult', function(assert) {
         now: function() {return 42;}
     });
 
-    assert.deepEqual(fillna(eng.scoreResult({
-        timeout: {
-            display: 1500,
-            input: 10000
+    [
+        {
+            desc: 'initially',
+            result: {
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'alpha bravo gamma',
+                got: ''
+            },
+            expected: {
+                doneAt: 42,
+                forced: false,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 0,
+                    input: 0
+                },
+                expected: 'alpha bravo gamma',
+                got: '',
+                errorRate: 1,
+                level: 1,
+                dist: 15,
+                maxDist: 4,
+                correct: false,
+                finished: false,
+                score: 0
+            }
         },
-        elapsed: {
-            display: NaN,
-            input: NaN
-        },
-        expected: 'alpha bravo gamma',
-        got: ''
-    }), 0), {
-        doneAt: 42,
-        forced: false,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 0,
-            input: 0
-        },
-        expected: 'alpha bravo gamma',
-        got: '',
-        errorRate: 1,
-        level: 1,
-        dist: 15,
-        maxDist: 4,
-        correct: false,
-        finished: false,
-        score: 0
-    }, 'initially');
 
+        {
+            desc: 'displayed',
+            result: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'alpha bravo gamma',
+                got: ''
+            },
+            expected: {
+                doneAt: 42,
+                inputShownAt: 100,
+                displayedAt: 33,
+                forced: false,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 67,
+                    input: -58
+                },
+                expected: 'alpha bravo gamma',
+                got: '',
+                errorRate: 1,
+                level: 1,
+                dist: 15,
+                maxDist: 4,
+                correct: false,
+                finished: false,
+                score: 0
+            }
+        },
 
-    assert.deepEqual(fillna(eng.scoreResult({
-        inputShownAt: 100,
-        displayedAt: 33,
-        timeout: {
-            display: 1500,
-            input: 10000
+        {
+            desc: 'inputing',
+            result: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'alpha bravo gamma',
+                got: ''
+            },
+            expected: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                doneAt: 42,
+                forced: false,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 67,
+                    input: -58
+                },
+                expected: 'alpha bravo gamma',
+                got: '',
+                errorRate: 1,
+                level: 1,
+                dist: 15,
+                maxDist: 4,
+                correct: false,
+                finished: false,
+                score: 0
+            }
         },
-        elapsed: {
-            display: NaN,
-            input: NaN
-        },
-        expected: 'alpha bravo gamma',
-        got: ''
-    }), 0), {
-        doneAt: 42,
-        inputShownAt: 100,
-        displayedAt: 33,
-        forced: false,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 67,
-            input: -58
-        },
-        expected: 'alpha bravo gamma',
-        got: '',
-        errorRate: 1,
-        level: 1,
-        dist: 15,
-        maxDist: 4,
-        correct: false,
-        finished: false,
-        score: 0
-    }, 'displayed');
 
-    assert.deepEqual(fillna(eng.scoreResult({
-        inputShownAt: 100,
-        displayedAt: 33,
-        timeout: {
-            display: 1500,
-            input: 10000
+        {
+            desc: 'some input',
+            result: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'alpha bravo gamma',
+                got: 'alpha b',
+            },
+            expected: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                doneAt: 42,
+                forced: false,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 67,
+                    input: -58
+                },
+                expected: 'alpha bravo gamma',
+                got: 'alpha b',
+                errorRate: 0.6,
+                level: 1,
+                dist: 9,
+                maxDist: 4,
+                correct: false,
+                finished: false,
+                score: 0
+            }
         },
-        elapsed: {
-            display: NaN,
-            input: NaN
-        },
-        expected: 'alpha bravo gamma',
-        got: ''
-    }), 0), {
-        inputShownAt: 100,
-        displayedAt: 33,
-        doneAt: 42,
-        forced: false,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 67,
-            input: -58
-        },
-        expected: 'alpha bravo gamma',
-        got: '',
-        errorRate: 1,
-        level: 1,
-        dist: 15,
-        maxDist: 4,
-        correct: false,
-        finished: false,
-        score: 0
-    }, 'inputing');
 
-    assert.deepEqual(fillna(eng.scoreResult({
-        inputShownAt: 100,
-        displayedAt: 33,
-        timeout: {
-            display: 1500,
-            input: 10000
+        {
+            desc: 'enough input',
+            result: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: NaN,
+                    input: NaN
+                },
+                expected: 'alpha bravo gamma',
+                got: 'alpha brvo gam',
+            },
+            expected: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                doneAt: 42,
+                forced: false,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 67,
+                    input: -58
+                },
+                expected: 'alpha bravo gamma',
+                got: 'alpha brvo gam',
+                errorRate: 0.2,
+                level: 1,
+                dist: 3,
+                maxDist: 4,
+                correct: true,
+                finished: true,
+                finishedAt: 42,
+                score: 50
+            }
         },
-        elapsed: {
-            display: NaN,
-            input: NaN
-        },
-        expected: 'alpha bravo gamma',
-        got: 'alpha b',
-    }), 0), {
-        inputShownAt: 100,
-        displayedAt: 33,
-        doneAt: 42,
-        forced: false,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 67,
-            input: -58
-        },
-        expected: 'alpha bravo gamma',
-        got: 'alpha b',
-        errorRate: 0.6,
-        level: 1,
-        dist: 9,
-        maxDist: 4,
-        correct: false,
-        finished: false,
-        score: 0
-    }, 'some input');
 
-    assert.deepEqual(fillna(eng.scoreResult({
-        inputShownAt: 100,
-        displayedAt: 33,
-        timeout: {
-            display: 1500,
-            input: 10000
+        {
+            desc: 'aborted',
+            result: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 1000,
+                    input: 500
+                },
+                expected: 'alpha bravo gamma',
+                got: 'wat',
+            },
+            force: true,
+            expected: {
+                inputShownAt: 100,
+                displayedAt: 33,
+                doneAt: 42,
+                forced: true,
+                timeout: {
+                    display: 1500,
+                    input: 10000
+                },
+                elapsed: {
+                    display: 67,
+                    input: -58
+                },
+                expected: 'alpha bravo gamma',
+                got: 'wat',
+                errorRate: 14/15,
+                level: 1,
+                dist: 14,
+                maxDist: 4,
+                correct: false,
+                finished: true,
+                finishedAt: 42,
+                score: 0
+            }
         },
-        elapsed: {
-            display: NaN,
-            input: NaN
-        },
-        expected: 'alpha bravo gamma',
-        got: 'alpha brvo gam',
-    }), 0), {
-        inputShownAt: 100,
-        displayedAt: 33,
-        doneAt: 42,
-        forced: false,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 67,
-            input: -58
-        },
-        expected: 'alpha bravo gamma',
-        got: 'alpha brvo gam',
-        errorRate: 0.2,
-        level: 1,
-        dist: 3,
-        maxDist: 4,
-        correct: true,
-        finished: true,
-        finishedAt: 42,
-        score: 50
-    }, 'enough input');
-
-    assert.deepEqual(fillna(eng.scoreResult({
-        inputShownAt: 100,
-        displayedAt: 33,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 1000,
-            input: 500
-        },
-        expected: 'alpha bravo gamma',
-        got: 'wat',
-    }, true), 0), {
-        inputShownAt: 100,
-        displayedAt: 33,
-        doneAt: 42,
-        forced: true,
-        timeout: {
-            display: 1500,
-            input: 10000
-        },
-        elapsed: {
-            display: 67,
-            input: -58
-        },
-        expected: 'alpha bravo gamma',
-        got: 'wat',
-        errorRate: 14/15,
-        level: 1,
-        dist: 14,
-        maxDist: 4,
-        correct: false,
-        finished: true,
-        finishedAt: 42,
-        score: 0
-    }, 'aborted');
+    ].forEach(function(testCase) {
+        var result = testCase.result;
+        eng.scoreResult(result, testCase.force);
+        result = fillna(result, 0);
+        assert.deepEqual(result, testCase.expected, testCase.desc);
+    });
 
     assert.end();
 });
