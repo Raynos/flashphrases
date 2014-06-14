@@ -82,7 +82,6 @@ function newRecord() {
         got: null
     };
 }
-newRecord();
 
 var displayTime = 1500;
 var inputTime = 5000;
@@ -93,7 +92,6 @@ function evaluate(force) {
     if (done) {
         timeout.clear();
         eng.onResult(record);
-        newRecord();
         if (mode.mode === 'input') {
             input.element.disabled = true;
             setTimeout(mode.setMode.bind(mode, 'display', 'input'), repromptDelay);
@@ -133,13 +131,15 @@ mode.on('change', function(mode) {
             break;
         case 'pause':
             lightsOut.style.display = '';
-            if (record.expected !== null) evaluate(true);
+            if (record && record.expected !== null) evaluate(true);
             break;
     }
 });
 
 function doDisplay() {
-    if (record.expected !== null) {
+    if (!record) {
+        newRecord();
+    } else if (record.expected !== null) {
         console.error('throwing away previous record', record);
         newRecord();
     }
