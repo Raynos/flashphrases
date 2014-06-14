@@ -89,8 +89,7 @@ var inputTime = 5000;
 var timeout = new Timeout();
 
 function evaluate(force) {
-    eng.scoreResult(record, force);
-    var done = force || record.finished;
+    var done = eng.scoreResult(record, force);
     if (done) {
         timeout.clear();
         eng.onResult(record);
