@@ -144,7 +144,6 @@ function doDisplay() {
         newRecord();
     }
     record.expected = PhraseData.generatePhrase.apply(null, eng.complexity.value);
-    record.got = '';
     record.displayedAt = Date.now();
     mode.panes.display.innerHTML = record.expected;
     record.timeout.display = displayTime;
@@ -156,6 +155,7 @@ function showInput() {
     input.element.size = record.expected.length + 2;
     input.element.disabled = false;
     input.element.focus();
+    record.got = '';
     record.inputShownAt = Date.now();
     record.timeout.input = inputTime;
     timeout.set(evaluate.bind(null, true), inputTime);
