@@ -9,7 +9,8 @@ test('Engine construction', function(assert) {
             step: [1, 4],
             lo: [2, 8],
             hi: [8, 32],
-        }
+        },
+        generate: function() {}
     });
     assert.equal(eng.complexity.level, 1, 'start at level 1');
     assert.deepEqual(eng.history, [], 'no history');
@@ -25,7 +26,8 @@ test('Engine tracks complexity level', function(assert) {
             step: [1, 4],
             lo: [2, 8],
             hi: [8, 32],
-        }
+        },
+        generate: function() {}
     });
 
     eng.levelScore = 42;
@@ -73,6 +75,7 @@ test('Engine.scoreResult', function(assert) {
             lo: [2, 8],
             hi: [8, 32],
         },
+        generate: function() {},
         maxErrorRate: 0.3,
         now: function() {return 42;}
     });

@@ -45,6 +45,7 @@ var eng = new Engine({
         lo: [2, 10],
         hi: [10, 50]
     },
+    generate: PhraseData.generatePhrase,
     maxErrorRate: 0.3
 });
 
@@ -143,7 +144,7 @@ function doDisplay() {
         console.error('throwing away previous record', record);
         newRecord();
     }
-    record.expected = PhraseData.generatePhrase.apply(null, eng.complexity.value);
+    record.expected = eng.generate();
     record.displayedAt = Date.now();
     mode.panes.display.innerHTML = record.expected;
     record.timeout.display = displayTime;
