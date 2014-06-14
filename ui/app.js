@@ -93,10 +93,12 @@ function evaluate(force) {
     var done = force || record.finished;
     if (done) {
         timeout.clear();
-        if (mode.mode === 'input') input.element.disabled = true;
         eng.onResult(record);
         newRecord();
-        if (mode.mode !== 'pause') setTimeout(mode.setMode.bind(mode, 'display'), repromptDelay);
+        if (mode.mode === 'input') {
+            input.element.disabled = true;
+            setTimeout(mode.setMode.bind(mode, 'display', 'input'), repromptDelay);
+        }
     }
     return done;
 }
