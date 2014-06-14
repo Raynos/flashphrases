@@ -123,16 +123,16 @@ input.on('stop', function(event) {
 
 mode.on('change', function(mode) {
     switch(mode) {
+        case 'pause':
+            lightsOut.style.display = '';
+            if (record && record.expected !== null) evaluate(true);
+            break;
         case 'display':
             lightsOut.style.display = 'none';
             doDisplay();
             break;
         case 'input':
             showInput();
-            break;
-        case 'pause':
-            lightsOut.style.display = '';
-            if (record && record.expected !== null) evaluate(true);
             break;
     }
 });
