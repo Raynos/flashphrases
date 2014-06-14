@@ -119,8 +119,8 @@ input.on('stop', function(event) {
     }
 });
 
-mode.on('change', function(mode) {
-    switch(mode) {
+mode.on('change', function(newMode) {
+    switch(newMode) {
         case 'pause':
             lightsOut.style.display = '';
             if (record && record.expected !== null) evaluate(true);
