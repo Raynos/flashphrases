@@ -345,6 +345,9 @@ test('Engine.scoreResult', function(assert) {
                 correct: true,
                 finished: true,
                 finishedAt: 42,
+                displayFactor: 2933/1500,
+                errorFactor: 4/3,
+                inputFactor: 10029/5000,
                 score: 50
             }
         },
