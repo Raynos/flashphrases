@@ -181,7 +181,7 @@ window.addEventListener('keypress', function(event) {
                 event.preventDefault();
                 mode.setMode('input');
                 input.element.value = char;
-                input.update();
+                input.updateNow();
             }
     }
 });

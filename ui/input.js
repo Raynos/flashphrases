@@ -1,6 +1,7 @@
 var EE = require('events').EventEmitter;
 var h = require('hyperscript');
 var inherits = require('inherits');
+var debounce = require('../lib/debounce');
 
 function Input() {
     if (!this instanceof Input) {
@@ -13,26 +14,15 @@ function Input() {
         onchange: this.update.bind(this, true),
         onblur: this.update.bind(this, true)
     });
+    this.update = debounce(200, this.update);
+    this.updateNow = this.update.immedCaller;
 }
 
 inherits(Input, EE);
 
 Input.prototype.update = function(force) {
     force = Boolean(force);
-    if (this.updateTimer) {
-        clearTimeout(this.updateTimer);
-        delete this.updateTimer;
-    }
     this.emit('data', this.element.value, force);
-};
-
-Input.prototype.eventuallyUpdate = function(force) {
-    if (this.updateTImer) clearTimeout(this.updateTImer);
-    var self = this;
-    this.updateTImer = setTimeout(function() {
-        delete self.updateTImer;
-        self.update(force);
-    }, 200);
 };
 
 Input.prototype.onKeyDown = function(event) {
@@ -48,9 +38,9 @@ Input.prototype.onKeyDown = function(event) {
 Input.prototype.onKeyPress = function(event) {
     if (event.keyCode === 0x0a ||
         event.keyCode === 0x0d) {
-        this.update(true);
+        this.updateNow(true);
     } else {
-        this.eventuallyUpdate();
+        this.update();
     }
 };
 
