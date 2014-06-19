@@ -43,3 +43,11 @@ div.error {
     border-radius: 0.4em;
     padding: 0.4em;
 }
+
+.results {
+    margin: 1em auto;
+}
+
+.results .title {
+    text-align: center;
+}

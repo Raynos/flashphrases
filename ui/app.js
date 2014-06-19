@@ -33,6 +33,7 @@ var Engine = require('../lib/engine');
 var Input = require('./input');
 var Mode = require('./mode');
 var PhraseData = require('./data');
+var ResultsTable = require('./results_table');
 var Timeout = require('./timeout');
 
 var eng = new Engine({
@@ -51,12 +52,17 @@ var eng = new Engine({
 
 var input = new Input();
 
+var results = new ResultsTable();
+
 var mode = new Mode({
     initial: 'loading',
     modes: {
         error: h('div.error', ''),
         loading: h('div.loading', 'Loading...'),
-        pause: h('div.pause', 'press <enter> to start'),
+        pause: h('div.pause', [
+            h('p', 'press <enter> to start'),
+            results.element
+        ]),
         display: h('div.display'),
         input: h('div.input', input.element),
         limbo: h('div.limbo')
@@ -192,6 +198,8 @@ window.addEventListener('blur', function() {
 
 eng.on('ready', function() {
     mode.setMode('pause', 'loading');
+    eng.session.results.forEach(results.addResult, results);
+    eng.session.on('resultAdd', results.addResult.bind(results));
 });
 eng.on('error', function(err) {
     mode.setMode('error');
