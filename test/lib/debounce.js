@@ -8,6 +8,12 @@ function countCalls(assert, func) {
     self.wasCalled = function(times, mess) {
         assert.equal(self.called, times, mess);
     };
+    self.willBeCalled = function(called, timeout, mess, done) {
+        setTimeout(function() {
+            self.wasCalled(called, mess);
+            done();
+        }, timeout);
+    };
     function self() {
         self.called++;
         func.apply(this, arguments);
@@ -60,10 +66,7 @@ test('trailing debounce', function(assert) {
     db(1, 2);
     db(2, 3);
     db.func.wasCalled(0, 'not called immediately');
-    setTimeout(function() {
-        db.func.wasCalled(1, 'called once');
-        assert.end();
-    }, 2);
+    db.func.willBeCalled(1, 2, 'called once', assert.end);
 });
 
 test('trailing debounce, renew', function(assert) {
@@ -81,10 +84,7 @@ test('trailing debounce, renew', function(assert) {
     setTimeout(function() {
         db.func.wasCalled(0, 'still not called');
     }, 12);
-    setTimeout(function() {
-        db.func.wasCalled(1, 'called once');
-        assert.end();
-    }, 17);
+    db.func.willBeCalled(1, 17, 'called once', assert.end);
 });
 
 test('trailing debounce, sans-renew', function(assert) {
@@ -212,10 +212,7 @@ test('batch debounce, renew', function(assert) {
         db.func.wasCalled(0, 'not called yet');
     }, 15);
 
-    setTimeout(function() {
-        db.func.wasCalled(1, 'called once');
-        assert.end();
-    }, 25);
+    db.func.willBeCalled(1, 25, 'called once', assert.end);
 });
 
 test('batch debounce, sans-renew', function(assert) {
@@ -246,8 +243,5 @@ test('batch debounce, sans-renew', function(assert) {
         db.func.wasCalled(1, 'not called again yet');
     }, 17);
 
-    setTimeout(function() {
-        db.func.wasCalled(2, 'called twice');
-        assert.end();
-    }, 25);
+    db.func.willBeCalled(2, 25, 'called twice', assert.end);
 });
