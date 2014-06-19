@@ -1,3 +1,4 @@
+var async = require('async');
 var util = require('util');
 var test = require('tape');
 
@@ -244,4 +245,45 @@ test('batch debounce, sans-renew', function(assert) {
     }, 17);
 
     db.func.willBeCalled(2, 25, 'called twice', assert.end);
+});
+
+test('debounce immed', function(assert) {
+    var db = debounce(10, countCalls(assert, function() {
+        assert.deepEqual(
+            Array.prototype.slice.call(arguments), [1, 2],
+            'called with correct args');
+    }));
+
+    function step1(next) {
+        var called = db.func.called;
+        db(1, 2);
+        db.func.wasCalled(called, 'not called immediately');
+
+        db.immed(null, [1, 2]);
+        db.func.wasCalled(++called, 'called immediately on purpose');
+        db.func.willBeCalled(called, 20, 'not called again', next);
+    }
+
+    function step2(next) {
+        var called = db.func.called;
+
+        db.immed(null, [1, 2]);
+        db.func.wasCalled(++called, 'called immediately on purpose, with none deferred');
+        db.func.willBeCalled(called, 20, 'not called again', next);
+    }
+
+    function step3(next) {
+        var now = db.immedCaller;
+        var called = db.func.called;
+
+        now(1, 2);
+        db.func.wasCalled(++called, 'called immediately on purpose, by immedCaller');
+        db.func.willBeCalled(called, 20, 'not called again', next);
+    }
+
+    async.series([
+        step1,
+        step2,
+        step3
+    ], assert.end);
 });
