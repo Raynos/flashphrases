@@ -1,4 +1,6 @@
 var h = require('hyperscript');
+var inherits = require('inherits');
+var FlexTable = require('./flex_table');
 
 function ResultsTable() {
     this.element = h('table', {
@@ -12,13 +14,16 @@ function ResultsTable() {
                     colSpan: this.fields.length
                 }, 'Results')
             ),
-            h('tr', this.fields.map(function(field) {
+            this.fieldsRow = h('tr', this.fields.map(function(field) {
                 return h('th.field.' + field, field);
             }))
         ),
         this.body = h('tbody')
     );
+    FlexTable.call(this);
 }
+
+inherits(ResultsTable, FlexTable);
 
 ResultsTable.prototype.fields = [
     'level',
