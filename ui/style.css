@@ -52,6 +52,11 @@ div.error {
     margin: 0 auto;
 }
 
+.results table th,
+.results table td {
+    padding: 0.1em 0.15em;
+}
+
 .results .title {
     text-align: center;
 }
