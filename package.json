@@ -15,7 +15,6 @@
     "xtend": "^3.0.0",
     "async": "^0.9.0",
     "minimist": "^0.1.0",
-    "binarysearch": "^0.2.4",
     "uuid": "^1.4.1",
     "routes-router": "^3.1.0",
     "send-data": "^3.1.2",
