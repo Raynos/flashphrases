@@ -1,7 +1,11 @@
 var h = require('hyperscript');
 
 function ResultsTable() {
-    this.element = h('table.results',
+    this.element = h('table.results', {
+        cellSpacing: 0,
+        cellPadding: 0,
+        border: 0
+    },
         h('thead',
             h('tr',
                 h('th.title', {
