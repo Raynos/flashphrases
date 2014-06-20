@@ -48,6 +48,10 @@ div.error {
     margin: 1em auto;
 }
 
+.results table {
+    margin: 0 auto;
+}
+
 .results .title {
     text-align: center;
 }

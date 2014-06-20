@@ -61,7 +61,7 @@ var mode = new Mode({
         loading: h('div.loading', 'Loading...'),
         pause: h('div.pause', [
             h('p', 'press <enter> to start'),
-            results.element
+            h('div.results', results.element),
         ]),
         display: h('div.display'),
         input: h('div.input', input.element),
