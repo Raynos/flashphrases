@@ -4,23 +4,82 @@ var util = require('util');
 var editdist = require('../../lib/editdist');
 
 var DistTests = [
-    ['', '', 0],
-    ['a', 'a', 0],
-    ['a', 'b', 1],
-    ['b', 'a', 1],
-    ['doge', 'dog', 1],
-    ['dog', 'doge', 1],
-    ['cat', 'cab', 1],
-    ['kitten', 'sitting', 3],
-    ['stop', 'tops', 2],
-    ['rosettacode', 'raisethysword', 8],
+    {
+        a: '', b: '',
+        expected: {
+            dist: 0
+        }
+    },
+
+    {
+        a: 'a', b: 'a',
+        expected: {
+            dist: 0
+        }
+    },
+
+    {
+        a: 'a', b: 'b',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'b', b: 'a',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'doge', b: 'dog',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'dog', b: 'doge',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'cat', b: 'cab',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'kitten', b: 'sitting',
+        expected: {
+            dist: 3
+        }
+    },
+
+    {
+        a: 'stop', b: 'tops',
+        expected: {
+            dist: 2
+        }
+    },
+
+    {
+        a: 'rosettacode', b: 'raisethysword',
+        expected: {
+            dist: 8
+        }
+    }
 ];
 
 test('editdist', function(assert) {
     DistTests.forEach(function(testCase) {
-        var desc = util.format('d(%j, %j) = %j', testCase[0], testCase[1], testCase[2]);
-        var got = editdist(testCase[0], testCase[1]);
-        assert.equal(got, testCase[2], desc);
+        var desc = util.format('d(%j, %j) = %j', testCase.a, testCase.b, testCase.expected.dist);
+        var got = editdist(testCase.a, testCase.b);
+        assert.equal(got, testCase.expected.dist, desc);
     });
     assert.end();
 });
