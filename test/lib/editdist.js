@@ -72,6 +72,83 @@ var DistTests = [
         expected: {
             dist: 8
         }
+    },
+
+    {
+        a: 'word', b: 'word',
+        expected: {
+            dist: 0
+        }
+    },
+
+    {
+        a: 'word', b: 'ord',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'word', b: 'wrd',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'word', b: 'rd',
+        expected: {
+            dist: 2
+        }
+    },
+
+    {
+        a: 'word', b: '1word',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'word', b: '12word',
+        expected: {
+            dist: 2
+        }
+    },
+
+    {
+        a: 'word', b: 'word12',
+        expected: {
+            dist: 2
+        }
+    },
+
+    {
+        a: 'word', b: 'word1',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'word', b: 'wor',
+        expected: {
+            dist: 1
+        }
+    },
+
+    {
+        a: 'word', b: 'wo',
+        expected: {
+            dist: 2
+        }
+    },
+
+    {
+        a: 'word', b: 'aword',
+        expected: {
+            dist: 1
+        }
     }
 ];
 
