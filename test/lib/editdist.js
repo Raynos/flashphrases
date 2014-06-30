@@ -18,10 +18,9 @@ var DistTests = [
 
 test('editdist', function(assert) {
     DistTests.forEach(function(testCase) {
-        var a = testCase[0];
-        var b = testCase[1];
-        var d = testCase[2];
-        assert.equal(editdist(a,b), d, util.format('d(%j, %j) = %j', a, b, d));
+        var desc = util.format('d(%j, %j) = %j', testCase[0], testCase[1], testCase[2]);
+        var got = editdist(testCase[0], testCase[1]);
+        assert.equal(got, testCase[2], desc);
     });
     assert.end();
 });
