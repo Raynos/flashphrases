@@ -18,3 +18,4 @@ require('./lib/editdist');
 require('./lib/engine');
 require('./lib/extract');
 require('./lib/sample');
+require('./lib/match');
