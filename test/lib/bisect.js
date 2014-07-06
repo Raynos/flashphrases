@@ -3,7 +3,7 @@ var util = require('util');
 
 var bisect = require('../../lib/bisect');
 
-test('bisect', function(assert) {
+test('bisect.left', function(assert) {
     [
         {ar: [],     value: 3, expected: 0},
         {ar: [3],    value: 4, expected: 1},
@@ -26,8 +26,8 @@ test('bisect', function(assert) {
         {ar: [3, 3, 5, 5, 7, 7], value: 8, expected: 6},
 
     ].forEach(function(testCase) {
-        var desc = util.format('bisect(%j, %j)', testCase.ar, testCase.value);
-        assert.equal(bisect(testCase.ar, testCase.value), testCase.expected, desc);
+        var desc = util.format('bisect.left(%j, %j)', testCase.ar, testCase.value);
+        assert.equal(bisect.left(testCase.ar, testCase.value), testCase.expected, desc);
     });
 
     assert.end();
@@ -56,7 +56,7 @@ test('bisect.right', function(assert) {
         {ar: [3, 3, 5, 5, 7, 7], value: 8, expected: 6},
 
     ].forEach(function(testCase) {
-        var desc = util.format('bisect(%j, %j)', testCase.ar, testCase.value);
+        var desc = util.format('bisect.right(%j, %j)', testCase.ar, testCase.value);
         assert.equal(bisect.right(testCase.ar, testCase.value), testCase.expected, desc);
     });
 
