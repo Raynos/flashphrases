@@ -15,7 +15,6 @@ require('./lib/stream/sentence');
 require('./lib/stream/sse');
 require('./lib/complexity');
 require('./lib/editdist');
-require('./lib/engine');
 require('./lib/extract');
 require('./lib/phrase_result');
 require('./lib/phrase_session');
