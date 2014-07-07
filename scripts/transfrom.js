@@ -41,7 +41,8 @@ if (require.main === module) {
     doTransform(input, output, function(session) {
         session = new Session(session.getData());
         for (var n=transforms.length, i=0; i<n; i++) {
-            transforms[i](session);
+            var r = transforms[i](session);
+            if (r) session = r;
         }
         return session;
     }, function(err) {
