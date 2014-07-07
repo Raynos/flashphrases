@@ -20,9 +20,11 @@ sessionRoutes.addRoute('/all', function(req, res, opts, done) {
     });
 });
 
-sessionRoutes.addRoute('/create', {
+sessionRoutes.addRoute('/create/:type', {
     PUT: function(req, res, opts, done) {
-        sessions.save(new Session(), function(err, session) {
+        sessions.save(Session({
+            type: opts.type
+        }), function(err, session) {
             if (err) return sendError(req, res, err, done);
             sendJson(req, res, resolveData(session), done);
         });

@@ -10,7 +10,7 @@ function toAsync(transform) {
 
 function withCopiedSession(transform) {
     return function(session, done) {
-        session = new Session(resolveData(session));
+        session = Session(resolveData(session));
         transform(session, done);
     };
 }

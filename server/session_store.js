@@ -42,7 +42,7 @@ SessionStore.prototype.load = function(id, done) {
             return done(err, null);
         }
         var data = JSON.parse(String(buf)); // TODO safe parse
-        var session = new self.sessionType(data);
+        var session = self.sessionType(data);
         self.cache[session.id] = session;
         self.hook(session);
         done(null, session);
