@@ -13,7 +13,7 @@ test('Engine construction', function(assert) {
         generate: function() {}
     });
     assert.equal(eng.complexity.level, 1, 'start at level 1');
-    assert.deepEqual(eng.history, [], 'no history');
+    assert.deepEqual(eng.session.results, [], 'no session results');
     assert.equal(eng.levelScore, 0, 'no score');
     assert.equal(eng.levelGoal, 200, 'correct level 1 goal');
     assert.end();
