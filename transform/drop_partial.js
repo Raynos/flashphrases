@@ -1,6 +1,6 @@
-module.exports = rescore;
+module.exports = dropPartial;
 
-function rescore(session) {
+function dropPartial(session) {
   session.results = session.results
     .filter(function(result) {
       if (result.correct === undefined) return false;
@@ -12,4 +12,3 @@ function rescore(session) {
     })
     ;
 }
-
