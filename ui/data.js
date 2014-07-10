@@ -12,10 +12,7 @@ function generatePhrase(numPhrases, minLength) {
     if (!markovMap) throw new Error('unable to get a markov for ' + numPhrases + '-phrases');
     var markov = markovMap.get(numPhrases);
     if (!markov) throw new Error('no markov available for ' + numPhrases + '-phrases');
-    var phrase = '';
-    while (phrase.length < minLength) {
-        phrase = markov.chain(numPhrases).join(' ');
-    }
+    var phrase = markov.generatePhrase(numPhrases, minLength);
     return phrase.toLowerCase();
 }
 
