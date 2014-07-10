@@ -1,18 +1,5 @@
 var Markov = require('../lib/markov');
 
-function loadMarkovMap(data) {
-    var markovMap = {};
-    if (data.transitions) {
-        var markov = Markov.load(data);
-        markovMap[markov.stateSize] = markov;
-    } else {
-        Object.keys(data).forEach(function(key) {
-            markovMap[key] = Markov.load(data[key]);
-        });
-    }
-    return markovMap;
-}
-
 var markovMap = null;
 
 /* global XMLHttpRequest */
@@ -21,7 +8,7 @@ xhr.open('GET', '/markov_source.json');
 xhr.onreadystatechange = function() {
     if (this.readyState !== XMLHttpRequest.DONE) return;
     var data = JSON.parse(this.responseText);
-    markovMap = loadMarkovMap(data);
+    markovMap = Markov.makeMap(data);
 };
 xhr.send(null);
 
