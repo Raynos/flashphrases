@@ -10,9 +10,7 @@ varData.get('gutenberg-upper-upto5', function(err, data) {
 
 function generatePhrase(numPhrases, minLength) {
     if (!markovMap) throw new Error('unable to get a markov for ' + numPhrases + '-phrases');
-    var markov = markovMap.get(numPhrases);
-    if (!markov) throw new Error('no markov available for ' + numPhrases + '-phrases');
-    var phrase = markov.generatePhrase(numPhrases, minLength);
+    var phrase = markovMap.generatePhrase(numPhrases, minLength);
     return phrase.toLowerCase();
 }
 
