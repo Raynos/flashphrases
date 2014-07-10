@@ -1,16 +1,12 @@
 var Markov = require('../lib/markov');
+var varData = require('../lib/var_data');
 
 var markovMap = null;
 
-/* global XMLHttpRequest */
-var xhr = new XMLHttpRequest();
-xhr.open('GET', '/markov_source.json');
-xhr.onreadystatechange = function() {
-    if (this.readyState !== XMLHttpRequest.DONE) return;
-    var data = JSON.parse(this.responseText);
-    markovMap = Markov.makeMap(data);
-};
-xhr.send(null);
+varData.get('gutenberg-upper-upto5', function(err, data) {
+    if (err) return console.error(err);
+    if (data) markovMap = Markov.makeMap(data);
+});
 
 function getMarkov(k) {
     if (!markovMap) return null;
