@@ -31,10 +31,17 @@ function changeStyle(name) {
 
 var Engine = require('../lib/engine');
 var Input = require('./input');
+var Markov = require('../lib/markov');
 var Mode = require('./mode');
-var PhraseData = require('./data');
 var ResultsTable = require('./results_table');
 var Timeout = require('./timeout');
+var varData = require('../lib/var_data');
+
+var markovMap = null;
+varData.get('gutenberg-upper-upto5', function(err, data) {
+    if (err) return console.error(err);
+    if (data) markovMap = Markov.makeMap(data);
+});
 
 var eng = new Engine({
     sessionCookie: 'session-key',
@@ -46,7 +53,11 @@ var eng = new Engine({
         lo: [2, 10],
         hi: [10, 50]
     },
-    generate: PhraseData.generatePhrase,
+    generate: function generatePhrase(numPhrases, minLength) {
+        if (!markovMap) throw new Error('unable to get a markov for ' + numPhrases + '-phrases');
+        var phrase = markovMap.generatePhrase(numPhrases, minLength);
+        return phrase.toLowerCase();
+    },
     maxErrorRate: 0.3
 });
 
