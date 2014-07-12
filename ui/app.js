@@ -149,7 +149,8 @@ input.on('data', function(got) {
 
 input.on('done', function(got) {
     result.got = got;
-    evaluate(true);
+    eng.scoreResult(result, true);
+    finishResult();
 });
 
 input.on('stop', function(event) {
@@ -163,7 +164,8 @@ mode.on('change', function(newMode) {
         case 'pause':
             lightsOut.style.display = '';
             if (result) {
-                if (result.expected !== null) evaluate(true);
+                eng.scoreResult(result, true);
+                finishResult();
             }
             break;
         case 'display':
@@ -185,7 +187,8 @@ function doDisplay() {
     result.displayedAt = Date.now();
     mode.panes.display.innerHTML = result.expected;
     result.timeout.display = displayTime;
-    if (!evaluate()) timeout.set(mode.setMode.bind(mode, 'input', 'display'), displayTime);
+    eng.scoreResult(result);
+    timeout.set(mode.setMode.bind(mode, 'input', 'display'), displayTime);
 }
 
 function showInput() {
@@ -193,7 +196,8 @@ function showInput() {
     result.inputShownAt = Date.now();
     result.timeout.input = inputTime;
     timeout.set(function() {
-        evaluate(true);
+        eng.scoreResult(result, true);
+        finishResult();
     }, inputTime);
     input.reset(result.expected);
 }
