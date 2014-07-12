@@ -115,12 +115,11 @@ function clearResult() {
     result = null;
 }
 
-function evaluate(force) {
-    if (result.finished) return result.true;
-    var done = eng.scoreResult(result, force);
-    if (done) finishResult();
-    return done;
-}
+var judgeResult = debounce(200, function judgeResult() {
+    if (result.finished) return;
+    eng.scoreResult(result);
+    finishResult();
+});
 
 function finishResult() {
     if (result.finished) {
@@ -130,8 +129,6 @@ function finishResult() {
         clearResult();
     }
 }
-
-var eventuallyEvaluate = debounce(200, evaluate);
 
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
@@ -144,7 +141,7 @@ var lightsOut = document.body.appendChild(h(
 
 input.on('data', function(got) {
     result.got = got;
-    eventuallyEvaluate();
+    judgeResult();
 });
 
 input.on('done', function(got) {
