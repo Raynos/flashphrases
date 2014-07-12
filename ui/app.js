@@ -32,34 +32,26 @@ function changeStyle(name) {
 var debounce = require('../lib/debounce');
 var Engine = require('../lib/engine');
 var Input = require('./input');
-var Markov = require('../lib/markov');
 var Mode = require('./mode');
 var ResultsTable = require('./results_table');
 var Timeout = require('./timeout');
-var varData = require('../lib/var_data');
-
-var markovMap = null;
-varData.get('gutenberg-upper-upto5', function(err, data) {
-    if (err) return console.error(err);
-    if (data) markovMap = Markov.makeMap(data);
-});
+require('../lib/phrase_session');
 
 var eng = new Engine({
     sessionCookie: 'session-key',
-    base: 10,
-    perLevel: 10,
-    complexity: {
-        initial: [2, 10],
-        step: [1, 5],
-        lo: [2, 10],
-        hi: [10, 50]
-    },
-    generate: function generatePhrase(numPhrases, minLength) {
-        if (!markovMap) throw new Error('unable to get a markov for ' + numPhrases + '-phrases');
-        var phrase = markovMap.generatePhrase(numPhrases, minLength);
-        return phrase.toLowerCase();
-    },
-    maxErrorRate: 0.3
+    session: {
+        type: 'phrase_session',
+        base: 10,
+        perLevel: 10,
+        goalDistProp: 0.3,
+        complexity: {
+            lo: [2, 10],
+            step: [1, 5],
+            hi: [10, 50],
+            initial: [2, 10]
+        },
+        corpus: 'gutenberg-upper-upto5'
+    }
 });
 
 var input = new Input();
@@ -87,45 +79,29 @@ var repromptDelay = 200;
 var result = null;
 var timeout = new Timeout();
 
-function addResult() {
+function addResult(options) {
     clearResult();
-    result = {
-        displayedAt: NaN,
-        inputShownAt: NaN,
-        doneAt: NaN,
-        elapsed: {
-            display: NaN,
-            input: NaN,
-        },
-        timeout: {
-            display: NaN,
-            input: NaN,
-        },
-        expected: null,
-        got: null
-    };
+    result = eng.session.addResult(options);
 }
-
-var displayTime = 1500;
-var inputTime = 5000;
-var timeout = new Timeout();
 
 function clearResult() {
     if (!result) return;
+    if (!result.session.done) result.addEvent('abandon');
     result = null;
 }
 
-var judgeResult = debounce(200, function judgeResult() {
-    if (!result || result.finished) return;
-    eng.scoreResult(result);
+var judgeResult = debounce(200, function() {
+    if (!result) return;
+    if (!result.session.done && result.score.distValue > 0) {
+        result.addEvent('judge', {timeout: judgeResult.time});
+    }
     finishResult();
 });
 
 function finishResult() {
     judgeResult.clear();
-    if (result.finished) {
+    if (result.session.done) {
         timeout.clear();
-        eng.onResult(result);
         mode.setMode('limbo', 'input');
         clearResult();
     }
@@ -141,14 +117,15 @@ var lightsOut = document.body.appendChild(h(
 ));
 
 input.on('data', function(got) {
-    result.got = got;
+    result.addEvent('input', {got: got});
     judgeResult();
 });
 
 input.on('done', function(got) {
     if (!result) return;
-    result.got = got;
-    eng.scoreResult(result, true);
+    var last = result.session.input && result.session.input[result.session.input.length-1];
+    if (!last || last.got !== got) result.addEvent('input', {got: got});
+    result.addEvent('submit');
     finishResult();
 });
 
@@ -163,7 +140,7 @@ mode.on('change', function(newMode) {
         case 'pause':
             lightsOut.style.display = '';
             if (result) {
-                eng.scoreResult(result, true);
+                result.addEvent('abort');
                 finishResult();
             }
             break;
@@ -182,23 +159,18 @@ mode.on('change', function(newMode) {
 
 function doDisplay() {
     addResult();
-    result.expected = eng.generate();
-    result.displayedAt = Date.now();
-    mode.panes.display.innerHTML = result.expected;
-    result.timeout.display = displayTime;
-    eng.scoreResult(result);
-    timeout.set(mode.setMode.bind(mode, 'input', 'display'), displayTime);
+    var event = result.addEvent('display', {timeout: eng.session.timeout.display});
+    mode.panes.display.innerHTML = result.phrase;
+    timeout.set(mode.setMode.bind(mode, 'input', 'display'), event.timeout);
 }
 
 function showInput() {
-    result.got = '';
-    result.inputShownAt = Date.now();
-    result.timeout.input = inputTime;
+    var event = result.addEvent('prompt', {timeout: eng.session.timeout.prompt});
     timeout.set(function() {
-        eng.scoreResult(result, true);
+        result.addEvent('expire');
         finishResult();
-    }, inputTime);
-    input.reset(result.expected);
+    }, event.timeout);
+    input.reset(result.phrase);
 }
 
 window.addEventListener('keydown', function(event) {
@@ -219,7 +191,7 @@ window.addEventListener('keypress', function(event) {
         default:
             if (mode.mode === 'display') {
                 var char = String.fromCharCode(event.charCode);
-                if (char !== result.expected[0]) return;
+                if (char !== result.phrase[0]) return;
                 event.stopPropagation();
                 event.preventDefault();
                 mode.setMode('input');
@@ -244,13 +216,3 @@ eng.on('error', function(err) {
     console.error(err);
 });
 eng.on('idle', mode.setMode.bind(mode, 'pause', ['display', 'input']));
-eng.on('setTimeout', function(kind, val) {
-    switch (kind) {
-        case 'display':
-            displayTime = val;
-            break;
-        case 'input':
-            inputTime = val;
-            break;
-    }
-});
