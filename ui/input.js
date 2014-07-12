@@ -11,8 +11,8 @@ function Input() {
         type: 'text',
         onkeydown: this.onKeyDown.bind(this),
         onkeypress: this.onKeyPress.bind(this),
-        onchange: this.update.bind(this, true),
-        onblur: this.update.bind(this, true)
+        onchange: this.finish.bind(this),
+        onblur: this.finish.bind(this)
     });
     this.update = debounce(200, this.update);
     this.updateNow = this.update.immedCaller;
@@ -26,9 +26,12 @@ Input.prototype.reset = function(expected) {
     this.element.focus();
 };
 
-Input.prototype.update = function(force) {
-    force = Boolean(force);
-    this.emit('data', this.element.value, force);
+Input.prototype.update = function() {
+    this.emit('data', this.element.value, false);
+};
+
+Input.prototype.finish = function() {
+    this.emit('data', this.element.value, true);
 };
 
 Input.prototype.onKeyDown = function(event) {
@@ -44,7 +47,7 @@ Input.prototype.onKeyDown = function(event) {
 Input.prototype.onKeyPress = function(event) {
     if (event.keyCode === 0x0a ||
         event.keyCode === 0x0d) {
-        this.updateNow(true);
+        this.finish();
     } else {
         this.update();
     }
