@@ -166,13 +166,11 @@ function doDisplay() {
 }
 
 function showInput() {
-    input.element.value = '';
-    input.element.size = record.expected.length + 2;
-    input.element.focus();
     record.got = '';
     record.inputShownAt = Date.now();
     record.timeout.input = inputTime;
     timeout.set(evaluate.bind(null, true), inputTime);
+    input.reset(record.expected);
 }
 
 window.addEventListener('keydown', function(event) {

@@ -20,6 +20,12 @@ function Input() {
 
 inherits(Input, EE);
 
+Input.prototype.reset = function(expected) {
+    this.element.value = '';
+    this.element.size = expected.length + 2;
+    this.element.focus();
+};
+
 Input.prototype.update = function(force) {
     force = Boolean(force);
     this.emit('data', this.element.value, force);
