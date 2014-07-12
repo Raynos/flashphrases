@@ -29,6 +29,7 @@ function changeStyle(name) {
 
 ////
 
+var debounce = require('../lib/debounce');
 var Engine = require('../lib/engine');
 var Input = require('./input');
 var Markov = require('../lib/markov');
@@ -117,6 +118,8 @@ function evaluate(force) {
     return done;
 }
 
+var eventuallyEvaluate = debounce(200, evaluate);
+
 var lightsOut = document.body.appendChild(h(
     'div.lightsOut', {
         onclick: function() {
@@ -128,7 +131,7 @@ var lightsOut = document.body.appendChild(h(
 
 input.on('data', function(got) {
     record.got = got;
-    evaluate();
+    eventuallyEvaluate();
 });
 
 input.on('done', function(got) {
@@ -201,7 +204,7 @@ window.addEventListener('keypress', function(event) {
                 event.preventDefault();
                 mode.setMode('input');
                 input.element.value = char;
-                input.updateNow();
+                input.update();
             }
     }
 });

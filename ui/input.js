@@ -1,7 +1,6 @@
 var EE = require('events').EventEmitter;
 var h = require('hyperscript');
 var inherits = require('inherits');
-var debounce = require('../lib/debounce');
 
 function Input() {
     if (!this instanceof Input) {
@@ -14,8 +13,6 @@ function Input() {
         onchange: this.finish.bind(this),
         onblur: this.finish.bind(this)
     });
-    this.update = debounce(200, this.update);
-    this.updateNow = this.update.immedCaller;
     this.done = false;
 }
 
