@@ -88,6 +88,7 @@ var result = null;
 var timeout = new Timeout();
 
 function createResult() {
+    clearResult();
     result = {
         displayedAt: NaN,
         inputShownAt: NaN,
@@ -109,6 +110,11 @@ var displayTime = 1500;
 var inputTime = 5000;
 var timeout = new Timeout();
 
+function clearResult() {
+    if (!result) return;
+    result = null;
+}
+
 function evaluate(force) {
     if (result.finished) return result.true;
     var done = eng.scoreResult(result, force);
@@ -121,6 +127,7 @@ function finishResult() {
         timeout.clear();
         eng.onResult(result);
         mode.setMode('limbo', 'input');
+        clearResult();
     }
 }
 
