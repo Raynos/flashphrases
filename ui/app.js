@@ -112,12 +112,16 @@ var timeout = new Timeout();
 function evaluate(force) {
     if (result.finished) return result.true;
     var done = eng.scoreResult(result, force);
-    if (done) {
+    if (done) finishResult();
+    return done;
+}
+
+function finishResult() {
+    if (result.finished) {
         timeout.clear();
         eng.onResult(result);
         mode.setMode('limbo', 'input');
     }
-    return done;
 }
 
 var eventuallyEvaluate = debounce(200, evaluate);
