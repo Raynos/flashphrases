@@ -126,9 +126,14 @@ var lightsOut = document.body.appendChild(h(
     }, style === 'light' ? 'Lights Out' : 'Lights On'
 ));
 
-input.on('data', function(got, force) {
+input.on('data', function(got) {
     record.got = got;
-    evaluate(force);
+    evaluate();
+});
+
+input.on('done', function(got) {
+    record.got = got;
+    evaluate(true);
 });
 
 input.on('stop', function(event) {

@@ -30,13 +30,13 @@ Input.prototype.reset = function(expected) {
 
 Input.prototype.update = function() {
     if (this.done) return;
-    this.emit('data', this.element.value, false);
+    this.emit('data', this.element.value);
 };
 
 Input.prototype.finish = function() {
     if (this.done) return;
     this.done = true;
-    this.emit('data', this.element.value, true);
+    this.emit('done', this.element.value);
 };
 
 Input.prototype.onKeyDown = function(event) {
