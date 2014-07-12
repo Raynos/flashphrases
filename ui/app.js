@@ -162,7 +162,9 @@ mode.on('change', function(newMode) {
     switch(newMode) {
         case 'pause':
             lightsOut.style.display = '';
-            if (result && result.expected !== null) evaluate(true);
+            if (result) {
+                if (result.expected !== null) evaluate(true);
+            }
             break;
         case 'display':
             lightsOut.style.display = 'none';
@@ -190,7 +192,9 @@ function showInput() {
     result.got = '';
     result.inputShownAt = Date.now();
     result.timeout.input = inputTime;
-    timeout.set(evaluate.bind(null, true), inputTime);
+    timeout.set(function() {
+        evaluate(true);
+    }, inputTime);
     input.reset(result.expected);
 }
 
