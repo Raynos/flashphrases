@@ -84,9 +84,11 @@ document.body.appendChild(mode.element);
 
 var repromptDelay = 200;
 
-var record = null;
-function newRecord() {
-    record = {
+var result = null;
+var timeout = new Timeout();
+
+function createResult() {
+    result = {
         displayedAt: NaN,
         inputShownAt: NaN,
         doneAt: NaN,
@@ -108,11 +110,11 @@ var inputTime = 5000;
 var timeout = new Timeout();
 
 function evaluate(force) {
-    if (record.finished) return record.true;
-    var done = eng.scoreResult(record, force);
+    if (result.finished) return result.true;
+    var done = eng.scoreResult(result, force);
     if (done) {
         timeout.clear();
-        eng.onResult(record);
+        eng.onResult(result);
         mode.setMode('limbo', 'input');
     }
     return done;
@@ -130,12 +132,12 @@ var lightsOut = document.body.appendChild(h(
 ));
 
 input.on('data', function(got) {
-    record.got = got;
+    result.got = got;
     eventuallyEvaluate();
 });
 
 input.on('done', function(got) {
-    record.got = got;
+    result.got = got;
     evaluate(true);
 });
 
@@ -149,7 +151,7 @@ mode.on('change', function(newMode) {
     switch(newMode) {
         case 'pause':
             lightsOut.style.display = '';
-            if (record && record.expected !== null) evaluate(true);
+            if (result && result.expected !== null) evaluate(true);
             break;
         case 'display':
             lightsOut.style.display = 'none';
@@ -165,20 +167,20 @@ mode.on('change', function(newMode) {
 });
 
 function doDisplay() {
-    newRecord();
-    record.expected = eng.generate();
-    record.displayedAt = Date.now();
-    mode.panes.display.innerHTML = record.expected;
-    record.timeout.display = displayTime;
+    createResult();
+    result.expected = eng.generate();
+    result.displayedAt = Date.now();
+    mode.panes.display.innerHTML = result.expected;
+    result.timeout.display = displayTime;
     if (!evaluate()) timeout.set(mode.setMode.bind(mode, 'input', 'display'), displayTime);
 }
 
 function showInput() {
-    record.got = '';
-    record.inputShownAt = Date.now();
-    record.timeout.input = inputTime;
+    result.got = '';
+    result.inputShownAt = Date.now();
+    result.timeout.input = inputTime;
     timeout.set(evaluate.bind(null, true), inputTime);
-    input.reset(record.expected);
+    input.reset(result.expected);
 }
 
 window.addEventListener('keydown', function(event) {
@@ -199,7 +201,7 @@ window.addEventListener('keypress', function(event) {
         default:
             if (mode.mode === 'display') {
                 var char = String.fromCharCode(event.charCode);
-                if (char !== record.expected[0]) return;
+                if (char !== result.expected[0]) return;
                 event.stopPropagation();
                 event.preventDefault();
                 mode.setMode('input');
