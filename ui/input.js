@@ -16,21 +16,26 @@ function Input() {
     });
     this.update = debounce(200, this.update);
     this.updateNow = this.update.immedCaller;
+    this.done = false;
 }
 
 inherits(Input, EE);
 
 Input.prototype.reset = function(expected) {
+    this.done = false;
     this.element.value = '';
     this.element.size = expected.length + 2;
     this.element.focus();
 };
 
 Input.prototype.update = function() {
+    if (this.done) return;
     this.emit('data', this.element.value, false);
 };
 
 Input.prototype.finish = function() {
+    if (this.done) return;
+    this.done = true;
     this.emit('data', this.element.value, true);
 };
 
