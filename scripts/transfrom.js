@@ -51,6 +51,8 @@ doTransform(input, output, function(session, done) {
         if (r) session = r;
     }
     done(null, session);
-}, function(err) {
+}, allDone);
+
+function allDone(err) {
     if (err) return console.error(err);
-});
+}
