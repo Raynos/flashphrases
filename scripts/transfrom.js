@@ -63,18 +63,14 @@ var steps = transforms.map(function(trans, i) {
     return transform;
 });
 
-function transform(session, done) {
-    async.series(steps.map(function(step) {
-        return step.bind(this, session);
-    }), done);
-}
-
 input.keys(function(err, keys) {
     if (err) return allDone(err);
     async.each(keys, function(key, keyDone) {
         input.load(key, function(err, session) {
             if (err) return keyDone(err);
-            transform(session, keyDone);
+            async.series(steps.map(function(step) {
+                return step.bind(this, session);
+            }), keyDone);
         });
     }, allDone);
 });
