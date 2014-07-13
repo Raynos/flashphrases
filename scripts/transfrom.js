@@ -52,19 +52,22 @@ var transforms = argv._.map(function(transform) {
     return require(path.join(process.cwd(), transform));
 });
 
-var steps = transforms.map(function(trans) {
+var steps = transforms.map(function(trans, i) {
     var transform = trans;
     if (!trans.async) transform = toAsync(transform);
     if (!trans.alwaysReturns) transform = maybeReturns(transform);
     if (!trans.inplace) transform = withCopiedSession(transform);
+    if (i === argv._.length - 1) {
+        transform = savedTo(output, transform);
+    }
     return transform;
 });
 
-var transform = savedTo(output, function transform(session, done) {
+function transform(session, done) {
     async.series(steps.map(function(step) {
         return step.bind(this, session);
     }), done);
-});
+}
 
 input.keys(function(err, keys) {
     if (err) return allDone(err);
