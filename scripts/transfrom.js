@@ -35,8 +35,8 @@ if (require.main === module) {
         return require(path.join(process.cwd(), transform));
     });
 
-    var input = new SessionStore(path.resolve(argv.input));
-    var output = argv.output ? new SessionStore(path.resolve(argv.output)) : input;
+    var input = new SessionStore(argv.input);
+    var output = argv.output ? new SessionStore(argv.output) : input;
 
     doTransform(input, output, function(session) {
         session = new Session(session.getData());
