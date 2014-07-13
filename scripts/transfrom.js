@@ -6,8 +6,10 @@ function doTransform(src, dst, transform, done) {
         async.each(keys, function(key, keyDone) {
             src.load(key, function(err, session) {
                 if (err) return keyDone(err);
-                session = transform(session);
-                dst.save(session, keyDone);
+                transform(session, function(err, session) {
+                    if (err) return keyDone(err);
+                    dst.save(session, keyDone);
+                });
             });
         }, done);
     });
@@ -38,13 +40,13 @@ if (require.main === module) {
     var input = new SessionStore(argv.input);
     var output = argv.output ? new SessionStore(argv.output) : input;
 
-    doTransform(input, output, function(session) {
+    doTransform(input, output, function(session, done) {
         session = new Session(session.getData());
         for (var n=transforms.length, i=0; i<n; i++) {
             var r = transforms[i](session);
             if (r) session = r;
         }
-        return session;
+        done(null, session);
     }, function(err) {
         if (err) return console.error(err);
     });
