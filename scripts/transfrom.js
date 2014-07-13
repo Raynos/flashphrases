@@ -7,6 +7,13 @@ function toAsync(transform) {
     };
 }
 
+function withCopiedSession(transform) {
+    return function(session, done) {
+        session = new Session(session.getData());
+        transform(session, done);
+    };
+}
+
 function maybeReturns(transform) {
     return function(session, done) {
         transform(session, function(err, r) {
@@ -52,12 +59,11 @@ var steps = transforms.map(function(trans) {
     return transform;
 });
 
-var transform = savedTo(output, function transform(session, done) {
-    session = new Session(session.getData());
+var transform = savedTo(output, withCopiedSession(function transform(session, done) {
     async.series(steps.map(function(step) {
         return step.bind(this, session);
     }), done);
-});
+}));
 
 input.keys(function(err, keys) {
     if (err) return allDone(err);
