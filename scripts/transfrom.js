@@ -40,13 +40,16 @@ var config = require('../server/config');
 var argv = require('minimist')(process.argv.slice(2), {
     alias: {
         i: 'input',
-        o: 'output'
+        o: 'output',
+        t: 'tmp'
     },
+    boolean: ['tmp'],
     default: {
         input: path.join(config.var, 'sessions')
     }
 });
 var input = new SessionStore(argv.input);
+var tmpBase = argv.output ? argv.output : argv.input;
 var output = argv.output ? argv.output : input;
 var transforms = argv._.map(function(transform) {
     return require(path.join(process.cwd(), transform));
@@ -54,11 +57,14 @@ var transforms = argv._.map(function(transform) {
 
 var steps = transforms.map(function(trans, i) {
     var transform = trans;
+    var name = argv._[i].replace(/\W+/g, '_').replace(/^_|_$/g, '');
     if (!trans.async) transform = toAsync(transform);
     if (!trans.alwaysReturns) transform = maybeReturns(transform);
     if (!trans.inplace) transform = withCopiedSession(transform);
     if (i === argv._.length - 1) {
         transform = savedTo(output, transform);
+    } else if (argv.tmp) {
+        transform = savedTo(tmpBase + '.tmp_' + name, transform);
     }
     return transform;
 });
