@@ -1,6 +1,12 @@
 var Session = require('../lib/session');
 var SessionStore = require('../server/session_store');
 
+function toAsync(transform) {
+    return function(session, done) {
+        done(null, transform(session));
+    };
+}
+
 function savedTo(store, transform) {
     if (typeof store === 'string') store = new SessionStore(store);
     return function(session, done) {
@@ -30,13 +36,22 @@ var transforms = argv._.map(function(transform) {
     return require(path.join(process.cwd(), transform));
 });
 
+var steps = transforms.map(function(trans) {
+    var transform = trans;
+    if (!trans.async) transform = toAsync(transform);
+    return function(session, done) {
+        transform(session, function(err, r) {
+            if (r) session = r;
+            done(err, session);
+        });
+    };
+});
+
 var transform = savedTo(output, function transform(session, done) {
     session = new Session(session.getData());
-    for (var n=transforms.length, i=0; i<n; i++) {
-        var r = transforms[i](session);
-        if (r) session = r;
-    }
-    done(null, session);
+    async.series(steps.map(function(step) {
+        return step.bind(this, session);
+    }), done);
 });
 
 input.keys(function(err, keys) {
