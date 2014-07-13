@@ -3,12 +3,13 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var nextTick = process.nextTick;
 
-var Session = require('../lib/session');
-
-function SessionStore(dir) {
+function SessionStore(dir, sessionType) {
     this.cache = {};
     this.dir = path.resolve(dir);
+    if (sessionType) this.sessionType = sessionType;
 }
+
+SessionStore.prototype.sessionType = require('../lib/session');
 
 SessionStore.prototype.keys = function(done) {
     fs.readdir(this.dir, done);
@@ -40,7 +41,7 @@ SessionStore.prototype.load = function(id, done) {
             return done(err, null);
         }
         var data = JSON.parse(String(buf)); // TODO safe parse
-        var session = new Session(data);
+        var session = new self.sessionType(data);
         self.cache[session.id] = session;
         self.hook(session);
         done(null, session);
