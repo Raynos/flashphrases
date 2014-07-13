@@ -1,4 +1,5 @@
-var async = require('async');
+var Session = require('../lib/session');
+var SessionStore = require('../server/session_store');
 
 function savedTo(store, transform) {
     if (typeof store === 'string') store = new SessionStore(store);
@@ -9,6 +10,8 @@ function savedTo(store, transform) {
         });
     };
 }
+
+var async = require('async');
 
 function doTransform(src, dst, transform, done) {
     transform = savedTo(dst, transform);
@@ -25,8 +28,6 @@ function doTransform(src, dst, transform, done) {
 
 var path = require('path');
 var config = require('../server/config');
-var Session = require('../lib/session');
-var SessionStore = require('../server/session_store');
 
 var argv = require('minimist')(process.argv.slice(2), {
     alias: {
