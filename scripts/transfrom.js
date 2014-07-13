@@ -38,13 +38,11 @@ var argv = require('minimist')(process.argv.slice(2), {
         input: path.join(config.var, 'sessions')
     }
 });
-
+var input = new SessionStore(argv.input);
+var output = argv.output ? argv.output : input;
 var transforms = argv._.map(function(transform) {
     return require(path.join(process.cwd(), transform));
 });
-
-var input = new SessionStore(argv.input);
-var output = argv.output ? new SessionStore(argv.output) : input;
 
 doTransform(input, output, function(session, done) {
     session = new Session(session.getData());
