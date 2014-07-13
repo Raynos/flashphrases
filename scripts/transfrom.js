@@ -1,15 +1,23 @@
 var async = require('async');
 
+function savedTo(store, transform) {
+    if (typeof store === 'string') store = new SessionStore(store);
+    return function(session, done) {
+        transform(session, function(err, session) {
+            if (err) return done(err);
+            store.save(session, done);
+        });
+    };
+}
+
 function doTransform(src, dst, transform, done) {
+    transform = savedTo(dst, transform);
     src.keys(function(err, keys) {
         if (err) return done(err);
         async.each(keys, function(key, keyDone) {
             src.load(key, function(err, session) {
                 if (err) return keyDone(err);
-                transform(session, function(err, session) {
-                    if (err) return keyDone(err);
-                    dst.save(session, keyDone);
-                });
+                transform(session, keyDone);
             });
         }, done);
     });
