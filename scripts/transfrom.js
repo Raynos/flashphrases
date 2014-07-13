@@ -7,6 +7,15 @@ function toAsync(transform) {
     };
 }
 
+function maybeReturns(transform) {
+    return function(session, done) {
+        transform(session, function(err, r) {
+            if (r) session = r;
+            done(err, session);
+        });
+    };
+}
+
 function savedTo(store, transform) {
     if (typeof store === 'string') store = new SessionStore(store);
     return function(session, done) {
@@ -39,12 +48,8 @@ var transforms = argv._.map(function(transform) {
 var steps = transforms.map(function(trans) {
     var transform = trans;
     if (!trans.async) transform = toAsync(transform);
-    return function(session, done) {
-        transform(session, function(err, r) {
-            if (r) session = r;
-            done(err, session);
-        });
-    };
+    if (!trans.alwaysReturns) transform = maybeReturns(transform);
+    return transform;
 });
 
 var transform = savedTo(output, function transform(session, done) {
