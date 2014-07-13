@@ -54,6 +54,9 @@ var output = argv.output ? argv.output : input;
 var transforms = argv._.map(function(transform) {
     return require(path.join(process.cwd(), transform));
 });
+if (transforms[0].sessionType) {
+    input.sessionType = transforms[0].sessionType;
+}
 
 var steps = transforms.map(function(trans, i) {
     var transform = trans;
