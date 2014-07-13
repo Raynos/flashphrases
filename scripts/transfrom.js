@@ -23,39 +23,35 @@ function doTransform(src, dst, transform, done) {
     });
 }
 
-module.exports.doTransform = doTransform;
+var path = require('path');
+var config = require('../server/config');
+var Session = require('../lib/session');
+var SessionStore = require('../server/session_store');
 
-if (require.main === module) {
-    var path = require('path');
-    var config = require('../server/config');
-    var Session = require('../lib/session');
-    var SessionStore = require('../server/session_store');
+var argv = require('minimist')(process.argv.slice(2), {
+    alias: {
+        i: 'input',
+        o: 'output'
+    },
+    default: {
+        input: path.join(config.var, 'sessions')
+    }
+});
 
-    var argv = require('minimist')(process.argv.slice(2), {
-        alias: {
-            i: 'input',
-            o: 'output'
-        },
-        default: {
-          input: path.join(config.var, 'sessions')
-        }
-    });
+var transforms = argv._.map(function(transform) {
+    return require(path.join(process.cwd(), transform));
+});
 
-    var transforms = argv._.map(function(transform) {
-        return require(path.join(process.cwd(), transform));
-    });
+var input = new SessionStore(argv.input);
+var output = argv.output ? new SessionStore(argv.output) : input;
 
-    var input = new SessionStore(argv.input);
-    var output = argv.output ? new SessionStore(argv.output) : input;
-
-    doTransform(input, output, function(session, done) {
-        session = new Session(session.getData());
-        for (var n=transforms.length, i=0; i<n; i++) {
-            var r = transforms[i](session);
-            if (r) session = r;
-        }
-        done(null, session);
-    }, function(err) {
-        if (err) return console.error(err);
-    });
-}
+doTransform(input, output, function(session, done) {
+    session = new Session(session.getData());
+    for (var n=transforms.length, i=0; i<n; i++) {
+        var r = transforms[i](session);
+        if (r) session = r;
+    }
+    done(null, session);
+}, function(err) {
+    if (err) return console.error(err);
+});
