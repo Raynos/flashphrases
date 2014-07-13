@@ -7,7 +7,7 @@ var Session = require('../lib/session');
 
 function SessionStore(dir) {
     this.cache = {};
-    this.dir = dir;
+    this.dir = path.resolve(dir);
 }
 
 SessionStore.prototype.keys = function(done) {
