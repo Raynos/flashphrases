@@ -56,14 +56,15 @@ var steps = transforms.map(function(trans) {
     var transform = trans;
     if (!trans.async) transform = toAsync(transform);
     if (!trans.alwaysReturns) transform = maybeReturns(transform);
+    if (!trans.inplace) transform = withCopiedSession(transform);
     return transform;
 });
 
-var transform = savedTo(output, withCopiedSession(function transform(session, done) {
+var transform = savedTo(output, function transform(session, done) {
     async.series(steps.map(function(step) {
         return step.bind(this, session);
     }), done);
-}));
+});
 
 input.keys(function(err, keys) {
     if (err) return allDone(err);
