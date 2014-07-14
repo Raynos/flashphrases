@@ -43,6 +43,22 @@ resultRoutes.addRoute('/:resultId', {
     })
 });
 
+resultRoutes.addRoute('/:resultId/event', {
+    PUT: loadResult(function(req, res, opts, done) {
+        jsonBody(req, res, function(err, eventOrEvents) {
+            if (err) return done(err);
+            if (Array.isArray(eventOrEvents)) {
+                eventOrEvents.forEach(function(event) {
+                    opts.result.addEvent(event);
+                });
+            } else {
+                opts.result.addEvent(eventOrEvents);
+            }
+            res.end();
+        });
+    })
+});
+
 resultRoutes.addRoute('/:resultId/listen', loadResult(function(req, res, opts) {
     opts.result.handleEventStream(req, res, {
         hello: 'listening to session ' + opts.session.id,
