@@ -43,4 +43,11 @@ resultRoutes.addRoute('/:resultId', {
     })
 });
 
+resultRoutes.addRoute('/:resultId/listen', loadResult(function(req, res, opts) {
+    opts.result.handleEventStream(req, res, {
+        hello: 'listening to session ' + opts.session.id,
+        keepalive: 5000
+    });
+}));
+
 module.exports = resultRoutes;
