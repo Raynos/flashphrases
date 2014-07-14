@@ -20,13 +20,13 @@ sessionRoutes.addRoute('/all', function(req, res, opts, done) {
     });
 });
 
-sessionRoutes.addRoute('/create/:type', {
+sessionRoutes.addRoute('/create', {
     PUT: function(req, res, opts, done) {
-        sessions.save(Session({
-            type: opts.type
-        }), function(err, session) {
-            if (err) return sendError(req, res, err, done);
-            sendJson(req, res, resolveData(session), done);
+        jsonBody(req, res, function(err, data) {
+            sessions.save(Session(data), function(err, session) {
+                if (err) return sendError(req, res, err, done);
+                sendJson(req, res, resolveData(session), done);
+            });
         });
     }
 });
