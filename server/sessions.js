@@ -1,6 +1,7 @@
 var Router = require('routes-router');
 var jsonBody = require('body/json');
 var path = require('path');
+var resolveData = require('../lib/data').resolveData;
 var sendError = require('send-data/error');
 var sendJson = require('send-data/json');
 
@@ -23,7 +24,7 @@ sessionRoutes.addRoute('/create', {
     PUT: function(req, res, opts, done) {
         sessions.save(new Session(), function(err, session) {
             if (err) return sendError(req, res, err, done);
-            sendJson(req, res, session.getData(), done);
+            sendJson(req, res, resolveData(session), done);
         });
     }
 });
@@ -44,7 +45,7 @@ function loadSession(func) {
 }
 
 sessionRoutes.addRoute('/:key', loadSession(function(req, res, opts, done) {
-    sendJson(req, res, opts.session.getData(), done);
+    sendJson(req, res, resolveData(opts.session), done);
 }));
 
 sessionRoutes.addRoute('/:key/result', {

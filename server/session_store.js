@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var nextTick = process.nextTick;
+var resolveData = require('../lib/data').resolveData;
 
 function SessionStore(dir, sessionType) {
     this.cache = {};
@@ -52,7 +53,7 @@ SessionStore.prototype.save = function(session, done) {
     var self = this;
     mkdirp(self.dir, function(err) {
         if (err) return done(err, session);
-        var data = JSON.stringify(session.getData(), null, 2);
+        var data = JSON.stringify(resolveData(session), null, 2);
         fs.writeFile(path.join(self.dir, session.id), data, function(err) {
             if (err) return done(err, session);
             if (self.cache[session.id] !== session) {

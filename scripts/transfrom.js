@@ -1,3 +1,4 @@
+var resolveData = require('../lib/data').resolveData;
 var Session = require('../lib/session');
 var SessionStore = require('../server/session_store');
 
@@ -9,7 +10,7 @@ function toAsync(transform) {
 
 function withCopiedSession(transform) {
     return function(session, done) {
-        session = new Session(session.getData());
+        session = new Session(resolveData(session));
         transform(session, done);
     };
 }
