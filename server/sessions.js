@@ -50,21 +50,7 @@ sessionRoutes.addRoute('/:sessionId', loadSession(function(req, res, opts, done)
     sendJson(req, res, resolveData(opts.session), done);
 }));
 
-sessionRoutes.addRoute('/:sessionId/result', {
-    PUT: loadSession(function(req, res, opts, done) {
-        jsonBody(req, res, function(err, resultOrResults) {
-            if (err) return done(err);
-            if (Array.isArray(resultOrResults)) {
-                resultOrResults.forEach(function(result) {
-                    opts.session.addResult(result);
-                });
-            } else {
-                opts.session.addResult(resultOrResults);
-            }
-            res.end();
-        });
-    })
-});
+sessionRoutes.addRoute('/:sessionId/result*?', loadSession(require('./results')));
 
 sessionRoutes.addRoute('/:sessionId/listen', loadSession(function(req, res, opts) {
     opts.session.handleEventStream(req, res, {
