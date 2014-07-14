@@ -66,7 +66,7 @@ sessionRoutes.addRoute('/:sessionId/result', {
     })
 });
 
-sessionRoutes.addRoute('/:sessionId/events', loadSession(function(req, res, opts) {
+sessionRoutes.addRoute('/:sessionId/listen', loadSession(function(req, res, opts) {
     opts.session.handleEventStream(req, res, {
         hello: 'listening to session ' + opts.session.id,
         keepalive: 5000
