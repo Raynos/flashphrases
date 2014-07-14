@@ -1,6 +1,7 @@
 var http = require('http');
 var Router = require('routes-router');
 var sendError = require("send-data/error");
+require('../lib/phrase_session');
 
 var routes = new Router();
 
