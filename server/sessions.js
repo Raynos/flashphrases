@@ -33,7 +33,7 @@ sessionRoutes.addRoute('/create/:type', {
 
 function loadSession(func) {
     return function(req, res, opts, done) {
-        sessions.load(opts.key, function(err, session) {
+        sessions.load(opts.sessionId, function(err, session) {
             if (!session) {
                 return done({
                     statusCode: 404,
@@ -46,11 +46,11 @@ function loadSession(func) {
     };
 }
 
-sessionRoutes.addRoute('/:key', loadSession(function(req, res, opts, done) {
+sessionRoutes.addRoute('/:sessionId', loadSession(function(req, res, opts, done) {
     sendJson(req, res, resolveData(opts.session), done);
 }));
 
-sessionRoutes.addRoute('/:key/result', {
+sessionRoutes.addRoute('/:sessionId/result', {
     PUT: loadSession(function(req, res, opts, done) {
         jsonBody(req, res, function(err, resultOrResults) {
             if (err) return done(err);
@@ -66,7 +66,7 @@ sessionRoutes.addRoute('/:key/result', {
     })
 });
 
-sessionRoutes.addRoute('/:key/events', loadSession(function(req, res, opts) {
+sessionRoutes.addRoute('/:sessionId/events', loadSession(function(req, res, opts) {
     opts.session.handleEventStream(req, res, {
         hello: 'listening to session ' + opts.session.id,
         keepalive: 5000
