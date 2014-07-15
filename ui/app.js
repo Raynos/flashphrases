@@ -122,6 +122,7 @@ var judgeResult = debounce(200, function judgeResult() {
 });
 
 function finishResult() {
+    judgeResult.clear();
     if (result.finished) {
         timeout.clear();
         eng.onResult(result);
