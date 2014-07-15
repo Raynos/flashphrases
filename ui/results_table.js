@@ -47,44 +47,45 @@ ResultsTable.prototype.fields = [
 ResultsTable.prototype.titles = {
 };
 
-function maybeRender(render) {
+var Render = {};
+
+Render.maybe = function maybeRender(render) {
     return function(field, result) {
         var value = np.get(result, field);
         if (value === undefined) return '';
         if (value === null) return '';
         return render(field, result);
     };
-}
+};
 
-function renderString(field, result) {
+Render.string = function renderString(field, result) {
     var value = np.get(result, field);
     return '' + value;
-}
+};
 
-var renderPct = maybeRender(function(field, result) {
+Render.default = Render.maybe(Render.string);
+
+Render.pct = Render.maybe(function(field, result) {
     var value = np.get(result, field);
     return (value * 100).toFixed(1) + '%';
 });
 
-var renderFactor = maybeRender(function(field, result) {
+Render.factor = Render.maybe(function(field, result) {
     var value = np.get(result, field);
     return (value).toFixed(1) + 'x';
 });
 
-var defaultRender = maybeRender(renderString);
-
 ResultsTable.prototype.renderField = {
-    errorRate: renderPct,
-    displayFactor: renderFactor,
-    inputFactor: renderFactor,
-    errorFactor: renderFactor
-
+    errorRate: Render.pct,
+    displayFactor: Render.factor,
+    inputFactor: Render.factor,
+    errorFactor: Render.factor
 };
 
 ResultsTable.prototype.renderResult = function(result) {
     var self = this;
     return h('tr', this.fields.map(function(field) {
-        var render = self.renderField[field] || defaultRender;
+        var render = self.renderField[field] || Render.default;
         return h('td.field.' + field, render.call(self, field, result));
     }));
 };
