@@ -29,22 +29,12 @@ inherits(ResultsTable, FlexTable);
 
 ResultsTable.prototype.fields = [
     'level',
-    'correct',
-    'score',
-    'displayFactor',
-    'inputFactor',
-    'errorFactor',
-    'expected',
-    // 'got',
-    // 'dist',
-    'errorRate',
-    // 'elapsed.display',
-    // 'timeout.display',
-    // 'elapsed.input',
-    // 'timeout.input',
+    'phrase',
+    'score.value',
 ];
 
 ResultsTable.prototype.titles = {
+    'score.value': 'score',
 };
 
 var Render = {};
@@ -76,10 +66,6 @@ Render.factor = Render.maybe(function(field, result) {
 });
 
 ResultsTable.prototype.renderField = {
-    errorRate: Render.pct,
-    displayFactor: Render.factor,
-    inputFactor: Render.factor,
-    errorFactor: Render.factor
 };
 
 ResultsTable.prototype.renderResult = function(result) {
