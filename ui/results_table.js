@@ -16,8 +16,9 @@ function ResultsTable() {
                 }, 'Results')
             ),
             this.fieldsRow = h('tr', this.fields.map(function(field) {
-                return h('th.field.' + field, field);
-            }))
+                var title = this.titles[field] || field;
+                return h('th.field.' + field, title);
+            }, this))
         ),
         this.body = h('tbody')
     );
@@ -42,6 +43,9 @@ ResultsTable.prototype.fields = [
     // 'elapsed.input',
     // 'timeout.input',
 ];
+
+ResultsTable.prototype.titles = {
+};
 
 function maybeRender(render) {
     return function(field, result) {
