@@ -116,7 +116,7 @@ function clearResult() {
 }
 
 var judgeResult = debounce(200, function judgeResult() {
-    if (result.finished) return;
+    if (!result || result.finished) return;
     eng.scoreResult(result);
     finishResult();
 });
@@ -145,6 +145,7 @@ input.on('data', function(got) {
 });
 
 input.on('done', function(got) {
+    if (!result) return;
     result.got = got;
     eng.scoreResult(result, true);
     finishResult();
