@@ -1,6 +1,7 @@
 var h = require('hyperscript');
 var inherits = require('inherits');
 var FlexTable = require('./flex_table');
+var np = require('nested-property');
 
 function ResultsTable() {
     this.element = h('table', {
@@ -36,7 +37,6 @@ ResultsTable.prototype.fields = [
     // 'got',
     // 'dist',
     'errorRate',
-    // TODO: support sub fields
     // 'elapsed.display',
     // 'timeout.display',
     // 'elapsed.input',
@@ -45,23 +45,25 @@ ResultsTable.prototype.fields = [
 
 function maybeRender(render) {
     return function(field, result) {
-        if (result[field] === undefined) return '';
-        if (result[field] === null) return '';
+        var value = np.get(result, field);
+        if (value === undefined) return '';
+        if (value === null) return '';
         return render(field, result);
     };
 }
 
 function renderString(field, result) {
-    return '' + result[field];
+    var value = np.get(result, field);
+    return '' + value;
 }
 
 var renderPct = maybeRender(function(field, result) {
-    var value = result[field];
+    var value = np.get(result, field);
     return (value * 100).toFixed(1) + '%';
 });
 
 var renderFactor = maybeRender(function(field, result) {
-    var value = result[field];
+    var value = np.get(result, field);
     return (value).toFixed(1) + 'x';
 });
 
