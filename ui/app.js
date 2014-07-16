@@ -87,7 +87,7 @@ var repromptDelay = 200;
 var result = null;
 var timeout = new Timeout();
 
-function createResult() {
+function addResult() {
     clearResult();
     result = {
         displayedAt: NaN,
@@ -181,7 +181,7 @@ mode.on('change', function(newMode) {
 });
 
 function doDisplay() {
-    createResult();
+    addResult();
     result.expected = eng.generate();
     result.displayedAt = Date.now();
     mode.panes.display.innerHTML = result.expected;
