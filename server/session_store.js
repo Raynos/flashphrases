@@ -51,9 +51,9 @@ SessionStore.prototype.load = function(id, done) {
 
 SessionStore.prototype.save = function(session, done) {
     var self = this;
+    var data = JSON.stringify(resolveData(session), null, 2);
     mkdirp(self.dir, function(err) {
         if (err) return done(err, session);
-        var data = JSON.stringify(resolveData(session), null, 2);
         fs.writeFile(path.join(self.dir, session.id), data, function(err) {
             if (err) return done(err, session);
             if (self.cache[session.id] !== session) {
