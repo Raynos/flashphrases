@@ -6,6 +6,7 @@ var resolveData = require('../lib/data').resolveData;
 
 function SessionStore(dir, sessionType) {
     this.cache = {};
+    this.saving = {};
     this.dir = path.resolve(dir);
     if (sessionType) this.sessionType = sessionType;
 }
@@ -50,6 +51,12 @@ SessionStore.prototype.load = function(id, done) {
 };
 
 SessionStore.prototype.save = function(session, done) {
+    var saving = this.saving[session.id];
+    if (saving) {
+        saving.push(done);
+        return;
+    }
+    saving = this.saving[session.id] = [];
     var self = this;
     var data = JSON.stringify(resolveData(session), null, 2);
     mkdirp(self.dir, function(err) {
@@ -62,6 +69,14 @@ SessionStore.prototype.save = function(session, done) {
                 }
             }
             done(err, session);
+            delete self.saving[session.id];
+            if (saving.length) {
+                nextTick(function() {
+                    self.save(session, function(err, session) {
+                        for (var i=0, n=saving.length; i<n; i++) saving[i](err, session);
+                    });
+                });
+            }
         });
     });
 };
