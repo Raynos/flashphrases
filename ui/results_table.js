@@ -85,11 +85,17 @@ ResultsTable.prototype.renderField = {
 };
 
 ResultsTable.prototype.renderResult = function(result) {
-    var self = this;
-    return h('tr', this.fields.map(function(field) {
-        var render = self.renderField[field] || Render.default;
-        return h('td.field.' + field, render.call(self, field, result));
-    }));
+    var contents = this.resultRowContents(result);
+    return h('tr', this.fields.map(function(field, i) {
+        return h('td.field.' + field, contents[i]);
+    }, this));
+};
+
+ResultsTable.prototype.resultRowContents = function(result) {
+    return this.fields.map(function(field) {
+        var render = this.renderField[field] || Render.default;
+        return render(field, result);
+    }, this);
 };
 
 ResultsTable.prototype.addResult = function(result) {
