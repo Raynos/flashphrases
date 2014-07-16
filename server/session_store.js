@@ -20,6 +20,8 @@ SessionStore.prototype.keys = function(done) {
 SessionStore.prototype.hook = function(session) {
     var self = this;
     session.on('change', function() {
+        var saving = self.saving[session.id];
+        if (saving && saving.length) return;
         self.save(session, function(err) {
             if (err) {
                 console.error(
