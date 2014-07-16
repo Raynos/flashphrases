@@ -21,7 +21,7 @@ function loadResult(func) {
     };
 }
 
-resultRoutes.addRoute('/', {
+resultRoutes.addRoute('/add', {
     PUT: function(req, res, opts, done) {
         jsonBody(req, res, function(err, resultOrResults) {
             if (err) return done(err);
@@ -43,7 +43,7 @@ resultRoutes.addRoute('/:resultId', {
     })
 });
 
-resultRoutes.addRoute('/:resultId/event', {
+resultRoutes.addRoute('/:resultId/event/add', {
     PUT: loadResult(function(req, res, opts, done) {
         jsonBody(req, res, function(err, eventOrEvents) {
             if (err) return done(err);
