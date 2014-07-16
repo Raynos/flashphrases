@@ -55,10 +55,11 @@ SessionStore.prototype.save = function(session, done) {
     mkdirp(self.dir, function(err) {
         if (err) return done(err, session);
         fs.writeFile(path.join(self.dir, session.id), data, function(err) {
-            if (err) return done(err, session);
-            if (self.cache[session.id] !== session) {
-                self.hook(session);
-                self.cache[session.id] = session;
+            if (!err) {
+                if (self.cache[session.id] !== session) {
+                    self.hook(session);
+                    self.cache[session.id] = session;
+                }
             }
             done(err, session);
         });
