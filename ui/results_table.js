@@ -1,3 +1,5 @@
+/* globals document */
+
 var h = require('hyperscript');
 var inherits = require('inherits');
 var FlexTable = require('./flex_table');
@@ -91,6 +93,14 @@ ResultsTable.prototype.renderResult = function(result) {
     }, this));
 };
 
+ResultsTable.prototype.updateResultRow = function(row, result) {
+    this.resultRowContents(result).forEach(function(content, i) {
+        var cell = row.cells[i];
+        while (cell.firstChild) cell.removeChild(cell.firstChild);
+        if (content) cell.appendChild(document.createTextNode(content));
+    }, this);
+};
+
 ResultsTable.prototype.resultRowContents = function(result) {
     return this.fields.map(function(field) {
         var render = this.renderField[field] || Render.default;
@@ -101,6 +111,7 @@ ResultsTable.prototype.resultRowContents = function(result) {
 ResultsTable.prototype.addResult = function(result) {
     var row = this.renderResult(result);
     this.body.insertBefore(row, this.body.rows[0]);
+    result.on('change', this.updateResultRow.bind(this, row, result));
 };
 
 module.exports = ResultsTable;
