@@ -37,7 +37,7 @@ SessionStore.prototype.load = function(id, done) {
     var self = this;
     var dirPath = path.join(this.dir, id);
     var session = this.cache[id];
-    if (session) {
+    if (self.saving[id]) {
         return nextTick(function() {
             done(null, self.cache[id]);
         });
