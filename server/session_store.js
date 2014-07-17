@@ -72,7 +72,6 @@ SessionStore.prototype.save = function(session, done) {
         self.cache[session.id] = session;
     }
     mkdirp(self.dir, function(err) {
-        if (err) return done(err, session);
         fs.writeFile(dirPath, data, function(err) {
             done(err, session);
             delete self.saving[session.id];
