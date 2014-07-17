@@ -34,12 +34,14 @@ SessionStore.prototype.hook = function(session) {
 
 SessionStore.prototype.load = function(id, done) {
     var self = this;
-    if (this.cache[id]) {
+    var dirPath = path.join(this.dir, id);
+    var session = this.cache[id];
+    if (session) {
         return nextTick(function() {
             done(null, self.cache[id]);
         });
     }
-    fs.readFile(path.join(this.dir, id), function(err, buf) {
+    fs.readFile(dirPath, function(err, buf) {
         if (err) {
             if (err.code === 'ENOENT') err = null;
             return done(err, null);
@@ -61,9 +63,10 @@ SessionStore.prototype.save = function(session, done) {
     saving = this.saving[session.id] = [];
     var self = this;
     var data = JSON.stringify(resolveData(session), null, 2);
+    var dirPath = path.join(self.dir, session.id);
     mkdirp(self.dir, function(err) {
         if (err) return done(err, session);
-        fs.writeFile(path.join(self.dir, session.id), data, function(err) {
+        fs.writeFile(dirPath, data, function(err) {
             if (!err) {
                 if (self.cache[session.id] !== session) {
                     self.hook(session);
