@@ -1,3 +1,4 @@
+var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -71,18 +72,19 @@ SessionStore.prototype.save = function(session, done) {
         self.hook(session);
         self.cache[session.id] = session;
     }
-    mkdirp(self.dir, function(err) {
-        fs.writeFile(dirPath, data, function(err) {
-            done(err, session);
-            delete self.saving[session.id];
-            if (saving.length) {
-                nextTick(function() {
-                    self.save(session, function(err, session) {
-                        for (var i=0, n=saving.length; i<n; i++) saving[i](err, session);
-                    });
+    async.series([
+        mkdirp.bind(mkdirp, self.dir),
+        fs.writeFile.bind(fs, dirPath, data),
+    ], function(err, results) {
+        done(err, session);
+        delete self.saving[session.id];
+        if (saving.length) {
+            nextTick(function() {
+                self.save(session, function(err, session) {
+                    for (var i=0, n=saving.length; i<n; i++) saving[i](err, session);
                 });
-            }
-        });
+            });
+        }
     });
 };
 
