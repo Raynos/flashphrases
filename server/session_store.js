@@ -42,8 +42,11 @@ SessionStore.prototype.load = function(id, done) {
             done(null, self.cache[id]);
         });
     }
-    load();
-    function load() {
+    fs.stat(dirPath, function(err, stats) {
+        if (err && err.code !== 'ENOENT') return done(err);
+        load(stats);
+    });
+    function load(stats) {
         fs.readFile(dirPath, function(err, buf) {
             if (err) {
                 if (err.code === 'ENOENT') err = null;
@@ -51,6 +54,7 @@ SessionStore.prototype.load = function(id, done) {
             }
             var data = JSON.parse(String(buf)); // TODO safe parse
             var session = self.sessionType(data);
+            if (stats) session._mtime = stats.mtime;
             self.cache[session.id] = session;
             self.hook(session);
             done(null, session);
@@ -75,7 +79,10 @@ SessionStore.prototype.save = function(session, done) {
     async.series([
         mkdirp.bind(mkdirp, self.dir),
         fs.writeFile.bind(fs, dirPath, data),
+        fs.stat.bind(fs, dirPath),
     ], function(err, results) {
+        var stats = results[2];
+        if (!err && stats) session._mtime = stats.mtime;
         done(err, session);
         delete self.saving[session.id];
         if (saving.length) {
