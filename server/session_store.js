@@ -41,17 +41,20 @@ SessionStore.prototype.load = function(id, done) {
             done(null, self.cache[id]);
         });
     }
-    fs.readFile(dirPath, function(err, buf) {
-        if (err) {
-            if (err.code === 'ENOENT') err = null;
-            return done(err, null);
-        }
-        var data = JSON.parse(String(buf)); // TODO safe parse
-        var session = self.sessionType(data);
-        self.cache[session.id] = session;
-        self.hook(session);
-        done(null, session);
-    });
+    load();
+    function load() {
+        fs.readFile(dirPath, function(err, buf) {
+            if (err) {
+                if (err.code === 'ENOENT') err = null;
+                return done(err, null);
+            }
+            var data = JSON.parse(String(buf)); // TODO safe parse
+            var session = self.sessionType(data);
+            self.cache[session.id] = session;
+            self.hook(session);
+            done(null, session);
+        });
+    }
 };
 
 SessionStore.prototype.save = function(session, done) {
