@@ -44,6 +44,7 @@ SessionStore.prototype.load = function(id, done) {
     }
     fs.stat(dirPath, function(err, stats) {
         if (err && err.code !== 'ENOENT') return done(err);
+        if (session && session._mtime && session._mtime >= stats.mtime) return done(null, session);
         load(stats);
     });
     function load(stats) {
