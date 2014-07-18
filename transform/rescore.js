@@ -12,7 +12,7 @@ var eng = new Engine({
         hi: [10, 50]
     },
     generate: function() {},
-    maxErrorRate: 0.3
+    goalDistProp: 0.3
 });
 
 function rescore(session) {
