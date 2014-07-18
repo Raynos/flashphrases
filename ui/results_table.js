@@ -73,6 +73,13 @@ Render.factor = Render.maybe(function(field, value) {
     return (value).toFixed(1) + 'x';
 });
 
+Render.chain = function(f, g) {
+    return function(field, value, result) {
+        value = f(field, value, result);
+        return g(field, value, result);
+    };
+};
+
 ResultsTable.prototype.renderField = {
     'score.value': function(field, value) {return '= ' + value;},
     'score.promptValue': Render.inc,
