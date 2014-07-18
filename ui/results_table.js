@@ -48,40 +48,33 @@ ResultsTable.prototype.titles = {
 var Render = {};
 
 Render.maybe = function maybeRender(render) {
-    return function(field, result) {
-        var value = np.get(result, field);
+    return function(field, value, result) {
         if (value === undefined) return '';
         if (value === null) return '';
-        return render(field, result);
+        return render(field, value, result);
     };
 };
 
-Render.string = function renderString(field, result) {
-    var value = np.get(result, field);
+Render.string = function renderString(field, value) {
     return '' + value;
 };
 
 Render.default = Render.maybe(Render.string);
 
-Render.inc = Render.maybe(function(field, result) {
-    var value = np.get(result, field);
+Render.inc = Render.maybe(function(field, value) {
     return (value < 0 ? '-' : '+') + ' ' + Math.abs(value);
 });
 
-Render.pct = Render.maybe(function(field, result) {
-    var value = np.get(result, field);
+Render.pct = Render.maybe(function(field, value) {
     return (value * 100).toFixed(1) + '%';
 });
 
-Render.factor = Render.maybe(function(field, result) {
-    var value = np.get(result, field);
+Render.factor = Render.maybe(function(field, value) {
     return (value).toFixed(1) + 'x';
 });
 
 ResultsTable.prototype.renderField = {
-    'score.value': function(field, result) {
-        return '= ' + result.score.value;
-    },
+    'score.value': function(field, value) {return '= ' + value;},
     'score.promptValue': Render.inc,
     'score.distValue': Render.inc,
 };
@@ -103,8 +96,9 @@ ResultsTable.prototype.updateResultRow = function(row, result) {
 
 ResultsTable.prototype.resultRowContents = function(result) {
     return this.fields.map(function(field) {
+        var value = np.get(result, field);
         var render = this.renderField[field] || Render.default;
-        return render(field, result);
+        return render(field, value, result);
     }, this);
 };
 
