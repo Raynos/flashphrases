@@ -32,10 +32,13 @@ inherits(ResultsTable, FlexTable);
 ResultsTable.prototype.fields = [
     'level',
     'phrase',
+    'session.done.name',
     'score.displayValue',
     'score.promptValue',
     'score.distValue',
     'score.value',
+    'levelScore',
+    'levelGoal',
 ];
 
 ResultsTable.prototype.titles = {
@@ -43,6 +46,7 @@ ResultsTable.prototype.titles = {
     'score.displayValue': 'display',
     'score.promptValue': 'prompt',
     'score.distValue': 'error',
+    'session.done.name': 'finalState',
 };
 
 var Render = {};
@@ -80,10 +84,15 @@ Render.chain = function(f, g) {
     };
 };
 
+var util = require('util');
+
 ResultsTable.prototype.renderField = {
     'score.value': function(field, value) {return '= ' + value;},
     'score.promptValue': Render.inc,
     'score.distValue': Render.inc,
+    'levelScore': Render.maybe(function(field, value, result) {
+        return util.format('%s -> %s', value, value + result.score.value);
+    })
 };
 
 ResultsTable.prototype.renderResult = function(result) {
