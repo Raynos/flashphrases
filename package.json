@@ -7,6 +7,9 @@
   "repository": "https://github.com/jcorbin/flashphrase.git",
   "main": "index",
   "homepage": "https://github.com/jcorbin/flashphrase",
+  "browser": {
+    "./lib/var_data.js": "./lib/var_data_browser.js"
+  },
   "bugs": {
     "url": "https://github.com/jcorbin/flashphrase/issues",
     "email": "jcorbin@wunjo.org"
@@ -28,7 +31,9 @@
     "send-data": "^3.1.2",
     "uuid": "^1.4.1",
     "xhr": "^1.8.0",
-    "xtend": "^3.0.0"
+    "xtend": "^3.0.0",
+    "d3": "^3.4.11",
+    "safe-json-parse": "^2.0.0"
   },
   "devDependencies": {
     "beefy": "git://github.com/jcorbin/beefy#custom_arg",

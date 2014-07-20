@@ -44,33 +44,95 @@ div.error {
     padding: 0.4em;
 }
 
-.results {
+.results .level {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.results .level legend {
+    width: 9%;
+    text-align: right;
+    float: left;
+}
+
+.results .level:after {
+    content: '';
+    display: block;
+    clear: both;
+    visibility: hidden;
+    height: 0;
+}
+
+.results ul {
+    float: left;
+    width: 90%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.results ul li {
+    padding: 0;
+    margin: 0;
+}
+
+.results .result {
+    /* float: left; */
+    margin: 0.25em 0.125em;
+    border-radius: 0.4em;
+}
+
+.results .result .score {
+    padding: 0.5em 0.25em;
+    border-top-left-radius: 0.4em;
+    border-bottom-left-radius: 0.4em;
+    width: 2em;
+    overflow: clip;
+    float: left;
+}
+
+.results .result .phrase {
+    padding: 0.5em 0.25em;
+    white-space: nowrap;
+    float: left;
+}
+
+.results .result:after {
+    content: '';
+    display: block;
+    clear: both;
+    visibility: hidden;
+    height: 0;
+}
+
+.resultsTable {
     margin: 1em auto;
 }
 
-.results table {
+.resultsTable {
     margin: 0 auto;
 }
 
-.results table th,
-.results table td {
+.resultsTable th,
+.resultsTable td {
     padding: 0.1em 0.15em;
 }
 
-.results table td {
+.resultsTable td {
     text-align: left;
 }
 
-.results table thead,
-.results table tbody {
+.resultsTable thead,
+.resultsTable tbody {
     display: block;
 }
 
-.results table tbody {
+.resultsTable tbody {
     overflow: auto;
     height: 15em;
 }
 
-.results .title {
+.resultsTable .title {
     text-align: center;
 }

@@ -23,3 +23,29 @@ div.error {
     background-color: #d7afaf;
     color: #af0000;
 }
+
+.results .result {
+    background-color: #ddd;
+}
+
+.results .result .score { background-color: #ccc; }
+/* TODO: better gradient */
+.results .result .score.v0 { background-color: #e0c0c0; }
+.results .result .score.v1 { background-color: #d8c0c0; }
+.results .result .score.v2 { background-color: #d0c0c0; }
+.results .result .score.v3 { background-color: #c8c0c0; }
+.results .result .score.v4 { background-color: #c0c0c0; }
+.results .result .score.v5 { background-color: #c0c0c0; }
+.results .result .score.v6 { background-color: #c0c0c0; }
+.results .result .score.v7 { background-color: #c0c8c0; }
+.results .result .score.v8 { background-color: #c0d0c0; }
+.results .result .score.v9 { background-color: #c0d8c0; }
+.results .result .score.vA { background-color: #c0e0c0; }
+
+.results .result .phrase .edit {
+    color: #a44;
+}
+
+.results .result .phrase .edit.insert {
+    color: #4a4;
+}

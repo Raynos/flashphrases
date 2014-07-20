@@ -23,3 +23,7 @@ div.error {
     background-color: #870000;
     color: #ff8787;
 }
+
+.results .result {
+    background-color: #404040;
+}
