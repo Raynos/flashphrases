@@ -33,43 +33,46 @@ Render.chain = function(f, g) {
     };
 };
 
-var d3 = require('d3');
-var h = require('hyperscript');
+var hyperscript = require('hyperscript');
+var mercury = require('mercury');
+var h = mercury.h;
 var inherits = require('inherits');
-var FlexTable = require('./flex_table');
+// var FlexTable = require('./flex_table');
 var np = require('nested-property');
 var ResultsBase = require('./results_base');
 var util = require('util');
 
 function ResultsTable() {
-    this.element = h('table.resultsTable', {
-        cellSpacing: 0,
-        cellPadding: 0,
-        border: 0
-    },
-        h('thead',
-            h('tr',
-                h('th.title', {
-                    colSpan: this.fields.length
-                }, 'Results')
-            ),
-            this.fieldsRow = h('tr', this.fields.map(function(field) {
-                var title = this.titles[field] || field;
-                return h('th.field.' + field, title);
-            }, this))
-        ),
-        this.body = h('tbody')
-    );
+    this.element = hyperscript('div');
     ResultsBase.call(this);
-    FlexTable.call(this);
+
+    this.state = mercury.struct({
+        results: mercury.array([], createResult)
+    });
+
+    mercury.app(this.element, this.state, render);
+
+    function createResult(result) {
+        return mercury.struct({
+            level: mercury.value(result.level),
+            session: mercury.struct({
+                done: mercury.struct({
+                    name: mercury.value(
+                        result.session &&
+                        result.session.done &&
+                        result.session.done.name)
+                })
+            }),
+            score: mercury.struct({
+                value: mercury.value(result.score.value)
+            }),
+            phrase: mercury.value(result.phrase),
+            got: mercury.value(result.got)
+        });
+    }
 }
 
-inherits(ResultsTable, FlexTable);
-for (var prop in ResultsBase.prototype)
-    if (ResultsBase.prototype[prop] !== Object.prototype[prop])
-        ResultsTable.prototype[prop] = ResultsBase.prototype[prop];
-
-ResultsTable.prototype.fields = [
+var fields = [
     'level',
     'phrase',
     'session.done.name',
@@ -80,16 +83,14 @@ ResultsTable.prototype.fields = [
     'levelScore',
     'levelGoal',
 ];
-
-ResultsTable.prototype.titles = {
+var titles = {
     'score.value': 'score',
     'score.displayValue': 'display',
     'score.promptValue': 'prompt',
     'score.distValue': 'error',
     'session.done.name': 'finalState',
 };
-
-ResultsTable.prototype.renderField = {
+var renderField = {
     'score.value': function(field, value) {return '= ' + value;},
     'score.promptValue': Render.inc,
     'score.distValue': Render.inc,
@@ -98,31 +99,49 @@ ResultsTable.prototype.renderField = {
     })
 };
 
-ResultsTable.prototype.update = function() {
-    var self = this;
+function render(state) {
+    return h('table.resultsTable', {
+        cellSpacing: 0,
+        cellPadding: 0,
+        border: 0
+    }, [
+        h('thead', [
+            h('tr', [
+                h('th.title', {
+                    colSpan: fields.length
+                }, 'Results')
+            ]),
+            h('tr', fields.map(function(field) {
+                var title = titles[field] || field;
+                return h('th.field.' + field, title);
+            }))
+        ]),
+        h('tbody', state.results.map(renderRow).reverse())
+    ]);
 
-    var rows = d3
-        .select(this.body)
-        .selectAll('tr')
-        .data([].concat(this.session.results).reverse())
-        ;
-    rows.exit().remove();
-    var cells = rows.enter()
-        .append('tr')
-        .selectAll('td')
-        .data(function(result) {
-            return self.fields.map(function(field) {
-                var value = np.get(result, field);
-                var render = self.renderField[field] || Render.default;
-                return render(field, value, result);
-            });
-        })
-        ;
-    cells.exit().remove();
-    cells.enter().append('td').attr('class', function(d, i, j) {
-        return 'field ' + self.fields[j];
-    });
-    cells.text(function(d) {return d;});
+    function renderRow(result) {
+        var row = fields.map(function (field) {
+            var value = np.get(result, field);
+            var render = renderField[field] || Render.default;
+            return render(field, value, result);
+        });
+
+        return h('tr', row.map(function (rowItem, index) {
+            return h('td', {
+                className: 'field ' + fields[index]
+            }, rowItem);
+        }));
+    }
+}
+
+inherits(ResultsTable, ResultsBase);
+
+ResultsTable.prototype.setState = function (session) {
+    this.state.results.set(session.results);
+};
+
+ResultsTable.prototype.update = function () {
+    this.setState(this.session);
 };
 
 module.exports = ResultsTable;

@@ -1,12 +1,38 @@
-var d3 = require('d3');
-var h = require('hyperscript');
+var hyperscript = require('hyperscript');
+var mercury = require('mercury');
+var h = mercury.h;
 var editdist = require('../lib/editdist');
 var inherits = require('inherits');
 var ResultsBase = require('./results_base');
 
 function Results() {
-    this.element = h('div.results');
+    this.element = hyperscript('div');
     ResultsBase.call(this);
+
+    this.state = mercury.struct({
+        results: mercury.array([], createResult)
+    });
+
+    mercury.app(this.element, this.state, render);
+
+    function createResult(result) {
+        return mercury.struct({
+            level: mercury.value(result.level),
+            session: mercury.struct({
+                done: mercury.struct({
+                    name: mercury.value(
+                        result.session &&
+                        result.session.done &&
+                        result.session.done.name)
+                })
+            }),
+            score: mercury.struct({
+                value: mercury.value(result.score.value)
+            }),
+            phrase: mercury.value(result.phrase),
+            got: mercury.value(result.got)
+        });
+    }
 }
 
 inherits(Results, ResultsBase);
@@ -28,8 +54,46 @@ function groupby(key, a) {
     return r;
 }
 
-Results.prototype.update = function() {
-    var results = this.session.results
+Results.prototype.setState = function (session) {
+    this.state.results.set(session.results);
+};
+
+Results.prototype.update = function () {
+    this.setState(this.session);
+};
+
+function render(state) {
+    var resultsByLevel = computeResultsByLevel(state.results);
+
+    return h('div.results', resultsByLevel.map(function (level) {
+        return h('fieldset.level', [
+            h('legend', 'Level ' + level.key),
+            h('ul', level.items.map(renderResult))
+        ]);
+    }));
+
+    function renderResult(result) {
+        return h('li.result', [
+            h('div.score', {
+                className: scoreClassName(result)
+            }, scoreText(result)),
+            h('div.phrase', phraseSegments(result).map(renderStep))
+        ]);
+    }
+
+    function renderStep(step) {
+        if (step.op) {
+            return h('span.edit', {
+                className: step.op
+            }, step.value);
+        }
+
+        return step.value;
+    }
+}
+
+function computeResultsByLevel(results) {
+    var relevantResults = results
         .filter(function(result) {
             if (!result.session || !result.session.done) return false;
             switch (result.session.done.name) {
@@ -39,96 +103,49 @@ Results.prototype.update = function() {
             }
             return true;
         })
-        .reverse()
-        ;
+        .reverse();
 
-    var resultsByLevel = groupby(function(result) {return result.level;}, results);
+    var resultsByLevel = groupby(function (result) {
+        return result.level;
+    }, relevantResults);
 
-    var levels = d3
-        .select(this.element)
-        .selectAll('fieldset.level')
-        .data(resultsByLevel)
-        ;
-    levels.exit()
-        .remove()
-        ;
-    var enter = levels.enter()
-        .append('fieldset')
-        .attr('class', 'level')
-        ;
-    enter.append('legend');
-    enter.append('ul');
-    levels
-        .select('legend')
-        .text(function(g) {return 'Level ' + g.key;})
-        ;
+    return resultsByLevel;
+}
 
-    var sel = levels
-        .select('ul')
-        .selectAll('li.result')
-        .data(function(g) {return g.items;})
-        ;
+function phraseSegments(result) {
+    var phrase = result.phrase;
+    var got = result.got;
 
-    sel.exit()
-        .remove()
-        ;
+    if (!got || !result) {
+        return [];
+    }
 
-    enter = sel.enter()
-        .append('li')
-        .attr('class', 'result')
-        ;
+    var trace = editdist.trace(phrase, got).edit;
 
-    enter
-        .append('div')
-        .attr('class', 'score')
-        ;
+    return trace.map(function (step) {
+        if (step[0] === editdist.SAME) {
+            return { value: phrase[step[1]] };
+        }
 
-    enter
-        .append('div')
-        .attr('class', 'phrase')
-        ;
+        var value = (step[0] === editdist.INSERT ?
+            got[step[2]] : phrase[step[1]]);
 
-    sel
-        .select('.score')
-        .attr('class', function(result) {
-            var value = result.score.value;
-            var v = Math.max(0, Math.min(1, value / 20 + 0.5));
-            var vc = 'v' + Math.round(v * 10).toString(16).toUpperCase();
-            return 'score ' + vc;
-        })
-        .text(function(result) {
-            var value = result.score.value;
-            return (value < 0 ? '-' : '+') + Math.abs(value);
-        })
-        ;
+        return { op: ops[step[0]], value: value };
+    });
+}
 
-    sel
-        .select('.phrase')
-        .html(function(result) {
-            var a = result.phrase, b = result.got;
-            if (a && b) {
-                return editdist.trace(a, b)
-                    .edit
-                    .map(function(step) {
+function scoreClassName(result) {
+    var value = result.score.value;
+    var v = Math.max(0, Math.min(1, value / 20 + 0.5));
+    
+    return 'v' + Math.round(v * 10)
+        .toString(16).toUpperCase();
+}
 
-                        // switch (step[0]) {
-                        //     case editdist.INSERT: return b[step[2]] + '\u0302';
-                        //     case editdist.CHANGE: return a[step[1]] + '\u0358' + b[step[2]];
-                        //     case editdist.DELETE: return a[step[1]] + '\u0338';
-                        //     default:              return a[step[1]];
-                        // }
+function scoreText(result) {
+    var value = result.score.value;
 
-                        if (step[0] === editdist.SAME) return a[step[1]];
-                        var c = step[0] === editdist.INSERT ? b[step[2]] : a[step[1]];
-                        return '<span class="edit ' + ops[step[0]] + '">' + c + '</span>';
-
-                    })
-                    .join('')
-                    ;
-            }
-        })
-        ;
-
-};
+    return (value < 0 ? '-' : '+') + Math.abs(value);
+}
 
 module.exports = Results;

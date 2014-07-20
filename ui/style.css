@@ -123,10 +123,10 @@ div.error {
     text-align: left;
 }
 
-.resultsTable thead,
+/*.resultsTable thead,
 .resultsTable tbody {
     display: block;
-}
+}*/
 
 .resultsTable tbody {
     overflow: auto;
